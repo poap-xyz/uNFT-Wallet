@@ -48,7 +48,9 @@ es:
         :alias="contract.alias"
         :lastScanBlock="contract.lastScanBlock"
         :coinbase="coinbase"
+        :chain="chain"
         @delete="onDeleteContract"
+        @scan="onScanContract"
       >
       </ContractRow>
       <q-page-sticky position="bottom-right" :offset="[18, 18]">
@@ -76,9 +78,10 @@ import LanguageChanger from '../components/LanguageChanger.vue';
 import Blockie from '../components/Blockie.vue';
 import ChainChip from '../components/ChainChip.vue';
 import AddContractDialog from '../components/AddContractDialog.vue';
+import idb from '../idb';
 
 async function searchContractCretionBlock(web3, contractAddress) {
-  //h ttps://ethereum.stackexchange.com/a/65210
+  // https://ethereum.stackexchange.com/a/65210
   let highestBlock = await web3.eth.getBlockNumber();
   let lowestBlock = 0;
 
@@ -120,11 +123,6 @@ export default {
   async mounted() {
     if (localStorage.lastAddress) {
       await this.connect();
-      if (localStorage.contracts) {
-        this.allContracts = JSON.parse(localStorage.contracts);
-      } else {
-        this.allContracts = {};
-      }
     }
     // Debugging:
     //    if (localStorage.contracts) {
@@ -146,13 +144,11 @@ export default {
       singleOutbound: [],
       loadedEvents: false,
       coinbase: '',
-      allContracts: {}
+      chain: 31337,
+      contracts: []
     };
   },
   computed: {
-    contracts: function() {
-      return this.allContracts[this.coinbase] || [];
-    },
     languages: function() {
       return this.$i18n.availableLocales.map(code => code.toUpperCase());
     }
@@ -169,6 +165,7 @@ export default {
     async connect() {
       this.coinbase = (await window.ethereum.enable())[0];
       localStorage.lastAddress = this.coinbase;
+      this.contracts = await idb.getContracts(this.chain, this.coinbase);
     },
     async showAddContractDialog() {
       this.$q
@@ -179,21 +176,20 @@ export default {
         })
         .onOk(async data => {
           let allContracts = { ...this.allContracts };
-          const lastScanBlock = await searchContractCretionBlock(
+          const blockCreated = await searchContractCretionBlock(
             this.$web3.instance,
             data.address
           );
-          console.log(`Result: ${lastScanBlock}`);
-          const augmentedData = {
-            ...data,
-            lastScanBlock
+          const contract = {
+            chain: this.chain,
+            account: this.coinbase,
+            address: data.address,
+            alias: data.alias,
+            lastScanBlock: blockCreated - 1
           };
-          if (allContracts[this.coinbase]) {
-            allContracts[this.coinbase].push(augmentedData);
-          } else {
-            allContracts[this.coinbase] = [augmentedData];
-          }
-          this.allContracts = allContracts;
+          idb.addContract(contract).then(() => {
+            this.contracts.push(contract);
+          });
         });
     },
     onDeleteContract(contract) {
@@ -204,14 +200,27 @@ export default {
           cancel: true
         })
         .onOk(() => {
-          let allContracts = { ...this.allContracts };
-          const index = allContracts[this.coinbase]
-            .map(cont => cont.address)
-            .indexOf(contract.address);
-          allContracts[this.coinbase].splice(index, 1);
-
-          this.allContracts = allContracts;
+          idb
+            .deleteContract(this.chain, this.coinbase, contract.address)
+            .then(() => {
+              this.contracts.splice(
+                this.contracts.findIndex(c => c.address === contract.address),
+                1
+              );
+            });
         });
+    },
+    onScanContract(e) {
+      idb.updateContractScan(
+        this.chain,
+        this.coinbase,
+        e.address,
+        e.lastScanBlock
+      );
+      const index = this.contracts
+        .map(contract => contract.address)
+        .indexOf(e.address);
+      this.contracts[index].lastScanBlock = e.lastScanBlock;
     }
   }
 };
