@@ -1,13 +1,25 @@
+<i18n lang="yaml">
+en:
+  login: "Login"
+
+es:
+  login: "Ingresar"
+
+</i18n>
+
 <template>
   <div>
-    <q-btn color="primary" text-color="white" @click="connect">{{
-      $t('common.actions.login')
-    }}</q-btn>
+    <q-btn
+      v-if="!connected"
+      color="primary"
+      text-color="white"
+      @click="connect"
+      >{{ $t('login') }}</q-btn
+    >
   </div>
 </template>
 
 <script>
-import { mapState } from 'vuex';
 import Web3 from 'web3';
 import Web3Modal from 'web3modal';
 import Portis from '@portis/web3';
@@ -19,36 +31,20 @@ export default {
   data() {
     return {
       web3Modal: {},
-      provider: {}
+      connected: false
     };
   },
-  computed: {
-    ...mapState('web3', ['connected', 'coinbase'])
-  },
   created() {
-    this.$store.subscribe(mutation => {
-      if (mutation.type === 'web3/SET_WANT_CHANGE_ACCOUNT') {
-        this.web3Modal.clearCachedProvider();
-        this.connect();
-      }
-    });
-
-    this.$store.subscribe(mutation => {
-      if (mutation.type === 'web3/SET_WANT_LOGOUT') {
-        this.web3Modal.clearCachedProvider();
-        this.$web3.instance.currentProvider.close();
-      }
-    });
     const providerOptions = {
       portis: {
         package: Portis, // required
         options: {
           id: 'c99ad65f-e89e-4b13-b6b3-13998f9d3639', // required
           network: {
-            // nodeUrl: 'http://localhost:8545',
-            // chainId: '31337',
-            nodeUrl: 'https://testnet.19930528.xyz',
-            chainId: '20066'
+            nodeUrl: 'http://localhost:8545',
+            chainId: '31337'
+            // nodeUrl: 'https://testnet.19930528.xyz',
+            // chainId: '20066'
           },
           config: {
             registerPageByDefault: true
@@ -77,29 +73,49 @@ export default {
       const provider = await this.web3Modal.connect();
 
       // Subscribe to accounts change
-      provider.on('accountsChanged', () => {
-        this.$store.dispatch('web3/saveLogin');
-      });
+      provider.on('accountsChanged', this.accountChanged);
 
       // Subscribe to chainId change
-      provider.on('chainChanged', () => {
-        this.$store.dispatch('web3/saveLogin');
-      });
+      provider.on('chainChanged', this.chainChanged);
 
       // Subscribe to provider connection
       provider.on('connect', () => {
-        this.$store.dispatch('web3/saveLogin');
+        this.accountChanged();
+        this.chainChanged();
+        this.connected = true;
       });
 
       // Subscribe to provider disconnection
       provider.on('disconnect', () => {
-        this.$store.dispatch('web3/logout');
+        this.logout();
       });
 
       provider.autoRefreshOnNetworkChange = false;
       this.$web3.instance = new Web3(provider);
-
-      this.$store.dispatch('web3/saveLogin');
+      this.chainChanged();
+      this.accountChanged();
+      this.connected = true;
+    },
+    accountChanged() {
+      if (this.$web3.instance) {
+        this.$web3.instance.eth.getAccounts().then(accounts => {
+          const [coinbase] = accounts;
+          this.$emit('accountChanged', { coinbase });
+        });
+      }
+    },
+    chainChanged() {
+      if (this.$web3.instance) {
+        this.$web3.instance.eth.getChainId().then(chain => {
+          this.$emit('chainChanged', { chain });
+        });
+      }
+    },
+    logout() {
+      this.web3Modal.clearCachedProvider();
+      this.$emit('accountChanged', { coinbase: null });
+      this.$emit('chainChanged', { chain: null });
+      this.connected = false;
     }
   }
 };

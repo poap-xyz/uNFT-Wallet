@@ -25,15 +25,6 @@ export default {
       required: true
     }
   },
-  mounted() {
-    console.log(this.$i18n.locale);
-    if (localStorage.locale) {
-      this.$i18n.locale = localStorage.locale;
-    } else {
-      this.$i18n.locale = this.$q.lang.getLocale();
-    }
-    this.locale = this.$i18n.locale.toUpperCase().substr(0, 2);
-  },
   data() {
     return {
       locale: null
@@ -44,6 +35,14 @@ export default {
       this.$i18n.locale = val.toLowerCase();
       localStorage.locale = this.$i18n.locale;
     }
+  },
+  mounted() {
+    if (localStorage.locale) {
+      this.$i18n.locale = localStorage.locale;
+    } else {
+      this.$i18n.locale = this.$q.lang.getLocale();
+    }
+    this.locale = this.$i18n.locale.toUpperCase().substr(0, 2);
   }
 };
 </script>

@@ -38,7 +38,7 @@ es:
         </q-card-section>
 
         <q-card-actions align="right">
-          <q-btn flat label="Close" color="primary" v-close-popup />
+          <q-btn v-close-popup flat label="Close" color="primary" />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -46,7 +46,6 @@ es:
 </template>
 
 <script>
-import ABI from '../artifacts/ierc1155.abi.json';
 import VueJsonPretty from 'vue-json-pretty';
 import 'vue-json-pretty/lib/styles.css';
 import TransferDialog from './TransferDialog';
@@ -55,7 +54,7 @@ function handleDecentralizedProtocols(url) {
   const [protocol, uri] = url.split('://');
 
   if (protocol === 'ipfs') {
-    return 'https://ipfs.io/ipfs/' + uri;
+    return `https://ipfs.io/ipfs/${uri}`;
     // return 'https://ipfs.io/' + uri;
   }
 
@@ -109,15 +108,15 @@ export default {
       avalilableLocales: []
     };
   },
-  created() {
-    this.load();
-  },
   watch: {
-    '$i18n.locale'(locale) {
+    '$i18n.locale': function(locale) {
       if (this.avalilableLocales.includes(locale)) {
         this.load();
       }
     }
+  },
+  created() {
+    this.load();
   },
   methods: {
     load() {
@@ -127,7 +126,7 @@ export default {
         this.$web3.instance.utils.BN
       );
       this.$axios
-        //.get('https://cors-anywhere.herokuapp.com/' + handledUri)
+        // .get('https://cors-anywhere.herokuapp.com/' + handledUri)
         .get(handledUri)
         .then(response => {
           if (response.data.localization) {
@@ -135,7 +134,7 @@ export default {
           }
           if (
             response.data.localization &&
-            this.$i18n.locale != response.data.localization.default &&
+            this.$i18n.locale !== response.data.localization.default &&
             response.data.localization.locales.includes(this.$i18n.locale)
           ) {
             const handledLocaleUri = handleLocaleExpansion(
@@ -147,7 +146,7 @@ export default {
             );
 
             this.$axios
-              //.get(                    'https://cors-anywhere.herokuapp.com/' + handledLocaleUri                  )
+              // .get('https://cors-anywhere.herokuapp.com/' + handledLocaleUri)
               .get(handledLocaleUri)
               .then(localeResponse => {
                 this.name = localeResponse.data.name || response.data.name;

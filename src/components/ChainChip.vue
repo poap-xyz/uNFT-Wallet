@@ -13,8 +13,6 @@ es:
 </template>
 
 <script>
-import { mapState } from 'vuex';
-
 const chains = {
   1: {
     name: 'Mainnet',
@@ -72,8 +70,13 @@ const icons = {
 
 export default {
   name: 'ChainChip',
+  props: {
+    chainId: {
+      type: Number,
+      required: true
+    }
+  },
   computed: {
-    ...mapState('web3', ['chainId']),
     chainName() {
       try {
         return chains[this.chainId].name;

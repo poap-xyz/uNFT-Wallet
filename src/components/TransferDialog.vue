@@ -7,6 +7,7 @@ en:
   amount: "Amount"
   submit: "Submit"
   reset: "Reset"
+  pleaseAprove: "Please aprove the transaction"
   validations:
     typeAmount: "Type an amount"
     typeAmountGtZero: "Type an amount greater than zero"
@@ -19,6 +20,7 @@ es:
   amount: "Cantidad"
   submit: "Enviar"
   reset: "Borrar"
+  pleaseAprove: "Favor de aprovar la transacción"
   validations:
     typeAmount: "Escribe una cantidad"
     typeAmountGtZero: "Escribe una cantidad mayor a cero"
@@ -223,7 +225,7 @@ export default {
         .estimateGas({ from: this.coinbase });
 
       this.$q.loading.show({
-        message: this.$t('common.transactions.aprove')
+        message: this.$t('pleaseAprove')
       });
       this.contract.methods
         .safeTransferFrom(
@@ -234,14 +236,15 @@ export default {
           0
         )
         .send({ gas: estimatedGas, from: this.coinbase })
-        .on('transactionHash', hash => {
-          console.log(hash);
-          this.$q.loading.show({
-            message: this.$t('common.transactions.waiting')
-          });
-        })
         .on('confirmation', confirmationNumber => {
-          console.log(confirmationNumber);
+          if (confirmationNumber === 1) {
+            this.$q.notify({
+              color: 'green-4',
+              textColor: 'white',
+              icon: 'send',
+              message: 'Transaction confirmed'
+            });
+          }
         })
         .on('receipt', () => {
           this.$q.loading.hide();

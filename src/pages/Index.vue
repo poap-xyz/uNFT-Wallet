@@ -1,17 +1,13 @@
 <i18n lang="yaml">
 en:
   addContract: "Add Contract"
-  connect: "Connect"
   logout: "Logout"
-  changeAccount: "Change Account"
   deleteContract: "Delete Contract"
   deleteContractMessage: "Do you wish to delete {alias}?"
 
 es:
   addContract: "Agregar Contrato"
-  connect: "Conectar"
   logout: "Salir"
-  changeAccount: "Cambiar Cuenta"
   deleteContract: "Borrar contrato"
   deleteContractMessage: "¿Deseas borrar {alias}?"
 
@@ -19,40 +15,36 @@ es:
 <template>
   <div>
     <LanguageChanger :languages="languages" />
-    <ChainChip />
-    <div v-if="coinbase != ''">
-      <q-btn v-if="connected" round flat>
+    <div v-if="connected">
+      <!--<div>-->
+      <ChainChip :chain-id="chain" />
+      <BlockchainChip :address="coinbase" />
+      <q-btn round flat>
         <Blockie :address="coinbase"></Blockie>
-        <!--<q-menu>-->
-        <!--<q-list style="min-width: 100px">-->
-        <!--<q-item v-close-popup clickable @click="logout">-->
-        <!--<q-item-section>{{ $t('logout') }}</q-item-section>-->
-        <!--</q-item>-->
-        <!--<q-item v-close-popup clickable @click="changeAccount">-->
-        <!--<q-item-section>{{ $t('changeAccount') }}</q-item-section>-->
-        <!--</q-item>-->
-        <!--</q-list>-->
-        <!--</q-menu>-->
+        <q-menu>
+          <q-list style="min-width: 100px">
+            <q-item v-close-popup clickable @click="logout">
+              <q-item-section>{{ $t('logout') }}</q-item-section>
+            </q-item>
+          </q-list>
+        </q-menu>
       </q-btn>
       <div class="row">
         <div class="col-xs-8">
-          <span class="truncate-chip-labels">
-            <BlockchainChip :address="coinbase" />
-          </span>
+          <span class="truncate-chip-labels"> </span>
         </div>
       </div>
       <ContractRow
-        v-for="contract in contracts"
-        v-bind:key="contract.address"
-        :address="contract.address"
-        :alias="contract.alias"
-        :lastScanBlock="contract.lastScanBlock"
+        v-for="c in contracts"
+        v-bind:key="c.address"
+        :address="c.address"
+        :alias="c.alias"
+        :last-scan-block="c.lastScanBlock"
         :coinbase="coinbase"
         :chain="chain"
         @delete="onDeleteContract"
         @scan="onScanContract"
-      >
-      </ContractRow>
+      />
       <q-page-sticky position="bottom-right" :offset="[18, 18]">
         <q-btn
           fab
@@ -63,10 +55,12 @@ es:
         />
       </q-page-sticky>
     </div>
-    <div v-else>
-      <!--<Web3Modal> </Web3Modal>-->
-      <q-btn @click="connect">{{ $t('connect') }}</q-btn>
-    </div>
+
+    <Web3Modal
+      ref="web3modal"
+      @accountChanged="accountChanged"
+      @chainChanged="chainChanged"
+    />
   </div>
 </template>
 
@@ -86,31 +80,32 @@ async function searchContractCretionBlock(web3, contractAddress) {
   let lowestBlock = 0;
 
   let contractCode = await web3.eth.getCode(contractAddress, highestBlock);
-  if (contractCode == '0x') {
-    console.error('Contract ' + contractAddress + ' does not exist!');
+  if (contractCode === '0x') {
     return -1;
   }
 
   while (lowestBlock <= highestBlock) {
-    let searchBlock = parseInt((lowestBlock + highestBlock) / 2);
+    const searchBlock = parseInt((lowestBlock + highestBlock) / 2, 10);
+    // eslint-disable-next-line no-await-in-loop
     contractCode = await web3.eth.getCode(contractAddress, searchBlock);
 
-    if (contractCode != '0x') {
+    if (contractCode !== '0x') {
       highestBlock = searchBlock;
-    } else if (contractCode == '0x') {
+    } else if (contractCode === '0x') {
       lowestBlock = searchBlock;
     }
 
-    if (highestBlock == lowestBlock + 1) {
+    if (highestBlock === lowestBlock + 1) {
       return highestBlock;
     }
   }
+  return -1;
 }
 
 export default {
   name: 'MyVouchers',
   components: {
-    //    Web3Modal,
+    Web3Modal,
     LanguageChanger,
     Blockie,
     ChainChip,
@@ -120,37 +115,19 @@ export default {
     AddContractDialog
   },
   props: {},
-  async mounted() {
-    if (localStorage.lastAddress) {
-      await this.connect();
-    }
-    // Debugging:
-    //    if (localStorage.contracts) {
-    //      this.allContracts = JSON.parse(localStorage.contracts);
-    //}
-  },
   data() {
     return {
-      tc: 'pages.myVouchers.',
-      connected: true,
-      from_addr: '',
-      to_addr: '',
-      contract: {},
-      name: '',
-      description: '',
-      profilePicture: '',
-      instagram: '',
-      singleInbound: [],
-      singleOutbound: [],
-      loadedEvents: false,
-      coinbase: '',
-      chain: 31337,
+      coinbase: null,
+      chain: null,
       contracts: []
     };
   },
   computed: {
-    languages: function() {
+    languages() {
       return this.$i18n.availableLocales.map(code => code.toUpperCase());
+    },
+    connected() {
+      return this.coinbase !== null && this.chain !== null;
     }
   },
   watch: {
@@ -162,10 +139,18 @@ export default {
     }
   },
   methods: {
-    async connect() {
-      this.coinbase = (await window.ethereum.enable())[0];
-      localStorage.lastAddress = this.coinbase;
-      this.contracts = await idb.getContracts(this.chain, this.coinbase);
+    accountChanged(e) {
+      this.coinbase = e.coinbase;
+      this.loadContracts();
+    },
+    chainChanged(e) {
+      this.chain = e.chain;
+      this.loadContracts();
+    },
+    async loadContracts() {
+      if (this.coinbase && this.chain) {
+        this.contracts = await idb.getContracts(this.chain, this.coinbase);
+      }
     },
     async showAddContractDialog() {
       this.$q
@@ -175,21 +160,24 @@ export default {
           existing: this.contracts
         })
         .onOk(async data => {
-          let allContracts = { ...this.allContracts };
           const blockCreated = await searchContractCretionBlock(
             this.$web3.instance,
             data.address
           );
-          const contract = {
-            chain: this.chain,
-            account: this.coinbase,
-            address: data.address,
-            alias: data.alias,
-            lastScanBlock: blockCreated - 1
-          };
-          idb.addContract(contract).then(() => {
-            this.contracts.push(contract);
-          });
+          if (blockCreated === -1) {
+            this.$notify('Contract not found');
+          } else {
+            const contract = {
+              chain: this.chain,
+              account: this.coinbase,
+              address: data.address,
+              alias: data.alias,
+              lastScanBlock: blockCreated - 1
+            };
+            idb.addContract(contract).then(() => {
+              this.contracts.push(contract);
+            });
+          }
         });
     },
     onDeleteContract(contract) {
@@ -221,6 +209,9 @@ export default {
         .map(contract => contract.address)
         .indexOf(e.address);
       this.contracts[index].lastScanBlock = e.lastScanBlock;
+    },
+    logout() {
+      this.$refs.web3modal.logout();
     }
   }
 };

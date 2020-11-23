@@ -43,7 +43,7 @@ es:
 
 <script>
 import ABI from '../artifacts/ierc1155.abi.json';
-import TokenCard from '../components/TokenCard.vue';
+import TokenCard from './TokenCard.vue';
 import idb from '../idb';
 
 function parseSingleEvents(events) {
@@ -186,7 +186,7 @@ export default {
               (batchOutgoing[id] || 0)
           };
         })
-        .filter(token => token.amount != 0);
+        .filter(token => token.amount !== 0);
 
       return Promise.all(
         newTokens.map(token => {
