@@ -28,37 +28,77 @@ es:
         <q-btn v-close-popup flat round dense icon="close" />
       </q-toolbar>
 
-      <q-card-section>
-        <q-form class="q-gutter-md" @submit="onOKClick" @reset="reset">
-          <q-input
-            v-model="address"
-            filled
-            debounce="500"
-            :label="$t('address')"
-            lazy-rules
-            :rules="[validateContractAddress]"
-          />
+      <q-tabs
+        v-model="tab"
+        dense
+        class="text-grey"
+        active-color="primary"
+        indicator-color="primary"
+        align="justify"
+        narrow-indicator
+      >
+        <q-tab name="common" label="Common" />
+        <q-tab name="custom" label="Custom" />
+      </q-tabs>
 
-          <q-input v-model="alias" filled :label="$t('alias')" />
+      <q-separator />
 
-          <q-card-actions align="right">
-            <q-btn
-              :label="$t('reset')"
-              type="reset"
-              color="primary"
-              flat
-              class="q-ml-sm"
+      <q-tab-panels v-model="tab" animated>
+        <q-tab-panel name="common">
+          <q-form class="q-gutter-md" @submit="onOKCommon" @reset="reset">
+            <q-select
+              v-model="commonSelection"
+              :options="commonContracts"
+              option-label="name"
+              label="Contract"
             />
-            <q-btn :label="$t('add')" type="submit" color="primary" />
-          </q-card-actions>
-        </q-form>
-      </q-card-section>
+
+            <q-card-actions align="right">
+              <q-btn
+                :label="$t('reset')"
+                type="reset"
+                color="primary"
+                flat
+                class="q-ml-sm"
+              />
+              <q-btn :label="$t('add')" type="submit" color="primary" />
+            </q-card-actions>
+          </q-form>
+        </q-tab-panel>
+
+        <q-tab-panel name="custom">
+          <q-form class="q-gutter-md" @submit="onOKClick" @reset="reset">
+            <q-input
+              v-model="address"
+              filled
+              debounce="500"
+              :label="$t('address')"
+              lazy-rules
+              :rules="[validateContractAddress]"
+            />
+
+            <q-input v-model="alias" filled :label="$t('alias')" />
+
+            <q-card-actions align="right">
+              <q-btn
+                :label="$t('reset')"
+                type="reset"
+                color="primary"
+                flat
+                class="q-ml-sm"
+              />
+              <q-btn :label="$t('add')" type="submit" color="primary" />
+            </q-card-actions>
+          </q-form>
+        </q-tab-panel>
+      </q-tab-panels>
     </q-card>
   </q-dialog>
 </template>
 
 <script>
 import ABI from '../artifacts/ierc1155.abi.json';
+import knownContracts from '../knownContracts.json';
 
 export default {
   name: 'AddContractDialog',
@@ -67,13 +107,24 @@ export default {
       type: Array,
       required: false,
       default: () => []
+    },
+    chain: {
+      type: Number,
+      required: true
     }
   },
   data() {
     return {
       address: null,
-      alias: null
+      alias: null,
+      tab: 'common',
+      commonSelection: null
     };
+  },
+  computed: {
+    commonContracts() {
+      return knownContracts[this.chain.toString()];
+    }
   },
   methods: {
     // following method is REQUIRED
@@ -105,6 +156,21 @@ export default {
       this.hide();
     },
 
+    onOKCommon() {
+      // on OK, it is REQUIRED to
+      // emit "ok" event (with optional payload)
+      // before hiding the QDialog
+      this.$emit('ok', {
+        address: this.commonSelection.address,
+        alias: this.commonSelection.name,
+        blockCreated: this.commonSelection.block
+      });
+      // or with payload: this.$emit('ok', { ... })
+
+      // then hiding dialog
+      this.hide();
+    },
+
     onCancelClick() {
       // we just need to hide dialog
       this.hide();
@@ -117,7 +183,6 @@ export default {
           .indexOf(address);
 
         if (index >= 0) {
-          console.log(index);
           result = this.$t('alreadyExists', {
             alias: this.existing[index].alias
           });
@@ -142,6 +207,7 @@ export default {
     reset() {
       this.address = null;
       this.alias = null;
+      this.commonSelection = null;
     }
   }
 };

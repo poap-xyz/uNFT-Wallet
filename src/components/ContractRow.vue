@@ -25,14 +25,18 @@ es:
     <q-scroll-area horizontal class="bg-grey-1 rounded-borders">
       <!--<div v-if="loadedEvents" class="">-->
       <div class="row no-wrap q-pa-md row items-start q-gutter-md">
-        <TokenCard
-          v-for="(token, index) in tokens"
+        <q-intersection
+          v-for="(token, index) in filteredTokens"
           :key="index"
-          v-bind="token"
-          :contract="contract"
-          :coinbase="coinbase"
-          @transfer="loadEvents"
-        />
+          class="card-intersection"
+        >
+          <TokenCard
+            v-bind="token"
+            :contract="contract"
+            :coinbase="coinbase"
+            @transfer="loadEvents"
+          />
+        </q-intersection>
       </div>
     </q-scroll-area>
     <div v-if="loadedEvents && tokens.length == 0">
@@ -101,6 +105,11 @@ export default {
       batchInbound: [],
       batchOutbound: []
     };
+  },
+  computed: {
+    filteredTokens() {
+      return this.tokens.filter(token => token.uri !== '');
+    }
   },
   watch: {
     // eslint-disable-next-line object-shorthand
@@ -268,5 +277,8 @@ export default {
   line-height: 1em;
   display: inline;
   margin-top: 0;
+}
+.card-intersection {
+  width: 500px;
 }
 </style>

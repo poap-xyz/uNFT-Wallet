@@ -139,8 +139,10 @@ export default {
     }
   },
   methods: {
-    accountChanged(e) {
-      this.coinbase = e.coinbase;
+    // accountChanged(e) {
+    accountChanged() {
+      //      this.coinbase = e.coinbase;
+      this.coinbase = '0xa44aad4cf0fb0d4940c6cf215977c9cd55340f42';
       this.loadContracts();
     },
     chainChanged(e) {
@@ -157,13 +159,20 @@ export default {
         .dialog({
           component: AddContractDialog,
           parent: this,
-          existing: this.contracts
+          existing: this.contracts,
+          chain: this.chain
         })
         .onOk(async data => {
-          const blockCreated = await searchContractCretionBlock(
-            this.$web3.instance,
-            data.address
-          );
+          console.log(data);
+          let blockCreated = -1;
+          if (data.blockCreated) {
+            blockCreated = data.blockCreated;
+          } else {
+            blockCreated = await searchContractCretionBlock(
+              this.$web3.instance,
+              data.address
+            );
+          }
           if (blockCreated === -1) {
             this.$notify('Contract not found');
           } else {
