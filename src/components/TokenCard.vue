@@ -7,16 +7,46 @@ es:
   transfer: "Transferir"
 </i18n>
 <template>
-  <div v-if="uri">
-    <q-card clickable class="token">
+  <div>
+    <!--<q-card v-if="description === '' && name === ''" class="token">-->
+    <q-card v-if="description === '' && name === ''" class="token">
+      <q-card-section horizontal>
+        <q-skeleton class="imageSkeleton" square />
+        <q-card-section>
+          <div class="text-h6 q-mb-xs name">
+            <q-skeleton v-if="state === 'OK'" type="text" />
+            <div v-else>{{ state }}</div>
+          </div>
+          <div class="q-mb-xs description">
+            <q-skeleton type="text" />
+            <q-skeleton type="text" />
+            <q-skeleton type="text" />
+          </div>
+        </q-card-section>
+      </q-card-section>
+      <q-card-actions align="around">
+        <q-skeleton type="QBtn" />
+        <q-skeleton type="QBtn" />
+      </q-card-actions>
+    </q-card>
+    <q-card v-else clickable class="token">
       <q-card-section horizontal>
         <q-badge v-if="amount > 0" color="accent" floating>
           {{ amount }}
         </q-badge>
-        <img v-if="image" :src="image" @error="imageError" />
+        <img
+          v-if="image"
+          :src="image"
+          class="tokenImage"
+          :class="{ empty: imageLoaded }"
+          @loaded="imageLoaded = true"
+          @error="imageError"
+        />
         <q-card-section>
-          <div class="text-h6 q-mb-xs">{{ name }}</div>
-          <div class="q-mb-xs description">{{ description }}</div>
+          <div class="text-h6 q-mb-xs name" :title="name">{{ name }}</div>
+          <div class="q-mb-xs description" :title="description">
+            {{ description }}
+          </div>
         </q-card-section>
       </q-card-section>
       <q-card-actions align="around">
@@ -33,7 +63,8 @@ es:
           <div class="text-h6">{{ $t('properties') }}</div>
         </q-card-section>
 
-        <q-card-section class="q-pt-none"> ID: {{ id }} </q-card-section>
+        <!-- eslint-disable-next-line @intlify/vue-i18n/no-raw-text -->
+        <q-card-section class="q-pt-none">0x{{ hexId }} </q-card-section>
 
         <q-card-section class="q-pt-none">
           <vue-json-pretty :data="properties"> </vue-json-pretty>
@@ -69,11 +100,8 @@ function handleDecentralizedProtocols(url) {
   return url;
 }
 
-function handleIdExpansion(url, id, BN) {
-  const bn = new BN(id);
-  const hexId = bn.toString(16);
-  const paddedHexId = hexId.padStart(64, '0');
-  return url.replace('{id}', paddedHexId);
+function handleIdExpansion(url, hexId) {
+  return url.replace('{id}', hexId);
 }
 
 function handleLocaleExpansion(url, locale) {
@@ -110,6 +138,7 @@ export default {
     return {
       name: '',
       description: '',
+      hexId: '',
       image: null,
       properties: null,
       propertiesDialog: false,
@@ -117,9 +146,12 @@ export default {
       fixedImage: false,
       fixedCORS: false,
       fixedCORSImage: false,
-      badCORSHosts: ['cdn.enjin.io']
+      badCORSHosts: ['cdn.enjin.io', 'forgottenartifacts.io'],
+      imageLoaded: false,
+      state: 'OK'
     };
   },
+
   watch: {
     '$i18n.locale': function(locale) {
       if (this.avalilableLocales.includes(locale)) {
@@ -128,23 +160,16 @@ export default {
     }
   },
   created() {
-    if (this.uri) {
-      this.load();
-    } else {
-      console.log(
-        // eslint-disable-next-line no-underscore-dangle
-        `Empty URI for Contract: ${this.contract._address} ID: ${this.id}`
-      );
-    }
+    const bn = new this.$web3.instance.utils.BN(this.id);
+    const hexId = bn.toString(16);
+    this.hexId = hexId.padStart(64, '0');
+
+    this.load();
   },
   methods: {
     load() {
       const handledUri = this.handleBadCORS(
-        handleIdExpansion(
-          handleDecentralizedProtocols(this.uri),
-          this.id,
-          this.$web3.instance.utils.BN
-        )
+        handleIdExpansion(handleDecentralizedProtocols(this.uri), this.hexId)
       );
       this.$axios
         .get(handledUri)
@@ -172,13 +197,11 @@ export default {
               this.description =
                 localeResponse.data.description || response.data.description;
               if (localeResponse.data.image) {
-                this.image = this.handleBadCORS(
-                  handleDecentralizedProtocols(localeResponse.data.image)
+                this.image = handleDecentralizedProtocols(
+                  localeResponse.data.image
                 );
               } else if (response.data.image) {
-                this.image = this.handleBadCORS(
-                  handleDecentralizedProtocols(response.data.image)
-                );
+                this.image = handleDecentralizedProtocols(response.data.image);
               } else {
                 this.image = 'https://via.placeholder.com/200';
               }
@@ -189,9 +212,7 @@ export default {
             this.name = response.data.name;
             this.description = response.data.description;
             if (response.data.image) {
-              this.image = this.handleBadCORS(
-                handleDecentralizedProtocols(response.data.image)
-              );
+              this.image = handleDecentralizedProtocols(response.data.image);
             } else {
               this.image = 'https://via.placeholder.com/200';
             }
@@ -200,11 +221,17 @@ export default {
           }
         })
         .catch(err => {
-          if (typeof err.response === 'undefined' && !this.fixedCORS) {
-            const url = new URL(this.uri);
-            this.badCORSHosts.push(url.host);
-            this.fixedCORS = true;
-            this.load();
+          if (typeof err.response === 'undefined') {
+            if (!this.fixedCORS) {
+              const url = new URL(this.uri);
+              this.badCORSHosts.push(url.host);
+              this.fixedCORS = true;
+              this.load();
+            } else {
+              this.state = 'Network error';
+            }
+          } else if (err.response.status >= 400 && err.response.status <= 503) {
+            this.state = 'Remote server error';
           }
         });
     },
@@ -242,6 +269,8 @@ export default {
           };
         });
         this.fixedImage = true;
+      } else {
+        this.image = 'https://via.placeholder.com/200';
       }
     }
   }
@@ -254,9 +283,40 @@ export default {
   height: 230px;
   width: 500px;
 }
-.token img {
+.token .tokenImage {
   max-height: 180px;
 }
+.token .tokenImage .empty {
+  height: 180px;
+  width: 180px;
+}
+
+.token .imageSkeleton {
+  height: 180px;
+  width: 180px;
+}
+
+.name .q-skeleton {
+  width: 220px;
+}
+
+.name {
+  -webkit-line-clamp: 1;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+}
+
+.description .q-skeleton:nth-of-type(1) {
+  width: 200px;
+}
+.description .q-skeleton:nth-of-type(2) {
+  width: 230px;
+}
+.description .q-skeleton:nth-of-type(3) {
+  width: 180px;
+}
+
 .description {
   -webkit-line-clamp: 5;
   overflow: hidden;

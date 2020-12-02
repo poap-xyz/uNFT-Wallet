@@ -18,7 +18,7 @@ es:
     <div v-if="connected">
       <!--<div>-->
       <ChainChip :chain-id="chain" />
-      <BlockchainChip :address="coinbase" />
+      <AddressChip :address="coinbase" />
       <q-btn round flat>
         <Blockie :address="coinbase"></Blockie>
         <q-menu>
@@ -67,7 +67,7 @@ es:
 <script>
 import ContractRow from '../components/ContractRow.vue';
 import Web3Modal from '../components/Web3Modal.vue';
-import BlockchainChip from '../components/BlockchainChip.vue';
+import AddressChip from '../components/AddressChip.vue';
 import LanguageChanger from '../components/LanguageChanger.vue';
 import Blockie from '../components/Blockie.vue';
 import ChainChip from '../components/ChainChip.vue';
@@ -109,7 +109,7 @@ export default {
     LanguageChanger,
     Blockie,
     ChainChip,
-    BlockchainChip,
+    AddressChip,
     ContractRow,
     // eslint-disable-next-line vue/no-unused-components
     AddContractDialog

@@ -1,6 +1,11 @@
 <i18n lang="yaml">
 en:
   wallet1155: "Wallet 1155"
+  logout: "Logout"
+
+es:
+  logout: "Salir"
+
 </i18n>
 <template>
   <q-layout view="lHh Lpr lFf">
@@ -18,6 +23,16 @@ en:
         <q-toolbar-title>
           {{ $t('wallet1155') }}
         </q-toolbar-title>
+        <q-btn round flat>
+          <Blockie :address="coinbase"></Blockie>
+          <q-menu>
+            <q-list style="min-width: 100px">
+              <q-item v-close-popup clickable @click="logout">
+                <q-item-section>{{ $t('logout') }}</q-item-section>
+              </q-item>
+            </q-list>
+          </q-menu>
+        </q-btn>
       </q-toolbar>
     </q-header>
 
@@ -39,6 +54,8 @@ en:
 </template>
 
 <script>
+import Blockie from '../components/Blockie.vue';
+
 const linksData = [
   {
     title: 'Docs',
@@ -86,6 +103,7 @@ const linksData = [
 
 export default {
   name: 'MainLayout',
+  components: { Blockie },
   data() {
     return {
       leftDrawerOpen: false,
