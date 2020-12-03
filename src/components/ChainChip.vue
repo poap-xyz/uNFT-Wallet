@@ -6,7 +6,7 @@ es:
   tooltip: "Conectado a {chainName}"
 </i18n>
 <template>
-  <q-chip v-if="chainShow" :icon="chainIcon" :color="chainColor">
+  <q-chip :icon="chainIcon" :color="chainColor">
     {{ chainName }}
     <q-tooltip>{{ $t('tooltip', { chainName }) }}</q-tooltip>
   </q-chip>
@@ -16,7 +16,7 @@ es:
 const chains = {
   1: {
     name: 'Mainnet',
-    status: 'error'
+    status: 'ok'
   },
   3: {
     name: 'Ropsten',
@@ -36,11 +36,11 @@ const chains = {
   },
   77: {
     name: 'Sokol',
-    status: 'warn'
+    status: 'error'
   },
   100: {
     name: 'xDAI',
-    status: 'ok'
+    status: 'warn'
   },
   1234: {
     name: 'Localhost',
@@ -101,13 +101,6 @@ export default {
         status = 'error';
       }
       return icons[status];
-    },
-    chainShow() {
-      try {
-        return chains[this.chainId].status !== 'ok';
-      } catch {
-        return true;
-      }
     }
   }
 };

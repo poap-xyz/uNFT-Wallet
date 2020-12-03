@@ -1,42 +1,27 @@
 <i18n lang="yaml">
 en:
   addContract: "Add Contract"
-  logout: "Logout"
   deleteContract: "Delete Contract"
   deleteContractMessage: "Do you wish to delete {alias}?"
 
 es:
   addContract: "Agregar Contrato"
-  logout: "Salir"
   deleteContract: "Borrar contrato"
   deleteContractMessage: "¿Deseas borrar {alias}?"
 
 </i18n>
 <template>
   <div>
-    <LanguageChanger :languages="languages" />
     <div v-if="connected">
       <!--<div>-->
       <ChainChip :chain-id="chain" />
       <AddressChip :address="coinbase" />
-      <q-btn round flat>
-        <Blockie :address="coinbase"></Blockie>
-        <q-menu>
-          <q-list style="min-width: 100px">
-            <q-item v-close-popup clickable @click="logout">
-              <q-item-section>{{ $t('logout') }}</q-item-section>
-            </q-item>
-          </q-list>
-        </q-menu>
-      </q-btn>
       <div class="row">
-        <div class="col-xs-8">
-          <span class="truncate-chip-labels"> </span>
-        </div>
+        <div class="col-xs-8"></div>
       </div>
       <ContractRow
         v-for="c in contracts"
-        v-bind:key="c.address"
+        :key="c.address"
         :address="c.address"
         :alias="c.alias"
         :last-scan-block="c.lastScanBlock"
@@ -55,21 +40,12 @@ es:
         />
       </q-page-sticky>
     </div>
-
-    <Web3Modal
-      ref="web3modal"
-      @accountChanged="accountChanged"
-      @chainChanged="chainChanged"
-    />
   </div>
 </template>
 
 <script>
 import ContractRow from '../components/ContractRow.vue';
-import Web3Modal from '../components/Web3Modal.vue';
 import AddressChip from '../components/AddressChip.vue';
-import LanguageChanger from '../components/LanguageChanger.vue';
-import Blockie from '../components/Blockie.vue';
 import ChainChip from '../components/ChainChip.vue';
 import AddContractDialog from '../components/AddContractDialog.vue';
 import idb from '../idb';
@@ -86,9 +62,12 @@ async function searchContractCretionBlock(web3, contractAddress) {
 
   while (lowestBlock <= highestBlock) {
     const searchBlock = parseInt((lowestBlock + highestBlock) / 2, 10);
-    // eslint-disable-next-line no-await-in-loop
-    contractCode = await web3.eth.getCode(contractAddress, searchBlock);
-
+    try {
+      // eslint-disable-next-line no-await-in-loop
+      contractCode = await web3.eth.getCode(contractAddress, searchBlock);
+    } catch (err) {
+      return -2;
+    }
     if (contractCode !== '0x') {
       highestBlock = searchBlock;
     } else if (contractCode === '0x') {
@@ -105,9 +84,6 @@ async function searchContractCretionBlock(web3, contractAddress) {
 export default {
   name: 'MyVouchers',
   components: {
-    Web3Modal,
-    LanguageChanger,
-    Blockie,
     ChainChip,
     AddressChip,
     ContractRow,
@@ -117,38 +93,32 @@ export default {
   props: {},
   data() {
     return {
-      coinbase: null,
-      chain: null,
       contracts: []
     };
   },
   computed: {
-    languages() {
-      return this.$i18n.availableLocales.map(code => code.toUpperCase());
-    },
     connected() {
       return this.coinbase !== null && this.chain !== null;
+    },
+    coinbase() {
+      return this.$store.state.web3.coinbase;
+    },
+    chain() {
+      return this.$store.state.web3.chainId;
     }
   },
   watch: {
-    allContracts: {
-      deep: true,
-      handler: newContracts => {
-        localStorage.contracts = JSON.stringify(newContracts);
-      }
+    coinbase() {
+      this.loadContracts();
+    },
+    chain() {
+      this.loadContracts();
     }
   },
+  created() {
+    this.loadContracts();
+  },
   methods: {
-    // accountChanged(e) {
-    accountChanged() {
-      //      this.coinbase = e.coinbase;
-      this.coinbase = '0xa44aad4cf0fb0d4940c6cf215977c9cd55340f42';
-      this.loadContracts();
-    },
-    chainChanged(e) {
-      this.chain = e.chain;
-      this.loadContracts();
-    },
     async loadContracts() {
       if (this.coinbase && this.chain) {
         this.contracts = await idb.getContracts(this.chain, this.coinbase);
@@ -163,7 +133,6 @@ export default {
           chain: this.chain
         })
         .onOk(async data => {
-          console.log(data);
           let blockCreated = -1;
           if (data.blockCreated) {
             blockCreated = data.blockCreated;
@@ -174,18 +143,57 @@ export default {
             );
           }
           if (blockCreated === -1) {
-            this.$notify('Contract not found');
-          } else {
-            const contract = {
-              chain: this.chain,
-              account: this.coinbase,
-              address: data.address,
-              alias: data.alias,
-              lastScanBlock: blockCreated - 1
-            };
-            idb.addContract(contract).then(() => {
-              this.contracts.push(contract);
+            this.$notify({
+              type: 'negative',
+              message: 'Contract not found'
             });
+          } else {
+            if (blockCreated === -2) {
+              await new Promise((resolve, reject) => {
+                this.$q
+                  .dialog({
+                    title: "Can't find contract creation",
+                    options: {
+                      persistent: true
+                    },
+                    message:
+                      "We could'nt determine when the contract was created. If you know the block where it was created (or the first block where you interacted with this contract), please write it in the field below. If you don't know, you may leave it blank, but scanning fot the first time will take a long time",
+                    prompt: {
+                      type: 'number'
+                    },
+                    cancel: true,
+                    persistent: true
+                  })
+                  .onOk(userBlock => {
+                    if (userBlock === undefined) {
+                      blockCreated = 1;
+                    } else {
+                      blockCreated = userBlock;
+                    }
+                    resolve();
+                  })
+                  .onCancel(() => {
+                    reject();
+                  });
+              });
+            }
+            if (blockCreated > 0) {
+              const contract = {
+                chain: this.chain,
+                account: this.coinbase,
+                address: data.address,
+                alias: data.alias,
+                lastScanBlock: blockCreated - 1
+              };
+              idb.addContract(contract).then(() => {
+                this.contracts.push(contract);
+              });
+            } else {
+              this.$notify({
+                type: 'negative',
+                message: 'Contract not addedd'
+              });
+            }
           }
         });
     },

@@ -244,9 +244,10 @@ export default {
           contract: this.contract,
           id: this.id
         })
-        .onOk(() => {
-          this.$emit('transfer');
-        });
+        .onOk(() => {});
+    },
+    confirmed() {
+      this.$emit('transfer');
     },
     handleBadCORS(url) {
       const urlUrl = new URL(url);

@@ -4,11 +4,13 @@ en:
   logout: "Logout"
 
 es:
+  wallet1155: "Wallet 1155"
   logout: "Salir"
 
 </i18n>
+
 <template>
-  <q-layout view="lHh Lpr lFf">
+  <q-layout view="hHh Lpr lFf">
     <q-header elevated>
       <q-toolbar>
         <q-btn
@@ -23,7 +25,14 @@ es:
         <q-toolbar-title>
           {{ $t('wallet1155') }}
         </q-toolbar-title>
-        <q-btn round flat>
+        <Web3Modal
+          ref="web3modal"
+          color="accent"
+          @accountChanged="accountChanged"
+          @chainChanged="chainChanged"
+        />
+
+        <q-btn v-if="connected" round flat>
           <Blockie :address="coinbase"></Blockie>
           <q-menu>
             <q-list style="min-width: 100px">
@@ -36,12 +45,8 @@ es:
       </q-toolbar>
     </q-header>
 
-    <q-drawer
-      v-model="leftDrawerOpen"
-      show-if-above
-      bordered
-      content-class="bg-grey-1"
-    >
+    <q-drawer v-model="leftDrawerOpen" bordered content-class="bg-grey-1">
+      <LanguageChanger :languages="languages" />
       <q-list>
         <q-item-label header class="text-grey-8"> </q-item-label>
       </q-list>
@@ -55,60 +60,47 @@ es:
 
 <script>
 import Blockie from '../components/Blockie.vue';
-
-const linksData = [
-  {
-    title: 'Docs',
-    caption: 'quasar.dev',
-    icon: 'school',
-    link: 'https://quasar.dev'
-  },
-  {
-    title: 'Github',
-    caption: 'github.com/quasarframework',
-    icon: 'code',
-    link: 'https://github.com/quasarframework'
-  },
-  {
-    title: 'Discord Chat Channel',
-    caption: 'chat.quasar.dev',
-    icon: 'chat',
-    link: 'https://chat.quasar.dev'
-  },
-  {
-    title: 'Forum',
-    caption: 'forum.quasar.dev',
-    icon: 'record_voice_over',
-    link: 'https://forum.quasar.dev'
-  },
-  {
-    title: 'Twitter',
-    caption: '@quasarframework',
-    icon: 'rss_feed',
-    link: 'https://twitter.quasar.dev'
-  },
-  {
-    title: 'Facebook',
-    caption: '@QuasarFramework',
-    icon: 'public',
-    link: 'https://facebook.quasar.dev'
-  },
-  {
-    title: 'Quasar Awesome',
-    caption: 'Community Quasar projects',
-    icon: 'favorite',
-    link: 'https://awesome.quasar.dev'
-  }
-];
+import Web3Modal from '../components/Web3Modal.vue';
+import LanguageChanger from '../components/LanguageChanger.vue';
 
 export default {
   name: 'MainLayout',
-  components: { Blockie },
+  components: { Blockie, Web3Modal, LanguageChanger },
   data() {
     return {
-      leftDrawerOpen: false,
-      essentialLinks: linksData
+      leftDrawerOpen: false
     };
+  },
+  computed: {
+    languages() {
+      return this.$i18n.availableLocales.map(code => code.toUpperCase());
+    },
+    connected() {
+      return this.coinbase !== null && this.chain !== null;
+    },
+    coinbase() {
+      return this.$store.state.web3.coinbase;
+    }
+  },
+  methods: {
+    accountChanged(e) {
+      this.$store.commit('web3/SET_COINBASE', e.coinbase);
+      /* if (e.coinbase) {
+        this.$store.commit(
+          'web3/SET_COINBASE',
+          '0xa44aad4cf0fb0d4940c6cf215977c9cd55340f42'
+        );
+      } else {
+        this.$store.commit('web3/SET_COINBASE', null);
+      } */
+    },
+    chainChanged(e) {
+      this.chain = e.chain;
+      this.$store.commit('web3/SET_CHAIN_ID', e.chain);
+    },
+    logout() {
+      this.$refs.web3modal.logout();
+    }
   }
 };
 </script>

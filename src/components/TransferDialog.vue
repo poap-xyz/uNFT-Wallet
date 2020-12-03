@@ -104,7 +104,7 @@ es:
 import Blockie from './Blockie.vue';
 
 export default {
-  name: 'MintDialog',
+  name: 'TransferDialog',
   components: {
     blockie: Blockie
   },
@@ -244,21 +244,41 @@ export default {
               icon: 'send',
               message: 'Transaction confirmed'
             });
+            this.$emmit('confirmed');
           }
         })
-        .on('receipt', () => {
+        .on('transactionHash', hash => {
           this.$q.loading.hide();
           this.$q.notify({
-            color: 'green-4',
-            textColor: 'white',
+            type: 'info',
             icon: 'send',
-            message: 'Transfer Sent'
+            message: 'Transfer Sent',
+            actions: [
+              {
+                label: 'View',
+                color: 'yellow',
+                handler: () => {
+                  window.open(`https://etherscan.io/tx/${hash}`, '_blank');
+                }
+              },
+              {
+                label: 'Dismiss',
+                color: 'white',
+                handler: () => {
+                  /* ... */
+                }
+              }
+            ]
           });
           this.reset();
           this.onOKClick();
         })
         .on('error', err => {
-          console.log(err);
+          this.$q.loading.hide();
+          this.$q.notify({
+            type: 'negative',
+            message: `Error: ${err.message}`
+          });
         });
     }
   }

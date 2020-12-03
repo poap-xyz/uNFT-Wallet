@@ -112,8 +112,7 @@ export default {
     }
   },
   watch: {
-    // eslint-disable-next-line object-shorthand
-    coinbase: function() {
+    coinbase() {
       this.loadedEvents = false;
       this.singleInbound = [];
       this.batchInbound = [];

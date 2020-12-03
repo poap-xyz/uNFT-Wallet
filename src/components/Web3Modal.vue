@@ -11,8 +11,8 @@ es:
   <div>
     <q-btn
       v-if="!connected"
-      color="primary"
-      text-color="white"
+      :color="color"
+      :text-color="textColor"
       @click="connect"
       >{{ $t('login') }}</q-btn
     >
@@ -28,6 +28,16 @@ import UniLogin from '@unilogin/provider';
 
 export default {
   name: 'Web3Modal',
+  props: {
+    color: {
+      type: String,
+      default: 'primary'
+    },
+    textColor: {
+      type: String,
+      default: 'white'
+    }
+  },
   data() {
     return {
       web3Modal: {},
