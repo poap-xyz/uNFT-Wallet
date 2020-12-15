@@ -18,8 +18,7 @@ es:
         {{ alias }}
         <div class="text-caption ">{{ address }}</div>
       </q-toolbar-title>
-      <!-- eslint-disable-next-line @intlify/vue-i18n/no-raw-text -->
-      <q-chip outline color="primary">ERC1155</q-chip>
+      <q-chip outline color="primary">{{ type }}</q-chip>
       <q-btn
         v-if="nonUriTokensCount > 0"
         flat
@@ -42,12 +41,13 @@ es:
       <!--<div v-if="loadedEvents" class="">-->
       <div class="row no-wrap q-pa-md row items-start q-gutter-md">
         <q-intersection
-          v-for="(token, index) in tokens"
-          :key="index"
+          v-for="token in tokens"
+          :key="token.id"
           class="card-intersection"
         >
           <TokenCard
             v-bind="token"
+            :type="type"
             :contract="contract"
             :coinbase="coinbase"
             @transfer="computeTokens"
@@ -62,8 +62,9 @@ es:
 </template>
 
 <script>
-import ABI from '../artifacts/ierc1155.abi.json';
+import ABI1155 from '../artifacts/ierc1155.abi.json';
 import TokenCard from './TokenCard.vue';
+import ABI721 from '../artifacts/ierc721metadata.abi.json';
 import idb from '../idb';
 
 function parseSingleEvents(events) {
@@ -103,6 +104,10 @@ export default {
       type: String,
       required: true
     },
+    type: {
+      type: String,
+      required: true
+    },
     chain: {
       type: Number,
       default: 1
@@ -127,13 +132,19 @@ export default {
     }
   },
   created() {
-    this.contract = new this.$web3.instance.eth.Contract(ABI, this.address);
+    this.contract =
+      this.type === 'ERC1155'
+        ? new this.$web3.instance.eth.Contract(ABI1155, this.address)
+        : new this.$web3.instance.eth.Contract(ABI721, this.address);
     this.computeTokens();
   },
   methods: {
     async computeTokens() {
       const lastBlock = await this.$web3.instance.eth.getBlockNumber();
-      const newTokenIds = await this.getNewIds(lastBlock);
+      const newTokenIds =
+        this.type === 'ERC1155'
+          ? await this.getNewIds1155(lastBlock)
+          : await this.getNewIds721(lastBlock);
 
       const oldTokens = await idb.getTokens(
         this.chain,
@@ -147,6 +158,23 @@ export default {
         Array.from(newTokenIds).filter(item => oldTokenIds.indexOf(item) < 0)
       );
 
+      const fullTokens =
+        this.type === 'ERC1155'
+          ? await this.fullTokens1155(tokenIds)
+          : await this.fullTokens721(tokenIds);
+
+      this.tokens = fullTokens.filter(token => token.uri);
+
+      this.tokens.forEach(token =>
+        idb.putToken(this.chain, this.coinbase, this.address, token)
+      );
+
+      this.$emit('scan', { address: this.address, lastScanBlock: lastBlock });
+
+      this.nonUriTokensCount = fullTokens.length - this.tokens.length;
+    },
+
+    async fullTokens1155(tokenIds) {
       const coinbaseArray = new Array(tokenIds.length).fill(this.coinbase);
 
       const balances = await this.contract.methods
@@ -169,17 +197,31 @@ export default {
         })
       );
 
-      this.tokens = fullTokens.filter(token => token.uri);
-
-      this.tokens.forEach(token =>
-        idb.putToken(this.chain, this.coinbase, this.address, token)
-      );
-
-      this.$emit('scan', { address: this.address, lastBlock });
-
-      this.nonUriTokensCount = fullTokens.length - this.tokens.length;
+      return fullTokens;
     },
-    async getNewIds(lastBlock) {
+    async fullTokens721(tokenIds) {
+      const partialTokens = (
+        await Promise.all(
+          await tokenIds.map(async tokenId => {
+            return {
+              id: tokenId,
+              currentOwner: await this.contract.methods.ownerOf(tokenId).call()
+            };
+          })
+        )
+      ).filter(token => token.currentOwner === this.coinbase);
+
+      const fullTokens = await Promise.all(
+        partialTokens.map(token => {
+          return this.contract.methods
+            .tokenURI(token.id)
+            .call()
+            .then(uri => ({ ...token, uri }));
+        })
+      );
+      return fullTokens;
+    },
+    async getNewIds1155(lastBlock) {
       if (lastBlock > this.lastScanBlock) {
         const singleInboundPromise = this.contract
           .getPastEvents('TransferSingle', {
@@ -207,6 +249,21 @@ export default {
           sourceEventIds[1].forEach(id => sourceEventIds[0].add(id));
           return sourceEventIds[0];
         });
+        return tokenIds;
+      }
+      return [];
+    },
+    async getNewIds721(lastBlock) {
+      if (lastBlock > this.lastScanBlock) {
+        const tokenIds = await this.contract
+          .getPastEvents('Transfer', {
+            fromBlock: this.lastScanBlock + 1,
+            toBlock: lastBlock,
+            filter: { to: this.coinbase }
+          })
+          .then(events => {
+            return events.map(ev => ev.returnValues.tokenId);
+          });
         return tokenIds;
       }
       return [];

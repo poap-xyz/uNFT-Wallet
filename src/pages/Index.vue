@@ -21,17 +21,7 @@ es:
       </div>
       <div v-for="c in contracts" :key="c.address">
         <ContractRow
-          v-if="c.type === 'ERC1155'"
-          :address="c.address"
-          :alias="c.alias"
-          :last-scan-block="c.lastScanBlock"
-          :coinbase="coinbase"
-          :chain="chain"
-          @delete="onDeleteContract"
-          @scan="onScanContract"
-        />
-        <ContractRow721
-          v-if="c.type === 'ERC721'"
+          :type="c.type"
           :address="c.address"
           :alias="c.alias"
           :last-scan-block="c.lastScanBlock"
@@ -56,7 +46,6 @@ es:
 
 <script>
 import ContractRow from '../components/ContractRow.vue';
-import ContractRow721 from '../components/ContractRow721.vue';
 import AddressChip from '../components/AddressChip.vue';
 import ChainChip from '../components/ChainChip.vue';
 import AddContractDialog from '../components/AddContractDialog.vue';
@@ -99,7 +88,6 @@ export default {
     ChainChip,
     AddressChip,
     ContractRow,
-    ContractRow721,
     // eslint-disable-next-line vue/no-unused-components
     AddContractDialog
   },

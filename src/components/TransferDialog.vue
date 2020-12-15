@@ -73,6 +73,7 @@ es:
           />
 
           <q-input
+            v-if="type === 'ERC1155'"
             v-model="amount"
             filled
             type="number"
@@ -119,6 +120,10 @@ export default {
       required: true
     },
     id: {
+      type: String,
+      required: true
+    },
+    type: {
       type: String,
       required: true
     }
@@ -214,7 +219,59 @@ export default {
       this.recipientAddress = null;
       this.isENS = false;
     },
-    async transfer() {
+    transfer() {
+      if (this.type === 'ERC1155') {
+        this.transfer1155();
+      } else {
+        this.transfer721();
+      }
+    },
+    transactionReceipt() {
+      this.$parent.$parent.$emit('transferConfirmed');
+      this.$q.notify({
+        type: 'positive',
+        message: 'Transaction confirmed'
+      });
+    },
+    transactionHash(hash) {
+      this.$q.loading.hide();
+      this.$q.notify({
+        type: 'info',
+        icon: 'send',
+        message: 'Transfer Sent',
+        actions: [
+          {
+            label: 'View',
+            color: 'yellow',
+            handler: () => {
+              window.open(`https://etherscan.io/tx/${hash}`, '_blank');
+            }
+          },
+          {
+            label: 'Dismiss',
+            color: 'white',
+            handler: () => {
+              /* ... */
+            }
+          }
+        ]
+      });
+      this.reset();
+      this.onOKClick();
+    },
+    transactionError(err) {
+      this.$q.loading.hide();
+      this.$q.notify({
+        type: 'negative',
+        message: `Error: ${err.message}`
+      });
+    },
+    alertAprove() {
+      this.$q.loading.show({
+        message: this.$t('pleaseAprove')
+      });
+    },
+    async transfer1155() {
       const estimatedGas = await this.contract.methods
         .safeTransferFrom(
           this.coinbase,
@@ -225,9 +282,8 @@ export default {
         )
         .estimateGas({ from: this.coinbase });
 
-      this.$q.loading.show({
-        message: this.$t('pleaseAprove')
-      });
+      this.alertAprove();
+
       this.contract.methods
         .safeTransferFrom(
           this.coinbase,
@@ -237,46 +293,23 @@ export default {
           0
         )
         .send({ gas: estimatedGas, from: this.coinbase })
-        .on('receipt', () => {
-          this.$q.notify({
-            type: 'positive',
-            message: 'Transaction confirmed'
-          });
-          this.$parent.$parent.$emit('transferConfirmed');
-        })
-        .on('transactionHash', hash => {
-          this.$q.loading.hide();
-          this.$q.notify({
-            type: 'info',
-            icon: 'send',
-            message: 'Transfer Sent',
-            actions: [
-              {
-                label: 'View',
-                color: 'yellow',
-                handler: () => {
-                  window.open(`https://etherscan.io/tx/${hash}`, '_blank');
-                }
-              },
-              {
-                label: 'Dismiss',
-                color: 'white',
-                handler: () => {
-                  /* ... */
-                }
-              }
-            ]
-          });
-          this.reset();
-          this.onOKClick();
-        })
-        .on('error', err => {
-          this.$q.loading.hide();
-          this.$q.notify({
-            type: 'negative',
-            message: `Error: ${err.message}`
-          });
-        });
+        .on('receipt', this.transactionReceipt)
+        .on('transactionHash', this.transactionHash)
+        .on('error', this.transactionError);
+    },
+    async transfer721() {
+      const estimatedGas = await this.contract.methods
+        .safeTransferFrom(this.coinbase, this.recipientAddress, this.id, 0)
+        .estimateGas({ from: this.coinbase });
+
+      this.alertAprove();
+
+      this.contract.methods
+        .safeTransferFrom(this.coinbase, this.recipientAddress, this.id, 0)
+        .send({ gas: estimatedGas, from: this.coinbase })
+        .on('receipt', this.transactionReceipt)
+        .on('transactionHash', this.transactionHash)
+        .on('error', this.transactionError);
     }
   }
 };

@@ -132,6 +132,10 @@ export default {
       type: String,
       required: true
     },
+    type: {
+      type: String,
+      required: true
+    },
     amount: {
       type: Number,
       default: 0
@@ -215,8 +219,10 @@ export default {
           } else {
             this.name = response.data.name;
             this.description = response.data.description;
-            if (response.data.image) {
-              this.image = handleDecentralizedProtocols(response.data.image);
+            if (response.data.image || response.data.image_url) {
+              this.image = handleDecentralizedProtocols(
+                response.data.image || response.data.image_url
+              );
             } else {
               this.image = 'https://via.placeholder.com/200';
             }
@@ -246,7 +252,8 @@ export default {
           parent: this,
           coinbase: this.coinbase,
           contract: this.contract,
-          id: this.id
+          id: this.id,
+          type: this.type
         })
         .onOk(() => {});
     },
