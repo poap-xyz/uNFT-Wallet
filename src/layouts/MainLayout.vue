@@ -85,14 +85,16 @@ export default {
   methods: {
     accountChanged(e) {
       this.$store.commit('web3/SET_COINBASE', e.coinbase);
-      /* if (e.coinbase) {
+      /*
+      if (e.coinbase) {
         this.$store.commit(
           'web3/SET_COINBASE',
           '0xa44aad4cf0fb0d4940c6cf215977c9cd55340f42'
         );
       } else {
         this.$store.commit('web3/SET_COINBASE', null);
-      } */
+      }
+      */
     },
     chainChanged(e) {
       this.chain = e.chain;

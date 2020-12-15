@@ -4,21 +4,25 @@ en:
   address: "Address"
   alias: "Alias"
   invalidAddress: "Invalid address"
-  notERC1155: "Address is not a ERC1155 Contract"
+  notSupportedToken: "Address is not a ERC721 nor ERC1155 Contract"
   add: "Add"
   reset: "Reset"
   alreadyExists: "This address already exists as: {alias}"
+  tokenType: "Type"
 
 es:
   addContract: "Agregar Contrato"
   address: "Dirección"
   alias: "Alias"
   invalidAddress: "Dirección inválida"
-  notERC1155: "La dirección no es un contrato ERC1155"
+  notSupportedToken: "La dirección no es un contrato ERC721 ni ERC1155"
   add: "Agregar"
   reset: "Borrar"
   alreadyExists: "Esta dirección ya existe como: {alias}"
+  tokenType: "Tipo"
+
 </i18n>
+
 <template>
   <q-dialog ref="dialog" @hide="onDialogHide">
     <q-card>
@@ -53,6 +57,13 @@ es:
               label="Contract"
             />
 
+            <q-input
+              v-model="commonSelectionType"
+              filled
+              :label="$t('tokenType')"
+              readonly
+            />
+
             <q-card-actions align="right">
               <q-btn
                 :label="$t('reset')"
@@ -78,6 +89,7 @@ es:
             />
 
             <q-input v-model="alias" filled :label="$t('alias')" />
+            <q-input v-model="type" filled :label="$t('tokenType')" readonly />
 
             <q-card-actions align="right">
               <q-btn
@@ -117,6 +129,7 @@ export default {
     return {
       address: null,
       alias: null,
+      type: null,
       tab: 'common',
       commonSelection: null
     };
@@ -124,6 +137,10 @@ export default {
   computed: {
     commonContracts() {
       return knownContracts[this.chain.toString()];
+    },
+    commonSelectionType() {
+      if (this.commonSelection) return this.commonSelection.type;
+      return null;
     }
   },
   methods: {
@@ -149,7 +166,11 @@ export default {
       // on OK, it is REQUIRED to
       // emit "ok" event (with optional payload)
       // before hiding the QDialog
-      this.$emit('ok', { address: this.address, alias: this.alias });
+      this.$emit('ok', {
+        address: this.address,
+        alias: this.alias,
+        type: this.type
+      });
       // or with payload: this.$emit('ok', { ... })
 
       // then hiding dialog
@@ -163,7 +184,8 @@ export default {
       this.$emit('ok', {
         address: this.commonSelection.address,
         alias: this.commonSelection.name,
-        blockCreated: this.commonSelection.block
+        blockCreated: this.commonSelection.block,
+        type: this.commonSelection.type
       });
       // or with payload: this.$emit('ok', { ... })
 
@@ -191,11 +213,25 @@ export default {
           await contract.methods
             .supportsInterface('0xd9b67a26') // ERC1155 Standard
             .call()
-            .then(isERC1155 => {
+            .then(async isERC1155 => {
               if (isERC1155) {
+                this.type = 'ERC1155';
                 result = true;
               } else {
-                result = this.$t('notERC1155');
+                await contract.methods
+                  .supportsInterface('0x80ac58cd') // ERC721 Standard
+                  .call()
+                  .then(isERC721 => {
+                    if (isERC721) {
+                      this.type = 'ERC721';
+                      result = true;
+                    } else {
+                      result = {
+                        status: 'error',
+                        message: this.$t('notSupportedToken')
+                      };
+                    }
+                  });
               }
             });
         }

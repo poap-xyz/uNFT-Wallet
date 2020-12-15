@@ -19,7 +19,7 @@ es:
         <div class="text-caption ">{{ address }}</div>
       </q-toolbar-title>
       <!-- eslint-disable-next-line @intlify/vue-i18n/no-raw-text -->
-      <q-chip outline color="primary">ERC1155</q-chip>
+      <q-chip outline color="primary">ERC721</q-chip>
       <q-btn
         v-if="nonUriTokensCount > 0"
         flat
@@ -42,11 +42,11 @@ es:
       <!--<div v-if="loadedEvents" class="">-->
       <div class="row no-wrap q-pa-md row items-start q-gutter-md">
         <q-intersection
-          v-for="(token, index) in tokens"
-          :key="index"
+          v-for="token in tokens"
+          :key="token.id"
           class="card-intersection"
         >
-          <TokenCard
+          <TokenCard721
             v-bind="token"
             :contract="contract"
             :coinbase="coinbase"
@@ -62,30 +62,13 @@ es:
 </template>
 
 <script>
-import ABI from '../artifacts/ierc1155.abi.json';
-import TokenCard from './TokenCard.vue';
+import ABI from '../artifacts/ierc721metadata.abi.json';
+import TokenCard721 from './TokenCard721.vue';
 import idb from '../idb';
 
-function parseSingleEvents(events) {
-  return events.reduce((accumulator, ev) => {
-    const { id } = ev.returnValues;
-    accumulator.add(id);
-    return accumulator;
-  }, new Set());
-}
-
-function parseBatchEvents(events) {
-  return events.reduce((accumulator, ev) => {
-    ev.returnValues.ids.forEach(id => {
-      accumulator.add(id);
-    });
-    return accumulator;
-  }, new Set());
-}
-
 export default {
-  name: 'ContractRow',
-  components: { TokenCard },
+  name: 'ContractRow721',
+  components: { TokenCard721 },
   props: {
     address: {
       type: String,
@@ -147,23 +130,19 @@ export default {
         Array.from(newTokenIds).filter(item => oldTokenIds.indexOf(item) < 0)
       );
 
-      const coinbaseArray = new Array(tokenIds.length).fill(this.coinbase);
-
-      const balances = await this.contract.methods
-        .balanceOfBatch(coinbaseArray, tokenIds)
-        .call();
-
-      const partialTokens = tokenIds
-        .map((tokenId, index) => ({
-          id: tokenId,
-          amount: parseInt(balances[index], 10)
-        }))
-        .filter(token => token.amount > 0);
+      const partialTokens = await Promise.all(
+        await tokenIds.map(async tokenId => {
+          return {
+            id: tokenId,
+            currentOwner: await this.contract.methods.ownerOf(tokenId).call()
+          };
+        })
+      ).filter(token => token.currentOwner === this.coinbase);
 
       const fullTokens = await Promise.all(
         partialTokens.map(token => {
           return this.contract.methods
-            .uri(token.id)
+            .tokenURI(token.id)
             .call()
             .then(uri => ({ ...token, uri }));
         })
@@ -175,38 +154,21 @@ export default {
         idb.putToken(this.chain, this.coinbase, this.address, token)
       );
 
-      this.$emit('scan', { address: this.address, lastBlock });
+      this.$emit('scan', { address: this.address, lastScanBlock: lastBlock });
 
       this.nonUriTokensCount = fullTokens.length - this.tokens.length;
     },
     async getNewIds(lastBlock) {
       if (lastBlock > this.lastScanBlock) {
-        const singleInboundPromise = this.contract
-          .getPastEvents('TransferSingle', {
+        const tokenIds = await this.contract
+          .getPastEvents('Transfer', {
             fromBlock: this.lastScanBlock + 1,
             toBlock: lastBlock,
             filter: { to: this.coinbase }
           })
           .then(events => {
-            return parseSingleEvents(events);
+            return events.map(ev => ev.returnValues.tokenId);
           });
-        const batchInboundPromise = this.contract
-          .getPastEvents('TransferBatch', {
-            fromBlock: this.lastScanBlock + 1,
-            toBlock: lastBlock,
-            filter: { to: this.coinbase }
-          })
-          .then(events => {
-            return parseBatchEvents(events);
-          });
-
-        const tokenIds = await Promise.all([
-          singleInboundPromise,
-          batchInboundPromise
-        ]).then(sourceEventIds => {
-          sourceEventIds[1].forEach(id => sourceEventIds[0].add(id));
-          return sourceEventIds[0];
-        });
         return tokenIds;
       }
       return [];

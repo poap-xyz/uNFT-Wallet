@@ -84,7 +84,7 @@ es:
 <script>
 import VueJsonPretty from 'vue-json-pretty';
 import 'vue-json-pretty/lib/styles.css';
-import TransferDialog from './TransferDialog';
+import Transfer721Dialog from './Transfer721Dialog';
 
 function handleDecentralizedProtocols(url) {
   const urlUrl = new URL(url);
@@ -112,9 +112,9 @@ function handleLocaleExpansion(url, locale) {
 }
 
 export default {
-  name: 'TokenCard',
+  name: 'TokenCard721',
   // eslint-disable-next-line vue/no-unused-components
-  components: { VueJsonPretty, TransferDialog },
+  components: { VueJsonPretty, Transfer721Dialog },
   props: {
     coinbase: {
       type: String,
@@ -215,8 +215,10 @@ export default {
           } else {
             this.name = response.data.name;
             this.description = response.data.description;
-            if (response.data.image) {
-              this.image = handleDecentralizedProtocols(response.data.image);
+            if (response.data.image || response.data.image_url) {
+              this.image = handleDecentralizedProtocols(
+                response.data.image || response.data.image_url
+              );
             } else {
               this.image = 'https://via.placeholder.com/200';
             }
@@ -242,7 +244,7 @@ export default {
     showTransferDialog() {
       this.$q
         .dialog({
-          component: TransferDialog,
+          component: Transfer721Dialog,
           parent: this,
           coinbase: this.coinbase,
           contract: this.contract,

@@ -22,7 +22,7 @@ es:
 <script>
 import Web3 from 'web3';
 import Web3Modal from 'web3modal';
-import Portis from '@portis/web3';
+// import Portis from '@portis/web3';
 import Authereum from 'authereum';
 import UniLogin from '@unilogin/provider';
 
@@ -46,7 +46,7 @@ export default {
   },
   created() {
     const providerOptions = {
-      portis: {
+      /* portis: {
         package: Portis, // required
         options: {
           id: 'c99ad65f-e89e-4b13-b6b3-13998f9d3639', // required
@@ -60,7 +60,7 @@ export default {
             registerPageByDefault: true
           }
         }
-      },
+      }, */
       authereum: {
         package: Authereum // required
       },

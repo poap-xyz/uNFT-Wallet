@@ -4,26 +4,18 @@ en:
   recipient: "Recipient"
   addressOrENS: "Address or ENS"
   address: "Address"
-  amount: "Amount"
   submit: "Submit"
   reset: "Reset"
   pleaseAprove: "Please aprove the transaction"
-  validations:
-    typeAmount: "Type an amount"
-    typeAmountGtZero: "Type an amount greater than zero"
 
 es:
   transferToken: "Transferir Token"
   recipient: "Receptor"
   addressOrENS: "Dirección o ENS"
   address: "Dirección"
-  amount: "Cantidad"
   submit: "Enviar"
   reset: "Borrar"
   pleaseAprove: "Favor de aprovar la transacción"
-  validations:
-    typeAmount: "Escribe una cantidad"
-    typeAmountGtZero: "Escribe una cantidad mayor a cero"
 
 </i18n>
 
@@ -72,19 +64,6 @@ es:
             label="ENS"
           />
 
-          <q-input
-            v-model="amount"
-            filled
-            type="number"
-            :label="$t('amount')"
-            lazy-rules
-            :rules="[
-              val =>
-                (val !== null && val !== '') || $t('validations.typeAmount'),
-              val => val > 0 || $t('validations.typeAmountGtZero')
-            ]"
-          />
-
           <q-card-actions align="right">
             <q-btn
               :label="$t('reset')"
@@ -126,7 +105,6 @@ export default {
   data() {
     return {
       recipient: null,
-      amount: 1,
       isENS: false,
       reverseENS: false,
       recipientAddress: null
@@ -210,39 +188,26 @@ export default {
     },
     reset() {
       this.recipient = null;
-      this.amount = null;
       this.recipientAddress = null;
       this.isENS = false;
     },
     async transfer() {
       const estimatedGas = await this.contract.methods
-        .safeTransferFrom(
-          this.coinbase,
-          this.recipientAddress,
-          this.id,
-          this.amount,
-          0
-        )
+        .safeTransferFrom(this.coinbase, this.recipientAddress, this.id, 0)
         .estimateGas({ from: this.coinbase });
 
       this.$q.loading.show({
         message: this.$t('pleaseAprove')
       });
       this.contract.methods
-        .safeTransferFrom(
-          this.coinbase,
-          this.recipientAddress,
-          this.id,
-          this.amount,
-          0
-        )
+        .safeTransferFrom(this.coinbase, this.recipientAddress, this.id, 0)
         .send({ gas: estimatedGas, from: this.coinbase })
         .on('receipt', () => {
+          this.$parent.$parent.$emit('transferConfirmed');
           this.$q.notify({
             type: 'positive',
             message: 'Transaction confirmed'
           });
-          this.$parent.$parent.$emit('transferConfirmed');
         })
         .on('transactionHash', hash => {
           this.$q.loading.hide();
