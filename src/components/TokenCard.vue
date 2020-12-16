@@ -34,7 +34,7 @@ es:
     </q-card>
     <q-card v-else clickable class="token">
       <q-card-section horizontal>
-        <q-badge v-if="amount > 0" color="accent" floating>
+        <q-badge v-if="type === 'ERC1155'" color="accent" floating>
           {{ amount }}
         </q-badge>
         <img
@@ -253,7 +253,8 @@ export default {
           coinbase: this.coinbase,
           contract: this.contract,
           id: this.id,
-          type: this.type
+          type: this.type,
+          currentAmount: this.amount
         })
         .onOk(() => {});
     },

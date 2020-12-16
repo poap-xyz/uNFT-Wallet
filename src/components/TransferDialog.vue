@@ -8,9 +8,11 @@ en:
   submit: "Submit"
   reset: "Reset"
   pleaseAprove: "Please aprove the transaction"
+  shortMaximum: "Max"
   validations:
     typeAmount: "Type an amount"
     typeAmountGtZero: "Type an amount greater than zero"
+    typeAmountLeMax: "The max amount of tokens you can transfer is {currentAmount}"
 
 es:
   transferToken: "Transferir Token"
@@ -21,9 +23,11 @@ es:
   submit: "Enviar"
   reset: "Borrar"
   pleaseAprove: "Favor de aprovar la transacción"
+  shortMaximum: "Max"
   validations:
     typeAmount: "Escribe una cantidad"
     typeAmountGtZero: "Escribe una cantidad mayor a cero"
+    typeAmountLeMax: "La cantiad máxima de tokens que puedes transferir es {currentAmount}"
 
 </i18n>
 
@@ -82,9 +86,23 @@ es:
             :rules="[
               val =>
                 (val !== null && val !== '') || $t('validations.typeAmount'),
-              val => val > 0 || $t('validations.typeAmountGtZero')
+              val => val > 0 || $t('validations.typeAmountGtZero'),
+              val =>
+                val <= currentAmount ||
+                $t('validations.typeAmountLeMax', { currentAmount })
             ]"
-          />
+          >
+            <template v-slot:append>
+              <q-btn
+                outline
+                unelevated
+                rounded
+                color="primary"
+                @click="amount = currentAmount"
+                >{{ $t('shortMaximum') }}</q-btn
+              >
+            </template>
+          </q-input>
 
           <q-card-actions align="right">
             <q-btn
@@ -125,6 +143,10 @@ export default {
     },
     type: {
       type: String,
+      required: true
+    },
+    currentAmount: {
+      type: Number,
       required: true
     }
   },
