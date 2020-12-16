@@ -11,8 +11,7 @@ es:
 
 <template>
   <div>
-    <!--<q-card v-if="description === '' && name === ''" class="token">-->
-    <q-card v-if="description === '' && name === ''" class="token">
+    <q-card v-if="description === '' && name === ''" class="token ">
       <q-card-section horizontal>
         <q-skeleton class="imageSkeleton" square />
         <q-card-section>
@@ -32,10 +31,19 @@ es:
         <q-skeleton type="QBtn" />
       </q-card-actions>
     </q-card>
-    <q-card v-else clickable class="token">
+    <q-card
+      v-else
+      clickable
+      class="token "
+      :class="{ disabled: pendingTransferNoneLeft }"
+    >
       <q-card-section horizontal>
         <q-badge v-if="type === 'ERC1155'" color="accent" floating>
           {{ amount }}
+          <!-- eslint-disable-next-line @intlify/vue-i18n/no-raw-text -->
+          <span v-if="pendingTransferAmount > 0">
+            –{{ pendingTransferAmount }}
+          </span>
         </q-badge>
         <img
           v-if="image"
@@ -155,7 +163,9 @@ export default {
       fixedCORSImage: false,
       badCORSHosts: ['cdn.enjin.io', 'forgottenartifacts.io'],
       imageLoaded: false,
-      state: 'OK'
+      state: 'OK',
+      pendingTransferNoneLeft: false,
+      pendingTransferAmount: 0
     };
   },
 
@@ -173,6 +183,7 @@ export default {
 
     this.load();
     this.$on('transferConfirmed', this.transferConfirmed);
+    this.$on('transferSent', this.transferSent);
   },
   methods: {
     load() {
@@ -259,7 +270,15 @@ export default {
         .onOk(() => {});
     },
     transferConfirmed() {
+      this.pendingTransferAmount = 0;
       this.$emit('transfer');
+    },
+    transferSent(ev) {
+      if (this.amount - ev.amount <= 0 || this.type === 'ERC721') {
+        this.pendingTransferNoneLeft = true;
+      } else {
+        this.pendingTransferAmount = ev.amount;
+      }
     },
     handleBadCORS(url) {
       const urlUrl = new URL(url);

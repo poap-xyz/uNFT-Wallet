@@ -278,6 +278,7 @@ export default {
           }
         ]
       });
+      this.$parent.$parent.$emit('transferSent', { amount: this.amount });
       this.reset();
       this.onOKClick();
     },
