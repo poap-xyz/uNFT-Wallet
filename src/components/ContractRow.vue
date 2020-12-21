@@ -40,19 +40,22 @@ es:
     <q-scroll-area horizontal class="bg-grey-1 rounded-borders">
       <!--<div v-if="loadedEvents" class="">-->
       <div class="row no-wrap q-pa-md row items-start q-gutter-md">
-        <q-intersection
-          v-for="token in tokens"
+        <div
+          v-for="(token, index) in tokens"
           :key="token.id"
+          v-intersection="onIntersection"
           class="card-intersection"
+          :data-id="index"
         >
           <TokenCard
+            v-if="inView[index]"
             v-bind="token"
             :type="type"
             :contract="contract"
             :coinbase="coinbase"
             @transfer="computeTokens"
           />
-        </q-intersection>
+        </div>
       </div>
     </q-scroll-area>
     <div v-if="loadedEvents && tokens.length == 0">
@@ -120,7 +123,8 @@ export default {
       tokens: [],
       singleInbound: [],
       batchInbound: [],
-      nonUriTokensCount: 0
+      nonUriTokensCount: 0,
+      inView: []
     };
   },
   watch: {
@@ -172,6 +176,18 @@ export default {
       this.$emit('scan', { address: this.address, lastScanBlock: lastBlock });
 
       this.nonUriTokensCount = fullTokens.length - this.tokens.length;
+
+      if (this.inView.length === 0) {
+        this.inView = new Array(fullTokens.length).fill(false);
+        this.inView.splice(0, 10, Array(10).fill(true));
+      } else {
+        const diff = this.inView.length - fullTokens.length;
+        if (diff > 0) {
+          this.inView.splice(diff * -1, diff);
+        } else if (diff > 0) {
+          this.inView.splice(this.inView.length, 0, Array(diff).fill(true));
+        }
+      }
     },
 
     async fullTokens1155(tokenIds) {
@@ -276,6 +292,12 @@ export default {
           alias: this.alias
         })
       });
+    },
+    onIntersection(entry) {
+      const index = parseInt(entry.target.dataset.id, 10);
+      setTimeout(() => {
+        this.inView.splice(index, 1, entry.isIntersecting);
+      }, 50);
     }
   }
 };

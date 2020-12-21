@@ -64,7 +64,13 @@ es:
         <q-btn flat @click="propertiesDialog = true">{{
           $t('properties')
         }}</q-btn>
-        <q-btn flat @click="showTransferDialog">{{ $t('transfer') }}</q-btn>
+        <q-btn
+          flat
+          :disabled="pendingTransferNoneLeft"
+          @click="showTransferDialog"
+        >
+          {{ $t('transfer') }}</q-btn
+        >
       </q-card-actions>
     </q-card>
 
@@ -180,10 +186,7 @@ export default {
     const bn = new this.$web3.instance.utils.BN(this.id);
     const hexId = bn.toString(16);
     this.hexId = hexId.padStart(64, '0');
-
     this.load();
-    this.$on('transferConfirmed', this.transferConfirmed);
-    this.$on('transferSent', this.transferSent);
   },
   methods: {
     load() {
@@ -257,6 +260,7 @@ export default {
         });
     },
     showTransferDialog() {
+      this.$root.$on('transferSent', this.transferSent);
       this.$q
         .dialog({
           component: TransferDialog,
@@ -267,17 +271,26 @@ export default {
           type: this.type,
           currentAmount: this.amount
         })
-        .onOk(() => {});
+        .onOk(() => {
+          this.$root.$on('transferConfirmed', this.transferConfirmed);
+        });
     },
-    transferConfirmed() {
-      this.pendingTransferAmount = 0;
-      this.$emit('transfer');
+    transferConfirmed(ev) {
+      // eslint-disable-next-line no-underscore-dangle
+      if (ev.contract === this.contract._address && ev.id === this.id) {
+        this.pendingTransferAmount = 0;
+        this.$emit('transfer');
+        this.$root.$off('transferConfirmed');
+      }
     },
     transferSent(ev) {
-      if (this.amount - ev.amount <= 0 || this.type === 'ERC721') {
-        this.pendingTransferNoneLeft = true;
-      } else {
-        this.pendingTransferAmount = ev.amount;
+      // eslint-disable-next-line no-underscore-dangle
+      if (ev.contract === this.contract._address && ev.id === this.id) {
+        if (this.amount - ev.amount <= 0 || this.type === 'ERC721') {
+          this.pendingTransferNoneLeft = true;
+        } else {
+          this.pendingTransferAmount = ev.amount;
+        }
       }
     },
     handleBadCORS(url) {

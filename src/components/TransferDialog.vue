@@ -249,7 +249,11 @@ export default {
       }
     },
     transactionReceipt() {
-      this.$parent.$parent.$emit('transferConfirmed');
+      this.$root.$emit('transferConfirmed', {
+        // eslint-disable-next-line no-underscore-dangle
+        contract: this.contract._address,
+        id: this.id
+      });
       this.$q.notify({
         type: 'positive',
         message: 'Transaction confirmed'
@@ -278,7 +282,12 @@ export default {
           }
         ]
       });
-      this.$parent.$parent.$emit('transferSent', { amount: this.amount });
+      this.$root.$emit('transferSent', {
+        // eslint-disable-next-line no-underscore-dangle
+        contract: this.contract._address,
+        id: this.id,
+        amount: this.amount
+      });
       this.reset();
       this.onOKClick();
     },
@@ -323,7 +332,11 @@ export default {
     async transfer721() {
       const estimatedGas = await this.contract.methods
         .safeTransferFrom(this.coinbase, this.recipientAddress, this.id, 0)
-        .estimateGas({ from: this.coinbase });
+        .estimateGas({ from: this.coinbase })
+        .catch(err => {
+          this.transactionError(err);
+          throw err;
+        });
 
       this.alertAprove();
 
