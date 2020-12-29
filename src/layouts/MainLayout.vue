@@ -1,10 +1,10 @@
 <i18n lang="yaml">
 en:
-  wallet1155: "Wallet 1155"
+  uNFTWallet: "uNFT Wallet"
   logout: "Logout"
 
 es:
-  wallet1155: "Wallet 1155"
+  uNFTWallet: "uNFT Wallet"
   logout: "Salir"
 
 </i18n>
@@ -23,7 +23,7 @@ es:
         />
 
         <q-toolbar-title>
-          {{ $t('wallet1155') }}
+          {{ $t('uNFTWallet') }}
         </q-toolbar-title>
         <Web3Modal
           ref="web3modal"
@@ -32,10 +32,16 @@ es:
           @chainChanged="chainChanged"
         />
 
+        <ChainChip v-if="connected" :chain-id="chain" />
         <q-btn v-if="connected" round flat>
           <Blockie :address="coinbase"></Blockie>
           <q-menu>
             <q-list style="min-width: 100px">
+              <q-item v-close-popup clickable>
+                <q-item-section>
+                  {{ coinbase }}
+                </q-item-section>
+              </q-item>
               <q-item v-close-popup clickable @click="logout">
                 <q-item-section>{{ $t('logout') }}</q-item-section>
               </q-item>
@@ -62,10 +68,11 @@ es:
 import Blockie from '../components/Blockie.vue';
 import Web3Modal from '../components/Web3Modal.vue';
 import LanguageChanger from '../components/LanguageChanger.vue';
+import ChainChip from '../components/ChainChip.vue';
 
 export default {
   name: 'MainLayout',
-  components: { Blockie, Web3Modal, LanguageChanger },
+  components: { Blockie, Web3Modal, LanguageChanger, ChainChip },
   data() {
     return {
       leftDrawerOpen: false
@@ -80,6 +87,9 @@ export default {
     },
     coinbase() {
       return this.$store.state.web3.coinbase;
+    },
+    chain() {
+      return this.$store.state.web3.chainId;
     }
   },
   methods: {
@@ -97,7 +107,6 @@ export default {
       */
     },
     chainChanged(e) {
-      this.chain = e.chain;
       this.$store.commit('web3/SET_CHAIN_ID', e.chain);
     },
     logout() {

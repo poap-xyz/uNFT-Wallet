@@ -179,7 +179,7 @@ export default {
 
       if (this.inView.length === 0) {
         this.inView = new Array(fullTokens.length).fill(false);
-        this.inView.splice(0, 10, Array(10).fill(true));
+        this.inView.splice(0, 10, ...Array(10).fill(true));
       } else {
         const diff = this.inView.length - fullTokens.length;
         if (diff > 0) {
@@ -305,10 +305,18 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+body.screen--xs .q-scrollarea {
+  height: 388px;
+}
 .q-scrollarea {
   height: 265px;
   width: 100%;
 }
+
+.q-toolbar {
+  padding: 5px 12px;
+}
+
 .contract {
   margin: 10px;
 }
@@ -320,5 +328,8 @@ export default {
 }
 .card-intersection {
   width: 500px;
+}
+body.screen--xs .card-intersection {
+  width: 300px;
 }
 </style>

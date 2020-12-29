@@ -14,8 +14,6 @@ es:
   <div>
     <div v-if="connected">
       <!--<div>-->
-      <ChainChip :chain-id="chain" />
-      <AddressChip :address="coinbase" />
       <div class="row">
         <div class="col-xs-8"></div>
       </div>
@@ -46,8 +44,6 @@ es:
 
 <script>
 import ContractRow from '../components/ContractRow.vue';
-import AddressChip from '../components/AddressChip.vue';
-import ChainChip from '../components/ChainChip.vue';
 import AddContractDialog from '../components/AddContractDialog.vue';
 import idb from '../idb';
 
@@ -85,8 +81,6 @@ async function searchContractCretionBlock(web3, contractAddress) {
 export default {
   name: 'MyVouchers',
   components: {
-    ChainChip,
-    AddressChip,
     ContractRow,
     // eslint-disable-next-line vue/no-unused-components
     AddContractDialog

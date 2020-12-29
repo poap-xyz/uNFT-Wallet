@@ -7,7 +7,7 @@
 // https://quasar.dev/quasar-cli/quasar-conf-js
 /* eslint-env node */
 
-module.exports = function(/* ctx */) {
+module.exports = (/* ctx */) => {
   return {
     // https://quasar.dev/quasar-cli/supporting-ts
     supportTS: false,
@@ -87,7 +87,11 @@ module.exports = function(/* ctx */) {
     framework: {
       iconSet: 'material-icons', // Quasar icon set
       lang: 'en-us', // Quasar language pack
-      config: {},
+      config: {
+        screen: {
+          bodyClasses: true // <<< add this
+        }
+      },
 
       // Possible values for "importStrategy":
       // * 'auto' - (DEFAULT) Auto-import needed Quasar components & directives
@@ -184,7 +188,7 @@ module.exports = function(/* ctx */) {
       builder: {
         // https://www.electron.build/configuration/configuration
 
-        appId: 'wallet1155'
+        appId: 'unftwallet'
       },
 
       // More info: https://quasar.dev/quasar-cli/developing-electron-apps/node-integration

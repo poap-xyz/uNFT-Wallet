@@ -12,10 +12,17 @@ es:
 <template>
   <div>
     <q-card v-if="description === '' && name === ''" class="token ">
-      <q-card-section horizontal>
-        <q-skeleton class="imageSkeleton" square />
-        <q-card-section>
-          <div class="text-h6 q-mb-xs name">
+      <q-card-section :horizontal="$q.screen.gt.xs">
+        <q-skeleton class="imageSkeleton" square>
+          <div
+            v-if="$q.screen.xs"
+            class="absolute-bottom text-subtitle1 text-center"
+          >
+            <div v-if="state !== 'OK'">{{ state }}</div>
+          </div>
+        </q-skeleton>
+        <q-card-section class="content">
+          <div v-if="$q.screen.gt.xs" class="text-h6 q-mb-xs name">
             <q-skeleton v-if="state === 'OK'" type="text" />
             <div v-else>{{ state }}</div>
           </div>
@@ -34,10 +41,25 @@ es:
     <q-card
       v-else
       clickable
-      class="token "
+      class="token"
       :class="{ disabled: pendingTransferNoneLeft }"
     >
-      <q-card-section horizontal>
+      <q-card-section :horizontal="$q.screen.gt.xs">
+        <q-img
+          v-if="image"
+          :src="image"
+          class="tokenImage"
+          :class="{ empty: imageLoaded }"
+          @loaded="imageLoaded = true"
+          @error="imageError"
+        >
+          <div
+            v-if="$q.screen.xs"
+            class="absolute-bottom text-subtitle1 text-center"
+          >
+            {{ name }}
+          </div>
+        </q-img>
         <q-badge v-if="type === 'ERC1155'" color="accent" floating>
           {{ amount }}
           <!-- eslint-disable-next-line @intlify/vue-i18n/no-raw-text -->
@@ -45,16 +67,14 @@ es:
             –{{ pendingTransferAmount }}
           </span>
         </q-badge>
-        <img
-          v-if="image"
-          :src="image"
-          class="tokenImage"
-          :class="{ empty: imageLoaded }"
-          @loaded="imageLoaded = true"
-          @error="imageError"
-        />
-        <q-card-section>
-          <div class="text-h6 q-mb-xs name" :title="name">{{ name }}</div>
+        <q-card-section class="content">
+          <div
+            v-if="$q.screen.gt.xs"
+            class="text-h6 q-mb-xs name"
+            :title="name"
+          >
+            {{ name }}
+          </div>
           <div class="q-mb-xs description" :title="description">
             {{ description }}
           </div>
@@ -102,12 +122,12 @@ import TransferDialog from './TransferDialog';
 
 function handleDecentralizedProtocols(url) {
   const urlUrl = new URL(url);
-  const { protocol, pathname } = urlUrl;
+  const { protocol } = urlUrl;
 
   const cleanProtocol = protocol.slice(0, -1);
-  let cleanPathname = pathname.slice(2);
 
   if (cleanProtocol === 'ipfs') {
+    let cleanPathname = url.slice(7);
     if (cleanPathname.indexOf('ipfs') === 0) {
       cleanPathname = cleanPathname.slice(5);
     }
@@ -323,26 +343,42 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-.token {
+<style scoped lang="scss">
+.q-card {
   height: 230px;
   width: 500px;
 }
-.token .tokenImage {
+body.screen--xs .q-card {
+  height: 357px;
+  width: 300px;
+  .q-card__section {
+    padding: 0;
+  }
+  .q-card__actions {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+  }
+  .content {
+    padding: 16px 16px 0;
+  }
+  .imageSkeleton {
+    width: 100%;
+  }
+}
+
+.tokenImage {
   max-height: 180px;
-}
-.token .tokenImage .empty {
-  height: 180px;
-  width: 180px;
-}
-
-.token .imageSkeleton {
-  height: 180px;
-  width: 180px;
+  min-width: 180px;
+  .empty {
+    height: 180px;
+    width: 180px;
+  }
 }
 
-.name .q-skeleton {
-  width: 220px;
+.imageSkeleton {
+  height: 180px;
+  width: 180px;
 }
 
 .name {
@@ -350,16 +386,9 @@ export default {
   overflow: hidden;
   display: -webkit-box;
   -webkit-box-orient: vertical;
-}
-
-.description .q-skeleton:nth-of-type(1) {
-  width: 200px;
-}
-.description .q-skeleton:nth-of-type(2) {
-  width: 230px;
-}
-.description .q-skeleton:nth-of-type(3) {
-  width: 180px;
+  .q-skeleton {
+    width: 220px;
+  }
 }
 
 .description {
@@ -367,5 +396,17 @@ export default {
   overflow: hidden;
   display: -webkit-box;
   -webkit-box-orient: vertical;
+
+  .q-skeleton {
+    &:nth-of-type(1) {
+      width: 200px;
+    }
+    &:nth-of-type(2) {
+      width: 230px;
+    }
+    &:nth-of-type(3) {
+      width: 180px;
+    }
+  }
 }
 </style>
