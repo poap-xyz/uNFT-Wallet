@@ -2,7 +2,7 @@
   "name": "erc1155viewer",
   "version": "0.0.1",
   "description": "",
-  "productName": "ERC1155 Viewer",
+  "productName": "nNFT Wallet",
   "author": "Jorge Pérez <jorge@ktlxv.com>",
   "private": true,
   "scripts": {

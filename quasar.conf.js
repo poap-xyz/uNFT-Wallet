@@ -123,8 +123,8 @@ module.exports = (/* ctx */) => {
       workboxPluginMode: 'GenerateSW', // 'GenerateSW' or 'InjectManifest'
       workboxOptions: {}, // only for GenerateSW
       manifest: {
-        name: `ERC1155 Viewer`,
-        short_name: `ERC1155 Viewer`,
+        name: `uNFT Wallet`,
+        short_name: `uNFT Wallet`,
         description: ``,
         display: 'standalone',
         orientation: 'portrait',
