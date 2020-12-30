@@ -1,11 +1,6 @@
 {
   "1": [
     {
-      "name": "ENS" ,
-      "address": "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e",
-      "type": "ERC721",
-      "block": 9380380
-    },{
       "name": "Rarible Single" ,
       "address": "0x60f80121c31a0d46b5279700f9df786054aa5ee5",
       "type": "ERC721",
