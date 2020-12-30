@@ -2,7 +2,7 @@
   "name": "erc1155viewer",
   "version": "0.0.1",
   "description": "",
-  "productName": "nNFT Wallet",
+  "productName": "uNFT Wallet",
   "author": "Jorge Pérez <jorge@ktlxv.com>",
   "private": true,
   "scripts": {
@@ -16,6 +16,7 @@
     "@portis/web3": "^2.0.0-beta.59",
     "@quasar/extras": "^1.0.0",
     "@unilogin/provider": "^0.6.1",
+    "@walletconnect/web3-provider": "^1.3.1",
     "authereum": "^0.1.0",
     "axios": "^0.18.1",
     "core-js": "^3.6.5",
@@ -30,7 +31,7 @@
     "vue-json-pretty": "^1.7.1",
     "vue-router": "^3.4.9",
     "vuex": "^3.6.0",
-    "web3": "^1.3.0",
+    "web3": "^1.2.11",
     "web3modal": "^1.9.1"
   },
   "devDependencies": {

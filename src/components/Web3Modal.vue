@@ -22,9 +22,10 @@ es:
 <script>
 import Web3 from 'web3';
 import Web3Modal from 'web3modal';
+import WalletConnectProvider from '@walletconnect/web3-provider';
 // import Portis from '@portis/web3';
-import Authereum from 'authereum';
-import UniLogin from '@unilogin/provider';
+// import Authereum from 'authereum';
+// import UniLogin from '@unilogin/provider';
 
 export default {
   name: 'Web3Modal',
@@ -46,6 +47,21 @@ export default {
   },
   created() {
     const providerOptions = {
+      walletconnect: {
+        package: WalletConnectProvider, // required
+        options: {
+          rpc: {
+            1: 'https://eth-mainnet.gateway.pokt.network/v1/5f7648aab90218002e9ce993',
+            3: 'https://eth-ropsten.gateway.pokt.network/v1/5f7648aab90218002e9ce993',
+            4: 'https://eth-rinkeby.gateway.pokt.network/v1/5f7648aab90218002e9ce993',
+            5: 'https://eth-goerli.gateway.pokt.network/v1/5f7648aab90218002e9ce993',
+            42: 'https://poa-kovan.gateway.pokt.network/v1/5f7648aab90218002e9ce993',
+            100: 'https://dai.poa.network',
+            31337: 'http://localhost:8545'
+          }
+        }
+      }
+
       /* portis: {
         package: Portis, // required
         options: {
@@ -60,13 +76,13 @@ export default {
             registerPageByDefault: true
           }
         }
-      }, */
+      },
       authereum: {
         package: Authereum // required
       },
       unilogin: {
         package: UniLogin // required
-      }
+      } */
     };
 
     this.web3Modal = new Web3Modal({
