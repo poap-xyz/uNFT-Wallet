@@ -64,16 +64,26 @@ export default {
     const db = await this.getDb();
 
     return new Promise(resolve => {
-      const trans = db.transaction(['contracts'], 'readwrite');
+      const trans = db.transaction(['contracts', 'tokens'], 'readwrite');
       trans.oncomplete = () => {
         resolve();
       };
 
-      const objectStore = trans.objectStore('contracts');
+      const contractsObjectStore = trans.objectStore('contracts');
+      const tokensObjectStore = trans.objectStore('tokens');
 
-      const index = objectStore.index('chainAccountAddress');
-      index.getKey([chain, account, address]).onsuccess = e => {
-        objectStore.delete(e.target.result);
+      const contractsIndex = contractsObjectStore.index('chainAccountAddress');
+      contractsIndex.getKey([chain, account, address]).onsuccess = e => {
+        contractsObjectStore.delete(e.target.result);
+      };
+
+      const tokensIndex = tokensObjectStore.index('chainAccountAddress');
+      tokensIndex.openCursor([chain, account, address]).onsuccess = e => {
+        const cursor = e.target.result;
+        if (cursor) {
+          tokensObjectStore.delete(cursor.primaryKey);
+          cursor.continue();
+        }
       };
     });
   },
