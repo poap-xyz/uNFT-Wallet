@@ -145,10 +145,12 @@ export default {
   methods: {
     async computeTokens() {
       const lastBlock = await this.$web3.instance.eth.getBlockNumber();
-      const newTokenIds =
+      const newTokenIdsWithDups =
         this.type === 'ERC1155'
           ? await this.getNewIds1155(lastBlock)
           : await this.getNewIds721(lastBlock);
+
+      const newTokenIds = [...new Set(newTokenIdsWithDups)];
 
       const oldTokens = await idb.getTokens(
         this.chain,
