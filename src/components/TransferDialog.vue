@@ -97,7 +97,7 @@ es:
                 outline
                 unelevated
                 rounded
-                color="primary"
+                :color="$q.dark.isActive ? '' : 'primary'"
                 @click="amount = currentAmount"
                 >{{ $t('shortMaximum') }}</q-btn
               >

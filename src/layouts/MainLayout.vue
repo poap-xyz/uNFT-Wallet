@@ -51,10 +51,15 @@ es:
       </q-toolbar>
     </q-header>
 
-    <q-drawer v-model="leftDrawerOpen" bordered content-class="bg-grey-1">
+    <q-drawer v-model="leftDrawerOpen" bordered>
       <LanguageChanger :languages="languages" />
       <q-list>
-        <q-item-label header class="text-grey-8"> </q-item-label>
+        <q-toggle
+          v-model="darkEnabled"
+          checked-icon="dark_mode"
+          label="Dark Mode"
+          unchecked-icon="brightness_low"
+        />
       </q-list>
     </q-drawer>
 
@@ -90,6 +95,21 @@ export default {
     },
     chain() {
       return this.$store.state.web3.chainId;
+    },
+    darkEnabled: {
+      get() {
+        return this.$q.dark.isActive;
+      },
+      set() {
+        this.$q.dark.toggle();
+        window.localStorage.setItem('darkEnabled', this.$q.dark.isActive);
+        return this.$q.dark.isActive;
+      }
+    }
+  },
+  created() {
+    if (window.localStorage.getItem('darkEnabled') === 'true') {
+      this.$q.dark.set(true);
     }
   },
   methods: {
@@ -104,7 +124,7 @@ export default {
       } else {
         this.$store.commit('web3/SET_COINBASE', null);
       }
-      */
+    */
     },
     chainChanged(e) {
       this.$store.commit('web3/SET_CHAIN_ID', e.chain);

@@ -45,6 +45,11 @@ export default {
       connected: false
     };
   },
+  watch: {
+    '$q.dark.isActive': async function(newVal) {
+      await this.web3Modal.updateTheme(newVal ? 'dark' : 'light');
+    }
+  },
   created() {
     const providerOptions = {
       walletconnect: {
@@ -86,9 +91,10 @@ export default {
     };
 
     this.web3Modal = new Web3Modal({
-      cacheProvider: true, // optional
+      cacheProvider: true,
       disableInjectedProvider: false,
-      providerOptions // required
+      theme: this.$q.dark.isActive ? 'dark' : 'light',
+      providerOptions
     });
     if (this.web3Modal.cachedProvider) {
       this.connect();
@@ -138,6 +144,12 @@ export default {
       }
     },
     logout() {
+      if (
+        window.localStorage.getItem('WEB3_CONNECT_CACHED_PROVIDER') ===
+        '"walletconnect"'
+      ) {
+        window.localStorage.removeItem('walletconnect');
+      }
       this.web3Modal.clearCachedProvider();
       this.$emit('accountChanged', { coinbase: null });
       this.$emit('chainChanged', { chain: null });

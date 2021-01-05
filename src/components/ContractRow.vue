@@ -13,12 +13,16 @@ es:
 
 <template>
   <div class="contract">
-    <q-toolbar class="text-primary bg-grey-3">
+    <q-toolbar
+      :class="$q.dark.isActive ? 'bg-grey-10' : 'bg-grey-3 text-primary'"
+    >
       <q-toolbar-title>
         {{ alias }}
         <div class="text-caption ">{{ address }}</div>
       </q-toolbar-title>
-      <q-chip outline color="primary">{{ type }}</q-chip>
+      <q-chip outline :color="$q.dark.isActive ? '' : 'primary'">{{
+        type
+      }}</q-chip>
       <q-btn
         v-if="nonUriTokensCount > 0"
         flat
@@ -37,7 +41,11 @@ es:
         @click="$emit('delete', { address, alias })"
       />
     </q-toolbar>
-    <q-scroll-area horizontal class="bg-grey-1 rounded-borders">
+    <q-scroll-area
+      horizontal
+      rounded-borders
+      :class="$q.dark.isActive ? 'bg-grey-9' : 'bg-grey-1'"
+    >
       <!--<div v-if="loadedEvents" class="">-->
       <div class="row no-wrap q-pa-md row items-start q-gutter-md">
         <div
