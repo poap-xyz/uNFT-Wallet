@@ -187,14 +187,17 @@ export default {
       fixedImage: false,
       fixedCORS: false,
       fixedCORSImage: false,
-      badCORSHosts: ['cdn.enjin.io', 'forgottenartifacts.io'],
       imageLoaded: false,
       state: 'OK',
       pendingTransferNoneLeft: false,
       pendingTransferAmount: 0
     };
   },
-
+  computed: {
+    badCORSHosts() {
+      return this.$store.state.badCors.hosts;
+    }
+  },
   watch: {
     '$i18n.locale': function(locale) {
       if (this.avalilableLocales.includes(locale)) {
@@ -268,7 +271,7 @@ export default {
           if (typeof err.response === 'undefined') {
             if (!this.fixedCORS) {
               const url = new URL(this.uri);
-              this.badCORSHosts.push(url.host);
+              this.$store.dispatch('badCors/addHost', url.host);
               this.fixedCORS = true;
               this.load();
             } else {
@@ -315,10 +318,10 @@ export default {
     },
     handleBadCORS(url) {
       const urlUrl = new URL(url);
-      const { host } = urlUrl;
+      const { host, pathname } = urlUrl;
 
       if (this.badCORSHosts.includes(host)) {
-        return `https://cors-anywhere.herokuapp.com/${url}`;
+        return `https://unft_wallet-corsflare.ktlxv.workers.dev/${pathname}?3gjkLKyhu6w4kwNQwKpJ=${host}`;
       }
 
       return url;

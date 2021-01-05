@@ -2,6 +2,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 
 import web3 from './web3';
+import badCors from './badCors';
 
 Vue.use(Vuex);
 
@@ -18,11 +19,12 @@ export default function init(/* { ssrContext } */) {
   const Store = new Vuex.Store({
     modules: {
       web3,
+      badCors
     },
 
     // enable strict mode (adds overhead!)
     // for dev mode only
-    strict: process.env.DEV,
+    strict: process.env.DEV
   });
 
   return Store;
