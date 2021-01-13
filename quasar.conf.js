@@ -88,6 +88,7 @@ module.exports = (/* ctx */) => {
       iconSet: 'material-icons', // Quasar icon set
       lang: 'en-us', // Quasar language pack
       config: {
+        brand: {},
         screen: {
           bodyClasses: true // <<< add this
         }

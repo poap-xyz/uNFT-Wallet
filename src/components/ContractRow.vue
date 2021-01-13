@@ -13,16 +13,12 @@ es:
 
 <template>
   <div class="contract">
-    <q-toolbar
-      :class="$q.dark.isActive ? 'bg-grey-10' : 'bg-grey-3 text-primary'"
-    >
+    <q-toolbar>
       <q-toolbar-title>
         {{ alias }}
         <div class="text-caption ">{{ address }}</div>
       </q-toolbar-title>
-      <q-chip outline :color="$q.dark.isActive ? '' : 'primary'">{{
-        type
-      }}</q-chip>
+      <q-chip outline>{{ type }}</q-chip>
       <q-btn
         v-if="nonUriTokensCount > 0"
         flat
@@ -41,11 +37,7 @@ es:
         @click="$emit('delete', { address, alias })"
       />
     </q-toolbar>
-    <q-scroll-area
-      horizontal
-      rounded-borders
-      :class="$q.dark.isActive ? 'bg-grey-9' : 'bg-grey-1'"
-    >
+    <q-scroll-area horizontal rounded-borders>
       <!--<div v-if="loadedEvents" class="">-->
       <div class="row no-wrap q-pa-md row items-start q-gutter-md">
         <div
@@ -314,7 +306,7 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
+<style scoped lang="scss">
 body.screen--xs .q-scrollarea {
   height: 388px;
 }
@@ -341,5 +333,27 @@ body.screen--xs .q-scrollarea {
 }
 body.screen--xs .card-intersection {
   width: 300px;
+}
+body.body--light {
+  .q-toolbar {
+    background-color: #eeeeee;
+    color: var(--q-color-primary);
+
+    .q-chip {
+      color: var(--q-color-primary);
+    }
+  }
+  .q-scrollarea {
+    background-color: #e0e0e0;
+  }
+}
+
+body.body--dark {
+  .q-toolbar {
+    background-color: var(--q-color-primary);
+  }
+  .q-scrollarea {
+    background-color: #0f1d1d;
+  }
 }
 </style>

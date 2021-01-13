@@ -1,10 +1,12 @@
 <i18n lang="yaml">
 en:
   uNFTWallet: "uNFT Wallet"
+  betaWarning: "This is experimental software, use at your own risk"
   logout: "Logout"
 
 es:
   uNFTWallet: "uNFT Wallet"
+  betaWarning: "Este es software experimental, use bajo su propio riesgo"
   logout: "Salir"
 
 </i18n>
@@ -51,7 +53,11 @@ es:
       </q-toolbar>
     </q-header>
 
-    <q-drawer v-model="leftDrawerOpen" bordered>
+    <q-drawer
+      v-model="leftDrawerOpen"
+      bordered
+      :class="darkEnabled ? '' : 'bg-light'"
+    >
       <LanguageChanger :languages="languages" />
       <q-list>
         <q-toggle
@@ -64,6 +70,9 @@ es:
     </q-drawer>
 
     <q-page-container>
+      <div class="center">
+        <q-chip>{{ $t('betaWarning') }}</q-chip>
+      </div>
       <router-view />
     </q-page-container>
   </q-layout>
@@ -135,3 +144,30 @@ export default {
   }
 };
 </script>
+
+<style lang="scss">
+.center {
+  text-align: center;
+}
+body.body--light {
+  background-color: #f5f6f4;
+  --q-color-primary: #567b75;
+  --q-color-secondary: #ffd685;
+  --q-color-accent: #20525a;
+  --q-color-positive: #559649;
+  --q-color-negative: #a03c38;
+  --q-color-info: var(--q-color-primary);
+  --q-color-warning: #f6c856;
+}
+body.body--dark {
+  background-color: #041011;
+  --q-color-primary: #273835;
+  --q-color-secondary: #0e2529;
+  --q-color-accent: #ae7400;
+  --q-color-dark: #092324;
+  --q-color-positive: #135f25;
+  --q-color-negative: #8d343e;
+  --q-color-info: var(--q-color-primary);
+  --q-color-warning: var(--q-color-accent);
+}
+</style>

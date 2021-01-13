@@ -3,20 +3,15 @@ en:
   addContract: "Add Contract"
   deleteContract: "Delete Contract"
   deleteContractMessage: "Do you wish to delete {alias}?"
-  betaWarning: "This is experimental software, use at your own risk"
 
 es:
   addContract: "Agregar Contrato"
   deleteContract: "Borrar contrato"
   deleteContractMessage: "¿Deseas borrar {alias}?"
-  betaWarning: "Este es software experimental, use bajo su propio riesgo"
 
 </i18n>
 <template>
   <div>
-    <div class="center">
-      <q-chip>{{ $t('betaWarning') }}</q-chip>
-    </div>
     <div v-if="connected">
       <!--<div>-->
       <div class="row">
@@ -236,8 +231,4 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-.center {
-  text-align: center;
-}
-</style>
+<style scoped></style>
