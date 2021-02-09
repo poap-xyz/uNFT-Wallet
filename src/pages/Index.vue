@@ -111,7 +111,11 @@ export default {
     }
   },
   created() {
-    this.loadContracts();
+    if (this.connected) {
+      this.loadContracts();
+    } else {
+      this.$router.push({ path: 'welcome' });
+    }
   },
   methods: {
     async loadContracts() {

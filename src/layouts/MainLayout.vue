@@ -116,6 +116,15 @@ export default {
       }
     }
   },
+  watch: {
+    connected(newValue, oldValue) {
+      if (newValue && !oldValue) {
+        this.$router.push({ name: 'main' });
+      } else if (!newValue && oldValue) {
+        this.$router.push({ name: 'welcome' });
+      }
+    }
+  },
   created() {
     if (window.localStorage.getItem('darkEnabled') === 'true') {
       this.$q.dark.set(true);
