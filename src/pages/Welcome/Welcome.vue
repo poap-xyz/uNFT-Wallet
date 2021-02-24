@@ -5,7 +5,7 @@ en:
   anyToken: Add any ERC721 or ERC1155 token contract
   anyChain: Works on any EVM comparible Chain
   local: All you information is stored on your device
-  noTracking: No tracking
+  #noTracking: No tracking
   ipfs: View IPFS and centralized NFTs
   multilanguage: Support for multi-language ERC1155
 
@@ -15,7 +15,7 @@ es:
   anyToken: Add any ERC721 or ERC1155 token contract
   anyChain: Works on any EVM comparible Chain
   local: All you information is stored on your device
-  noTracking: No tracking
+  #noTracking: No tracking
   ipfs: View IPFS and centralized NFTs
   multilanguage: Support for multi-language ERC1155
 
@@ -52,13 +52,14 @@ es:
         </div>
       </div>
       <div class="row advantages">
-        <div class="col center">
+        <!--        <div class="col center">
           <inline-svg
             class="icon"
             :src="require('./noTracking.svg')"
           ></inline-svg>
           <div class="advantage">{{ $t('noTracking') }}</div>
         </div>
+        -->
         <div class="col center">
           <inline-svg class="icon" :src="require('./ipfs.svg')"></inline-svg>
           <div class="advantage">{{ $t('ipfs') }}</div>
