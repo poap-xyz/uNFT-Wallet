@@ -3,11 +3,15 @@ en:
   noTokens: "No tokens found"
   uriErrorTitle: "Error on tokens"
   uriErrorMessage: "{nonUriTokensCount} tokens for {alias} could not be displayed because their URI property is empty. Please check with the token creator."
+  notFoundErrorTitle: "Tokens not Found"
+  notFoundErrorMessage: "{notFoundTokenCount} tokens for {alias} could not be found on the blockchain, they could have been transfered to another chain or burned."
 
 es:
   noTokens: "No se encontraron tokens"
   uriErrorTitle: "Error en tokens"
   uriErrorMessage: "{nonUriTokensCount} tokens de {alias} no pueden ser desplegados porque su propiedad URI está vacía. Favor de revisar con los creadores del token."
+  notFoundErrorTitle: "Tokens no encontrados"
+  notFoundErrorMessage: "{notFoundTokenCount} tokens de {alias} no fueron encontrados en la blockchain, puede se hayan sido transferidos a otra cadena o quemados."
 
 </i18n>
 
@@ -20,13 +24,22 @@ es:
       </q-toolbar-title>
       <q-chip outline>{{ type }}</q-chip>
       <q-btn
+        v-if="notFoundTokenCount > 0"
+        flat
+        round
+        dense
+        class="text-warning"
+        icon="warning"
+        @click="showNotFoundErrors"
+      />
+      <q-btn
         v-if="nonUriTokensCount > 0"
         flat
         round
         dense
         class="text-warning"
         icon="warning"
-        @click="showErrors"
+        @click="showUriErrors"
       />
       <q-btn flat round dense icon="refresh" @click="computeTokens" />
       <q-btn
@@ -124,6 +137,7 @@ export default {
       singleInbound: [],
       batchInbound: [],
       nonUriTokensCount: 0,
+      notFoundTokenCount: 0,
       inView: []
     };
   },
@@ -170,6 +184,9 @@ export default {
           : await this.fullTokens721(tokenIds);
 
       this.tokens = fullTokens.filter(token => token.uri);
+      this.notFoundTokenCount = fullTokens.filter(
+        token => token.error === 'Not Found'
+      ).length;
 
       this.tokens.forEach(token =>
         idb.putToken(this.chain, this.coinbase, this.address, token)
@@ -177,7 +194,8 @@ export default {
 
       this.$emit('scan', { address: this.address, lastScanBlock: lastBlock });
 
-      this.nonUriTokensCount = fullTokens.length - this.tokens.length;
+      this.nonUriTokensCount =
+        fullTokens.length - this.notFoundTokenCount - this.tokens.length;
 
       if (this.inView.length === 0) {
         this.inView = new Array(fullTokens.length).fill(false);
@@ -218,26 +236,43 @@ export default {
       return fullTokens;
     },
     async fullTokens721(tokenIds) {
-      const partialTokens = (
-        await Promise.all(
-          await tokenIds.map(async tokenId => {
+      const partialTokens = await Promise.all(
+        await tokenIds.map(async tokenId => {
+          try {
             return {
               id: tokenId,
-              currentOwner: await this.contract.methods.ownerOf(tokenId).call()
+              currentOwner: await this.contract.methods.ownerOf(tokenId).call(),
+              error: null
             };
-          })
-        )
-      ).filter(token => token.currentOwner === this.coinbase);
+          } catch (e) {
+            const start = e.message.indexOf('{');
+            const end = e.message.indexOf('}');
+
+            const errorMessage = e.message.substring(start, end + 1);
+            const errorCode = JSON.parse(errorMessage).code;
+            if (errorCode === -32015) {
+              return { id: tokenId, error: 'Not Found' };
+            }
+
+            throw e;
+          }
+        })
+      );
+      const ownerTokens = partialTokens.filter(
+        token => token.currentOwner === this.coinbase
+      );
+
+      const errorTokens = partialTokens.filter(token => token.error !== null);
 
       const fullTokens = await Promise.all(
-        partialTokens.map(token => {
+        ownerTokens.map(token => {
           return this.contract.methods
             .tokenURI(token.id)
             .call()
             .then(uri => ({ ...token, uri }));
         })
       );
-      return fullTokens;
+      return fullTokens.concat(errorTokens);
     },
     async getNewIds1155(lastBlock) {
       if (lastBlock > this.lastScanBlock) {
@@ -286,11 +321,20 @@ export default {
       }
       return [];
     },
-    showErrors() {
+    showUriErrors() {
       this.$q.dialog({
         title: this.$t('uriErrorTitle'),
         message: this.$t('uriErrorMessage', {
           nonUriTokensCount: this.nonUriTokensCount,
+          alias: this.alias
+        })
+      });
+    },
+    showNotFoundErrors() {
+      this.$q.dialog({
+        title: this.$t('notFoundErrorTitle'),
+        message: this.$t('notFoundErrorMessage', {
+          notFoundTokenCount: this.notFoundTokenCount,
           alias: this.alias
         })
       });
