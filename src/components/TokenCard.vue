@@ -347,10 +347,17 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
+$token-img-size: 180px;
+
 .q-card {
   height: 230px;
   width: 500px;
 }
+
+.q-img {
+  width: $token-img-size;
+}
+
 body.screen--xs .q-card {
   height: 357px;
   width: 300px;
@@ -368,20 +375,23 @@ body.screen--xs .q-card {
   .imageSkeleton {
     width: 100%;
   }
+  .q-img {
+    width: 100%;
+  }
 }
 
 .tokenImage {
-  max-height: 180px;
-  min-width: 180px;
+  max-height: $token-img-size;
+  min-width: $token-img-size;
   .empty {
-    height: 180px;
-    width: 180px;
+    height: $token-img-size;
+    width: $token-img-size;
   }
 }
 
 .imageSkeleton {
-  height: 180px;
-  width: 180px;
+  height: $token-img-size;
+  width: $token-img-size;
 }
 
 .name {
