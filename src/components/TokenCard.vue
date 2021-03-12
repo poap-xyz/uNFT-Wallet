@@ -251,7 +251,9 @@ export default {
                 this.image = 'https://via.placeholder.com/200';
               }
               this.properties =
-                localeResponse.data.properties || response.data.properties;
+                localeResponse.data.properties ||
+                response.data.properties ||
+                response.data.attributes;
             });
           } else {
             this.name = response.data.name;
@@ -264,7 +266,8 @@ export default {
               this.image = 'https://via.placeholder.com/200';
             }
 
-            this.properties = response.data.properties;
+            this.properties =
+              response.data.properties || response.data.attributes;
           }
         })
         .catch(err => {
