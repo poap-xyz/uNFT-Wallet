@@ -8,4 +8,7 @@ const mainnetProvider = new Web3.providers.HttpProvider(
 
 const ens = new ENS(mainnetProvider);
 
-Vue.prototype.$web3 = { instance: null, ens };
+import chains from '../blockchains.json';
+import donations from '../donations.json';
+
+Vue.prototype.$web3 = { instance: null, ens, chains, donations };

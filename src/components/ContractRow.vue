@@ -1,17 +1,30 @@
+<!-- eslint-disable @intlify/vue-i18n/no-unused-keys -->
 <i18n lang="yaml">
 en:
   noTokens: "No tokens found"
+  scanningBlock: "Scanning block"
   uriErrorTitle: "Error on tokens"
   uriErrorMessage: "{nonUriTokensCount} tokens for {alias} could not be displayed because their URI property is empty. Please check with the token creator."
   notFoundErrorTitle: "Tokens not Found"
-  notFoundErrorMessage: "{notFoundTokenCount} tokens for {alias} could not be found on the blockchain, they could have been transfered to another chain or burned."
+  notFoundErrorMessage: "{notFoundTokenCount} tokens for {alias} could not be found on the blockchain, they could have been transferred to another chain or burned."
+  unknownErrorTitle: "Unknown error scanning Tokens"
+  unknownErrorMessage: "{unknownErrorCount} tokens for {alias} reported an error when scanning, please check with token issuer"
+  scanBlockchain: "Scanning the blockchain"
+  checkOwnership: "Verifying current owner of received tokens"
+  getMetadata: "Getting new token metadata"
 
 es:
   noTokens: "No se encontraron tokens"
+  scanningBlock: "Escaneando bloque"
+  scanBlockchain: "Escaneando la blockchain"
+  checkOwnership: "Verificando dueño actual de tokens recibidos"
+  getMetadata: "Obteniendo  metadatos de nuevos tokens"
   uriErrorTitle: "Error en tokens"
   uriErrorMessage: "{nonUriTokensCount} tokens de {alias} no pueden ser desplegados porque su propiedad URI está vacía. Favor de revisar con los creadores del token."
   notFoundErrorTitle: "Tokens no encontrados"
   notFoundErrorMessage: "{notFoundTokenCount} tokens de {alias} no fueron encontrados en la blockchain, puede se hayan sido transferidos a otra cadena o quemados."
+  unknownErrorTitle: "Error desconocido al escanear Tokens"
+  unknownErrorMessage: "{unknownErrorCount} tokens de {alias} reportaron un error al escanear, favor de revisar con el emisor"
 
 </i18n>
 
@@ -20,7 +33,17 @@ es:
     <q-toolbar>
       <q-toolbar-title>
         {{ alias }}
-        <div class="text-caption ">{{ address }}</div>
+        <div class="text-caption ">
+          {{ address }}
+          <a
+            v-if="$web3.chains[chainId].explorerAddress"
+            :href="$web3.chains[chainId].explorerAddress.replace('%s', address)"
+            target="_blank"
+            rel="noopener"
+          >
+            <q-icon name="fas fa-external-link-alt" />
+          </a>
+        </div>
       </q-toolbar-title>
       <q-chip outline>{{ type }}</q-chip>
       <q-btn
@@ -41,6 +64,15 @@ es:
         icon="warning"
         @click="showUriErrors"
       />
+      <q-btn
+        v-if="unknownErrorCount > 0"
+        flat
+        round
+        dense
+        class="text-warning"
+        icon="warning"
+        @click="showUnknownErrors"
+      />
       <q-btn flat round dense icon="refresh" @click="computeTokens" />
       <q-btn
         flat
@@ -50,54 +82,223 @@ es:
         @click="$emit('delete', { address, alias })"
       />
     </q-toolbar>
-    <q-scroll-area horizontal rounded-borders>
-      <!--<div v-if="loadedEvents" class="">-->
-      <div class="row no-wrap q-pa-md row items-start q-gutter-md">
-        <div
-          v-for="(token, index) in tokens"
-          :key="token.id"
-          v-intersection="onIntersection"
-          class="card-intersection"
-          :data-id="index"
-        >
-          <TokenCard
-            v-if="inView[index]"
-            v-bind="token"
-            :type="type"
-            :contract="contract"
-            :coinbase="coinbase"
-            @transfer="computeTokens"
+    <div v-if="loadedEvents" class="scroll-container">
+      <div v-if="tokens.length == 0">
+        {{ $t('noTokens') }}
+      </div>
+      <q-scroll-area v-else horizontal rounded-borders>
+        <div class="row no-wrap q-pa-md row items-start q-gutter-md">
+          <div
+            v-for="(token, index) in tokens"
+            :key="token.id"
+            v-intersection="onIntersection"
+            class="card-intersection"
+            :data-id="index"
+          >
+            <TokenCard
+              v-if="inView[index]"
+              v-bind="token"
+              :type="type"
+              :contract="contract"
+              :coinbase="coinbase"
+              @transfer="computeTokens"
+            />
+          </div>
+        </div>
+      </q-scroll-area>
+    </div>
+    <div v-else class="scroll-container">
+      <q-linear-progress
+        size="25px"
+        :value="(currentStep + 1) / 3"
+        color="accent"
+      >
+        <div class="absolute-full flex flex-center">
+          <q-badge color="white" text-color="accent" :label="stepLabel" />
+        </div>
+      </q-linear-progress>
+
+      <q-linear-progress
+        v-if="currentStep === 0"
+        size="50px"
+        :value="blockchainScanProgress"
+        color="accent"
+        class="q-mt-sm"
+      >
+        <div class="absolute-full flex flex-center">
+          <q-badge
+            color="white"
+            text-color="accent"
+            :label="blockchainScanProgressLabel"
           />
         </div>
-      </div>
-    </q-scroll-area>
-    <div v-if="loadedEvents && tokens.length == 0">
-      {{ $t('noTokens') }}
+      </q-linear-progress>
     </div>
   </div>
 </template>
 
 <script>
+import asyncPool from 'tiny-async-pool';
 import ABI1155 from '../artifacts/ierc1155.abi.json';
 import TokenCard from './TokenCard.vue';
 import ABI721 from '../artifacts/ierc721metadata.abi.json';
 import idb from '../idb';
 
+function getABI(type) {
+  if (type === 'ERC721') {
+    return ABI721;
+  }
+  return ABI1155;
+}
+
+function computeScanRanges(start, end, maxBlocks) {
+  const blockCount = end - start;
+  const rangeCount = Math.ceil(blockCount / maxBlocks);
+  const ranges = [];
+  for (let i = 0; i < rangeCount; i += 1) {
+    ranges.push({
+      from: start + 1 + maxBlocks * i,
+      to: start + maxBlocks * (i + 1) < end ? start + maxBlocks * (i + 1) : end
+    });
+  }
+  return ranges;
+}
+
+async function mapSeries(iterable, action) {
+  const res = [];
+  for (const x of iterable) {
+    // eslint-disable-next-line no-await-in-loop
+    res.push(await action(x));
+  }
+  return res.flat();
+}
+
 function parseSingleEvents(events) {
-  return events.reduce((accumulator, ev) => {
-    const { id } = ev.returnValues;
-    accumulator.add(id);
-    return accumulator;
-  }, new Set());
+  return [
+    ...events.reduce((accumulator, ev) => {
+      const { id } = ev.returnValues;
+      accumulator.add(id);
+      return accumulator;
+    }, new Set())
+  ];
 }
 
 function parseBatchEvents(events) {
-  return events.reduce((accumulator, ev) => {
-    ev.returnValues.ids.forEach(id => {
-      accumulator.add(id);
-    });
-    return accumulator;
-  }, new Set());
+  return [
+    ...events.reduce((accumulator, ev) => {
+      ev.returnValues.ids.forEach(id => {
+        accumulator.add(id);
+      });
+      return accumulator;
+    }, new Set())
+  ];
+}
+
+function getLogs721(contract, coinbase, range) {
+  return contract
+    .getPastEvents('Transfer', {
+      fromBlock: range.from,
+      toBlock: range.to,
+      filter: { to: coinbase }
+    })
+    .then(events => events.map(ev => ev.returnValues.tokenId));
+}
+
+function getLogs1155Single(contract, coinbase, range) {
+  return contract
+    .getPastEvents('TransferSingle', {
+      fromBlock: range.from,
+      toBlock: range.to,
+      filter: { to: coinbase }
+    })
+    .then(parseSingleEvents);
+}
+
+function getLogs1155Batch(contract, coinbase, range) {
+  return contract
+    .getPastEvents('TransferBatch', {
+      fromBlock: range.from,
+      toBlock: range.to,
+      filter: { to: coinbase }
+    })
+    .then(parseBatchEvents);
+}
+
+async function getOwner(contract, tokenId) {
+  try {
+    return {
+      id: tokenId,
+      currentOwner: await contract.methods.ownerOf(tokenId).call(),
+      error: null
+    };
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.warn(e);
+    const start = e.message.indexOf('{');
+    const end = e.message.indexOf('}');
+    const errorMessage = e.message.substring(start, end + 1);
+    try {
+      const errorCode = JSON.parse(errorMessage).code;
+      if (errorCode === -32015) {
+        return { id: tokenId, error: 'Not Found' };
+      }
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.warn(err);
+      return { id: tokenId, error: 'Unknown Error' };
+    }
+
+    throw e;
+  }
+}
+
+async function currentyOwned721(contract, coinbase, tokenIds) {
+  const partialTokens = await asyncPool(500, tokenIds, tokenId =>
+    getOwner(contract, tokenId)
+  );
+  const currentlyOwnedTokens = partialTokens.filter(token => {
+    return (
+      token.error === null &&
+      token.currentOwner.toLowerCase() === coinbase.toLowerCase()
+    );
+  });
+
+  const errorTokens = partialTokens.filter(token => token.error !== null);
+  return { currentlyOwnedTokens, errorTokens };
+}
+
+async function currentyOwned1155(contract, coinbase, tokenIds) {
+  const coinbaseArray = new Array(tokenIds.length).fill(coinbase);
+
+  const balances = await contract.methods
+    .balanceOfBatch(coinbaseArray, tokenIds)
+    .call();
+
+  const tokens = tokenIds
+    .map((tokenId, index) => ({
+      id: tokenId,
+      amount: parseInt(balances[index], 10)
+    }))
+    .filter(token => token.amount > 0);
+
+  return { currentlyOwnedTokens: tokens, errorTokens: [] };
+}
+
+async function getMetadata(contract, type, tokenIds) {
+  const uriFunctionName = type === 'ERC721' ? 'tokenURI' : 'uri';
+
+  return asyncPool(500, tokenIds, tokenId => {
+    return contract.methods[uriFunctionName](tokenId)
+      .call()
+      .then(uri => ({ id: tokenId, uri }));
+  });
+}
+
+function mergeAmount(tokens, amounts) {
+  return tokens.map(token => {
+    const [amount] = amounts.filter(amountToken => token.id === amountToken.id);
+    return { ...token, amount: amount.amount };
+  });
 }
 
 export default {
@@ -124,9 +325,9 @@ export default {
       type: String,
       required: true
     },
-    chain: {
+    chainId: {
       type: Number,
-      default: 1
+      required: true
     }
   },
   data() {
@@ -134,40 +335,62 @@ export default {
       loadedEvents: false,
       contract: null,
       tokens: [],
-      singleInbound: [],
-      batchInbound: [],
       nonUriTokensCount: 0,
       notFoundTokenCount: 0,
-      inView: []
+      inView: [],
+      unknownErrorCount: 0,
+      latestBlock: 0,
+      scanBlock: null,
+      currentStep: 0
     };
+  },
+  computed: {
+    blockchainScanProgressLabel() {
+      return `${this.$t('scanningBlock')}: ${this.scanBlock}/${
+        this.latestBlock
+      }`;
+    },
+    blockchainScanProgress() {
+      return (
+        (this.scanBlock - this.lastScanBlock) /
+        (this.latestBlock - this.lastScanBlock)
+      );
+    },
+    stepLabel() {
+      const steps = ['scanBlockchain', 'checkOwnership', 'getMetadata'];
+      return `${this.currentStep + 1}/3: ${this.$t(steps[this.currentStep])}`;
+    }
   },
   watch: {
     coinbase() {
       this.loadedEvents = false;
-      this.singleInbound = [];
-      this.batchInbound = [];
       this.computeTokens();
     }
   },
   created() {
-    this.contract =
-      this.type === 'ERC1155'
-        ? new this.$web3.instance.eth.Contract(ABI1155, this.address)
-        : new this.$web3.instance.eth.Contract(ABI721, this.address);
+    this.contract = new this.$web3.instance.eth.Contract(
+      getABI(this.type),
+      this.address
+    );
     this.computeTokens();
+    // Rescan on donations/mints
+    if (
+      this.address ===
+      this.$web3.donations[this.chainId.toString()].tokens[this.type].address
+    ) {
+      this.$root.$on('transferConfirmed', ev => {
+        if (ev.contract === this.address) this.computeTokens();
+      });
+    }
   },
   methods: {
     async computeTokens() {
-      const lastBlock = await this.$web3.instance.eth.getBlockNumber();
-      const newTokenIdsWithDups =
-        this.type === 'ERC1155'
-          ? await this.getNewIds1155(lastBlock)
-          : await this.getNewIds721(lastBlock);
+      this.latestBlock = await this.$web3.instance.eth.getBlockNumber();
 
-      const newTokenIds = [...new Set(newTokenIdsWithDups)];
+      const newTokenIds = await this.getNewIds(this.type, this.latestBlock);
 
       const oldTokens = await idb.getTokens(
-        this.chain,
+        this.chainId,
         this.coinbase,
         this.address
       );
@@ -175,157 +398,139 @@ export default {
       const oldTokenIds = oldTokens.map(token => token.id);
 
       const tokenIds = oldTokenIds.concat(
-        Array.from(newTokenIds).filter(item => oldTokenIds.indexOf(item) < 0)
+        newTokenIds.filter(item => oldTokenIds.indexOf(item) < 0)
+      );
+      this.currentStep = 1;
+      const {
+        currentlyOwnedTokens,
+        errorTokens
+      } = await this.getCurrentlyOwned(tokenIds);
+
+      const currentlyOwnedTokenIds = currentlyOwnedTokens.map(
+        token => token.id
       );
 
-      const fullTokens =
-        this.type === 'ERC1155'
-          ? await this.fullTokens1155(tokenIds)
-          : await this.fullTokens721(tokenIds);
+      const needMetadataTokenIds = currentlyOwnedTokenIds.filter(
+        tokenId => oldTokenIds.indexOf(tokenId) < 0
+      );
 
-      this.tokens = fullTokens.filter(token => token.uri);
-      this.notFoundTokenCount = fullTokens.filter(
+      this.currentStep = 2;
+      const newTokensMetadata = await getMetadata(
+        this.contract,
+        this.type,
+        needMetadataTokenIds
+      );
+
+      const newTokensMetadataComplete = newTokensMetadata.filter(
+        token => token.uri !== null
+      );
+
+      const stillOwnedOldTokens = oldTokens.filter(
+        oldToken => currentlyOwnedTokenIds.indexOf(oldToken.id) >= 0
+      );
+
+      this.tokens = stillOwnedOldTokens.concat(newTokensMetadataComplete);
+      if (this.type === 'ERC1155') {
+        this.tokens = mergeAmount(this.tokens, currentlyOwnedTokens);
+      }
+
+      this.unknownErrorCount = errorTokens.filter(
+        token => token.error === 'Unknown Error'
+      ).length;
+
+      this.notFoundTokenCount = errorTokens.filter(
         token => token.error === 'Not Found'
       ).length;
 
+      this.nonUriTokensCount =
+        newTokensMetadata.length - newTokensMetadataComplete.length;
+
       this.tokens.forEach(token =>
-        idb.putToken(this.chain, this.coinbase, this.address, token)
+        idb.putToken(this.chainId, this.coinbase, this.address, token)
       );
 
-      this.$emit('scan', { address: this.address, lastScanBlock: lastBlock });
-
-      this.nonUriTokensCount =
-        fullTokens.length - this.notFoundTokenCount - this.tokens.length;
+      this.$emit('scan', {
+        address: this.address,
+        lastScanBlock: this.latestBlock,
+        timeout: 120
+      });
 
       if (this.inView.length === 0) {
-        this.inView = new Array(fullTokens.length).fill(false);
+        this.inView = new Array(this.tokens.length).fill(false);
         this.inView.splice(0, 10, ...Array(10).fill(true));
       } else {
-        const diff = this.inView.length - fullTokens.length;
+        const diff = this.inView.length - this.tokens.length;
         if (diff > 0) {
           this.inView.splice(diff * -1, diff);
-        } else if (diff > 0) {
+        } else if (diff < 0) {
           this.inView.splice(this.inView.length, 0, Array(diff).fill(true));
         }
       }
+      this.loadedEvents = true;
     },
 
-    async fullTokens1155(tokenIds) {
-      const coinbaseArray = new Array(tokenIds.length).fill(this.coinbase);
-
-      const balances = await this.contract.methods
-        .balanceOfBatch(coinbaseArray, tokenIds)
-        .call();
-
-      const partialTokens = tokenIds
-        .map((tokenId, index) => ({
-          id: tokenId,
-          amount: parseInt(balances[index], 10)
-        }))
-        .filter(token => token.amount > 0);
-
-      const fullTokens = await Promise.all(
-        partialTokens.map(token => {
-          return this.contract.methods
-            .uri(token.id)
-            .call()
-            .then(uri => ({ ...token, uri }));
-        })
-      );
-
-      return fullTokens;
-    },
-    async fullTokens721(tokenIds) {
-      const partialTokens = await Promise.all(
-        await tokenIds.map(async tokenId => {
-          try {
-            return {
-              id: tokenId,
-              currentOwner: await this.contract.methods.ownerOf(tokenId).call(),
-              error: null
-            };
-          } catch (e) {
-            const start = e.message.indexOf('{');
-            const end = e.message.indexOf('}');
-
-            const errorMessage = e.message.substring(start, end + 1);
-            const errorCode = JSON.parse(errorMessage).code;
-            if (errorCode === -32015) {
-              return { id: tokenId, error: 'Not Found' };
-            }
-
-            throw e;
-          }
-        })
-      );
-      const ownerTokens = partialTokens.filter(
-        token => token.currentOwner === this.coinbase
-      );
-
-      const errorTokens = partialTokens.filter(token => token.error !== null);
-
-      const fullTokens = await Promise.all(
-        ownerTokens.map(token => {
-          return this.contract.methods
-            .tokenURI(token.id)
-            .call()
-            .then(uri => ({ ...token, uri }));
-        })
-      );
-      return fullTokens.concat(errorTokens);
-    },
-    async getNewIds1155(lastBlock) {
+    async getNewIds(type, lastBlock) {
       if (lastBlock > this.lastScanBlock) {
-        const singleInboundPromise = this.contract
-          .getPastEvents('TransferSingle', {
-            fromBlock: this.lastScanBlock + 1,
-            toBlock: lastBlock,
-            filter: { to: this.coinbase }
-          })
-          .then(events => {
-            return parseSingleEvents(events);
-          });
-        const batchInboundPromise = this.contract
-          .getPastEvents('TransferBatch', {
-            fromBlock: this.lastScanBlock + 1,
-            toBlock: lastBlock,
-            filter: { to: this.coinbase }
-          })
-          .then(events => {
-            return parseBatchEvents(events);
-          });
+        let ranges = [{ from: this.lastScanBlock, to: lastBlock }];
+        const maxBlocks = this.$web3.chains[this.chainId].getLogsLimit;
+        if (maxBlocks) {
+          ranges = computeScanRanges(this.lastScanBlock, lastBlock, maxBlocks);
+        }
 
-        const tokenIds = await Promise.all([
-          singleInboundPromise,
-          batchInboundPromise
-        ]).then(sourceEventIds => {
-          sourceEventIds[1].forEach(id => sourceEventIds[0].add(id));
-          return sourceEventIds[0];
-        });
-        return tokenIds;
+        let newIds = [];
+        if (type === 'ERC721') {
+          newIds = await this.getNewIds721(ranges);
+        } else {
+          newIds = await this.getNewIds1155(ranges);
+        }
+
+        return [...new Set(newIds)]; // Remove duplicates
       }
       return [];
     },
-    async getNewIds721(lastBlock) {
-      if (lastBlock > this.lastScanBlock) {
-        const tokenIds = await this.contract
-          .getPastEvents('Transfer', {
-            fromBlock: this.lastScanBlock + 1,
-            toBlock: lastBlock,
-            filter: { to: this.coinbase }
-          })
-          .then(events => {
-            return events.map(ev => ev.returnValues.tokenId);
-          });
-        return tokenIds;
-      }
-      return [];
+    async getNewIds721(ranges) {
+      const tokenIds = await mapSeries(ranges, range => {
+        this.scanBlock = range.to;
+        return getLogs721(this.contract, this.coinbase, range);
+      });
+      return tokenIds;
     },
+    async getNewIds1155(ranges) {
+      const singleTokenIds = mapSeries(ranges, range =>
+        getLogs1155Single(this.contract, this.coinbase, range)
+      );
+      const batchTokenIds = mapSeries(ranges, range => {
+        this.scanBlock = range.to;
+        return getLogs1155Batch(this.contract, this.coinbase, range);
+      });
+
+      const tokenIds = (
+        await Promise.all([singleTokenIds, batchTokenIds])
+      ).flat();
+      return tokenIds;
+    },
+
+    async getCurrentlyOwned(tokenIds) {
+      if (this.type === 'ERC721') {
+        return currentyOwned721(this.contract, this.coinbase, tokenIds);
+      }
+      return currentyOwned1155(this.contract, this.coinbase, tokenIds);
+    },
+
     showUriErrors() {
       this.$q.dialog({
         title: this.$t('uriErrorTitle'),
         message: this.$t('uriErrorMessage', {
           nonUriTokensCount: this.nonUriTokensCount,
+          alias: this.alias
+        })
+      });
+    },
+    showUnknownErrors() {
+      this.$q.dialog({
+        title: this.$t('unknownErrorTitle'),
+        message: this.$t('unknownErrorMessage', {
+          unknownErrorCount: this.unknownErrorCount,
           alias: this.alias
         })
       });
@@ -351,11 +556,14 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
-body.screen--xs .q-scrollarea {
+body.screen--xs .scroll-container {
   height: 388px;
 }
-.q-scrollarea {
+.scroll-container {
   height: 265px;
+}
+.q-scrollarea {
+  height: 100%;
   width: 100%;
 }
 
@@ -382,12 +590,16 @@ body.body--light {
   .q-toolbar {
     background-color: #eeeeee;
     color: var(--q-color-primary);
+    a {
+      color: var(--q-color-primary);
+      text-decoration: none;
+    }
 
     .q-chip {
       color: var(--q-color-primary);
     }
   }
-  .q-scrollarea {
+  .scroll-container {
     background-color: #e0e0e0;
   }
 }
@@ -395,8 +607,12 @@ body.body--light {
 body.body--dark {
   .q-toolbar {
     background-color: var(--q-color-primary);
+    a {
+      color: white;
+      text-decoration: none;
+    }
   }
-  .q-scrollarea {
+  .scroll-container {
     background-color: #0f1d1d;
   }
 }

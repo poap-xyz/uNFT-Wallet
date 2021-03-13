@@ -93,7 +93,7 @@ module.exports = {
     'func-names': ['error', 'as-needed'],
     '@intlify/vue-i18n/no-dynamic-keys': 'error',
     '@intlify/vue-i18n/no-unused-keys': [
-      'error',
+      'warn',
       {
         extensions: ['.js', '.vue']
       }

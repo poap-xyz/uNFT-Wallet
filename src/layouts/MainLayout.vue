@@ -34,7 +34,7 @@ es:
           @chainChanged="chainChanged"
         />
 
-        <ChainChip v-if="connected" :chain-id="chain" />
+        <ChainChip v-if="connected" :chain-id="chain" :chains="$web3.chains" />
         <q-btn v-if="connected" round flat>
           <Blockie :address="coinbase"></Blockie>
           <q-menu>

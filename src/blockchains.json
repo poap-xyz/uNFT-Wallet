@@ -1,0 +1,63 @@
+{
+  "1": {
+    "name": "Mainnet",
+    "status": "ok",
+    "explorerAddress":"https://etherscan.com/address/%s",
+    "explorerTx":"https://etherscan.com/tx/%s"
+  },
+  "3": {
+    "name": "Ropsten",
+    "status": "error",
+    "explorerAddress":"https://ropsten.etherscan.com/address/%s",
+    "explorerTx":"https://ropsten.etherscan.com/tx/%s"
+
+  },
+  "4": {
+    "name": "Rinkeby",
+    "status": "error",
+    "explorerAddress":"https://rinkeby.etherscan.com/address/%s",
+    "explorerTx":"https://rinkeby.etherscan.com/tx/%s"
+
+  },
+  "5": {
+    "name": "Goerli",
+    "status": "error",
+    "explorerAddress":"https://goerli.etherscan.com/address/%s",
+    "explorerTx":"https://goerli.etherscan.com/tx/%s"
+
+  },
+  "42": {
+    "name": "Kovan",
+    "status": "error",
+    "explorerAddress":"https://kovan.etherscan.com/address/%s",
+    "explorerTx":"https://kovan.etherscan.com/tx/%s"
+
+  },
+  "56": {
+    "name": "Binance Smart Chain",
+    "status": "warn",
+    "getLogsLimit":5000,
+    "explorerAddress":"https://bscscan.com/address/%s",
+    "explorerTx":"https://bscscan.com/tx/%s"
+  },
+  "77": {
+    "name": "Sokol",
+    "status": "error",
+    "explorerAddress":"https://blockscout.com/poa/sokol/address/%s",
+    "explorerTx":"https://blockscout.com/poa/sokol/tx/%s"
+  },
+  "100": {
+    "name": "xDAI",
+    "status": "warn",
+    "explorerAddress":"https://blockscout.com/xdai/mainnet/address/%s",
+    "explorerTx":"https://blockscout.com/xdai/mainnet/tx/%s"
+  },
+  "20066": {
+    "name": "TestNet",
+    "status": "error"
+  },
+  "31337": {
+    "name": "Localhost",
+    "status": "error"
+  }
+}

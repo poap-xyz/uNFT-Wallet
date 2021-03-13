@@ -25,6 +25,14 @@
       "block": 8099545
     }
   ],
+  "56": [
+    {
+      "name": "Pancake Bunnies",
+      "address": "0xdf7952b35f24acf7fc0487d01c8d5690a60dba07",
+      "type": "ERC721",
+      "block": "2992309"
+    }
+  ],
   "100": [
     {
       "name": "POAP",

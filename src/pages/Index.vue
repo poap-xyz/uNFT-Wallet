@@ -3,11 +3,19 @@ en:
   addContract: "Add Contract"
   deleteContract: "Delete Contract"
   deleteContractMessage: "Do you wish to delete {alias}?"
+  noContractsAddContract: "You don't seem to have any contracts, add one using the button in the lower left corner"
+  noContractsMint: "If you don't have any NFT yet you can mint one using the button in the lower right corner"
+  createdBlockErrorTitle: "Can't find contract creation"
+  createdBlockErrorMessage: "We couldn't determine when the contract was created. If you know the block where it was created (or the first block where you interacted with this contract), please write it in the field below. If you don't know, you may leave it blank, but scanning fot the first time may take a long time"
 
 es:
   addContract: "Agregar Contrato"
   deleteContract: "Borrar contrato"
   deleteContractMessage: "¿Deseas borrar {alias}?"
+  noContractsAddContract: "Parece que no has agregado ningún contrato, da uno de alta usando el botón de la esquina inferior derecha"
+  noContractsMint: "Si todavía no tienes ningún NFT, puedes acuñar uno con el botón de la esquina inferior izquierda"
+  createdBlockErrorTitle: "No fue posible encontrar la creación del contrato"
+  createdBlockErrorMessage: "No fue posible determinar cuando se creó el contrato. Si sabes en que bloque se creó, (o el primer bloque cuando interactuaste con este contrato), por favor escríbelo en el campo siguiente a este mensaje. Si no sabes, lo puedes dejar en blanco, pero la búsqueda inicial puede tomar mucho tiempo"
 
 </i18n>
 <template>
@@ -24,10 +32,23 @@ es:
           :alias="c.alias"
           :last-scan-block="c.lastScanBlock"
           :coinbase="coinbase"
-          :chain="chain"
+          :chain-id="chainId"
           @delete="onDeleteContract"
           @scan="onScanContract"
         />
+      </div>
+      <div v-if="contracts.length === 0" class="q-pa-md q-gutter-sm">
+        <q-banner class="bg-primary text-white center">
+          <template v-slot:avatar>
+            <q-icon name="sentiment_dissatisfied" color="accent" />
+          </template>
+          <p>
+            {{ $t('noContractsAddContract') }}
+          </p>
+          <p>
+            {{ $t('noContractsMint') }}
+          </p>
+        </q-banner>
       </div>
       <q-page-sticky position="bottom-right" :offset="[18, 18]">
         <q-btn
@@ -38,6 +59,9 @@ es:
           @click="showAddContractDialog"
         />
       </q-page-sticky>
+      <q-page-sticky position="bottom-left" :offset="[18, 18]">
+        <q-btn fab icon="favorite" color="red" @click="showMintDialog" />
+      </q-page-sticky>
     </div>
   </div>
 </template>
@@ -45,6 +69,7 @@ es:
 <script>
 import ContractRow from '../components/ContractRow.vue';
 import AddContractDialog from '../components/AddContractDialog.vue';
+import MintDialog from '../components/MintDialog.vue';
 import idb from '../idb';
 
 async function searchContractCretionBlock(web3, contractAddress) {
@@ -81,9 +106,7 @@ async function searchContractCretionBlock(web3, contractAddress) {
 export default {
   name: 'MyVouchers',
   components: {
-    ContractRow,
-    // eslint-disable-next-line vue/no-unused-components
-    AddContractDialog
+    ContractRow
   },
   props: {},
   data() {
@@ -93,12 +116,12 @@ export default {
   },
   computed: {
     connected() {
-      return this.coinbase !== null && this.chain !== null;
+      return this.coinbase !== null && this.chainId !== null;
     },
     coinbase() {
       return this.$store.state.web3.coinbase;
     },
-    chain() {
+    chainId() {
       return this.$store.state.web3.chainId;
     }
   },
@@ -106,7 +129,7 @@ export default {
     coinbase() {
       this.loadContracts();
     },
-    chain() {
+    chainId() {
       this.loadContracts();
     }
   },
@@ -119,8 +142,8 @@ export default {
   },
   methods: {
     async loadContracts() {
-      if (this.coinbase && this.chain) {
-        this.contracts = await idb.getContracts(this.chain, this.coinbase);
+      if (this.coinbase && this.chainId) {
+        this.contracts = await idb.getContracts(this.chainId, this.coinbase);
       }
     },
     async showAddContractDialog() {
@@ -129,7 +152,7 @@ export default {
           component: AddContractDialog,
           parent: this,
           existing: this.contracts,
-          chain: this.chain
+          chain: this.chainId
         })
         .onOk(async data => {
           let blockCreated = -1;
@@ -151,12 +174,11 @@ export default {
               await new Promise((resolve, reject) => {
                 this.$q
                   .dialog({
-                    title: "Can't find contract creation",
+                    title: this.$t('createdBlockErrorTitle'),
                     options: {
                       persistent: true
                     },
-                    message:
-                      "We could'nt determine when the contract was created. If you know the block where it was created (or the first block where you interacted with this contract), please write it in the field below. If you don't know, you may leave it blank, but scanning fot the first time will take a long time",
+                    message: this.$t('createdBlockErrorMessage'),
                     prompt: {
                       type: 'number'
                     },
@@ -178,7 +200,7 @@ export default {
             }
             if (blockCreated > 0) {
               const contract = {
-                chain: this.chain,
+                chain: this.chainId,
                 account: this.coinbase,
                 address: data.address,
                 alias: data.alias,
@@ -197,6 +219,28 @@ export default {
           }
         });
     },
+    async showMintDialog() {
+      this.$q
+        .dialog({
+          component: MintDialog,
+          parent: this,
+          chainId: this.chainId,
+          coinbase: this.coinbase
+        })
+        .onOk(({ address, type, blockCreated }) => {
+          const contract = {
+            chain: this.chainId,
+            account: this.coinbase,
+            address,
+            alias: `uNFT Wallet ${type}`,
+            type,
+            lastScanBlock: blockCreated - 1
+          };
+          idb.addContract(contract).then(() => {
+            this.contracts.push(contract);
+          });
+        });
+    },
     onDeleteContract(contract) {
       this.$q
         .dialog({
@@ -206,7 +250,7 @@ export default {
         })
         .onOk(() => {
           idb
-            .deleteContract(this.chain, this.coinbase, contract.address)
+            .deleteContract(this.chainId, this.coinbase, contract.address)
             .then(() => {
               this.contracts.splice(
                 this.contracts.findIndex(c => c.address === contract.address),
@@ -217,7 +261,7 @@ export default {
     },
     onScanContract(e) {
       idb.updateContractScan(
-        this.chain,
+        this.chainId,
         this.coinbase,
         e.address,
         e.lastScanBlock

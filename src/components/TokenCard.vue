@@ -85,6 +85,7 @@ es:
           $t('properties')
         }}</q-btn>
         <q-btn
+          v-if="!hideTransfer"
           flat
           :disabled="pendingTransferNoneLeft"
           @click="showTransferDialog"
@@ -147,20 +148,19 @@ function handleLocaleExpansion(url, locale) {
 
 export default {
   name: 'TokenCard',
-  // eslint-disable-next-line vue/no-unused-components
-  components: { VueJsonPretty, TransferDialog },
+  components: { VueJsonPretty },
   props: {
     coinbase: {
       type: String,
-      required: true
+      default: '0x0'
     },
     contract: {
       type: Object,
-      required: true
+      default: () => {}
     },
     id: {
       type: String,
-      required: true
+      default: '0'
     },
     uri: {
       type: String,
@@ -173,6 +173,10 @@ export default {
     amount: {
       type: Number,
       default: 0
+    },
+    hideTransfer: {
+      type: Boolean,
+      default: false
     }
   },
   data() {

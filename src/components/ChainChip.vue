@@ -13,49 +13,6 @@ es:
 </template>
 
 <script>
-const chains = {
-  1: {
-    name: 'Mainnet',
-    status: 'ok'
-  },
-  3: {
-    name: 'Ropsten',
-    status: 'error'
-  },
-  4: {
-    name: 'Rinkeby',
-    status: 'error'
-  },
-  5: {
-    name: 'Goreli',
-    status: 'error'
-  },
-  42: {
-    name: 'Kovan',
-    status: 'error'
-  },
-  77: {
-    name: 'Sokol',
-    status: 'error'
-  },
-  100: {
-    name: 'xDAI',
-    status: 'warn'
-  },
-  1234: {
-    name: 'Localhost',
-    status: 'warn'
-  },
-  20066: {
-    name: 'TestNet',
-    status: 'warn'
-  },
-  31337: {
-    name: 'Localhost',
-    status: 'warn'
-  }
-};
-
 const colors = {
   ok: 'positive',
   warn: 'warning',
@@ -71,6 +28,10 @@ const icons = {
 export default {
   name: 'ChainChip',
   props: {
+    chains: {
+      type: Object,
+      required: true
+    },
     chainId: {
       type: Number,
       required: true
@@ -79,7 +40,7 @@ export default {
   computed: {
     chainName() {
       try {
-        return chains[this.chainId].name;
+        return this.chains[this.chainId].name;
       } catch {
         return 'Unknown';
       }
@@ -87,7 +48,7 @@ export default {
     chainColor() {
       let status;
       try {
-        status = chains[this.chainId].status;
+        status = this.chains[this.chainId].status;
       } catch {
         status = 'error';
       }
@@ -96,7 +57,7 @@ export default {
     chainIcon() {
       let status;
       try {
-        status = chains[this.chainId].status;
+        status = this.chains[this.chainId].status;
       } catch {
         status = 'error';
       }

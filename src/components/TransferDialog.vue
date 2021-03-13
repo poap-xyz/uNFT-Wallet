@@ -7,7 +7,7 @@ en:
   amount: "Amount"
   submit: "Submit"
   reset: "Reset"
-  pleaseAprove: "Please aprove the transaction"
+  pleaseAprove: "Please approve the transaction"
   shortMaximum: "Max"
   validations:
     typeAmount: "Type an amount"
@@ -22,12 +22,12 @@ es:
   amount: "Cantidad"
   submit: "Enviar"
   reset: "Borrar"
-  pleaseAprove: "Favor de aprovar la transacción"
+  pleaseAprove: "Favor de aprobar la transacción"
   shortMaximum: "Max"
   validations:
     typeAmount: "Escribe una cantidad"
     typeAmountGtZero: "Escribe una cantidad mayor a cero"
-    typeAmountLeMax: "La cantiad máxima de tokens que puedes transferir es {currentAmount}"
+    typeAmountLeMax: "La cantidad máxima de tokens que puedes transferir es {currentAmount}"
 
 </i18n>
 
