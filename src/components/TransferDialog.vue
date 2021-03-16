@@ -7,7 +7,6 @@ en:
   amount: "Amount"
   submit: "Submit"
   reset: "Reset"
-  pleaseAprove: "Please approve the transaction"
   shortMaximum: "Max"
   validations:
     typeAmount: "Type an amount"
@@ -22,7 +21,6 @@ es:
   amount: "Cantidad"
   submit: "Enviar"
   reset: "Borrar"
-  pleaseAprove: "Favor de aprobar la transacción"
   shortMaximum: "Max"
   validations:
     typeAmount: "Escribe una cantidad"
@@ -122,12 +120,14 @@ es:
 
 <script>
 import Blockie from './Blockie.vue';
+import TransactionModal from '../mixins/TransactionModal.vue';
 
 export default {
   name: 'TransferDialog',
   components: {
     blockie: Blockie
   },
+  mixins: [TransactionModal],
   props: {
     coinbase: {
       type: String,
@@ -160,39 +160,6 @@ export default {
     };
   },
   methods: {
-    // following method is REQUIRED
-    // (don't change its name --> "show")
-    show() {
-      this.$refs.dialog.show();
-    },
-
-    // following method is REQUIRED
-    // (don't change its name --> "hide")
-    hide() {
-      this.$refs.dialog.hide();
-    },
-
-    onDialogHide() {
-      // required to be emitted
-      // when QDialog emits "hide" event
-      this.$emit('hide');
-    },
-
-    onOKClick() {
-      // on OK, it is REQUIRED to
-      // emit "ok" event (with optional payload)
-      // before hiding the QDialog
-      this.$emit('ok');
-      // or with payload: this.$emit('ok', { ... })
-
-      // then hiding dialog
-      this.hide();
-    },
-
-    onCancelClick() {
-      // we just need to hide dialog
-      this.hide();
-    },
     async validateRecipient(recipient) {
       let isOK = false;
       if (this.$web3.instance.utils.isAddress(recipient)) {
@@ -247,61 +214,6 @@ export default {
       } else {
         this.transfer721();
       }
-    },
-    transactionReceipt() {
-      this.$root.$emit('transferConfirmed', {
-        // eslint-disable-next-line no-underscore-dangle
-        contract: this.contract._address,
-        id: this.id
-      });
-      this.$q.notify({
-        type: 'positive',
-        message: 'Transaction confirmed'
-      });
-    },
-    transactionHash(hash) {
-      this.$q.loading.hide();
-      this.$q.notify({
-        type: 'info',
-        icon: 'send',
-        message: 'Transfer Sent',
-        actions: [
-          {
-            label: 'View',
-            color: 'yellow',
-            handler: () => {
-              window.open(`https://etherscan.io/tx/${hash}`, '_blank');
-            }
-          },
-          {
-            label: 'Dismiss',
-            color: 'white',
-            handler: () => {
-              /* ... */
-            }
-          }
-        ]
-      });
-      this.$root.$emit('transferSent', {
-        // eslint-disable-next-line no-underscore-dangle
-        contract: this.contract._address,
-        id: this.id,
-        amount: this.amount
-      });
-      this.reset();
-      this.onOKClick();
-    },
-    transactionError(err) {
-      this.$q.loading.hide();
-      this.$q.notify({
-        type: 'negative',
-        message: `Error: ${err.message}`
-      });
-    },
-    alertAprove() {
-      this.$q.loading.show({
-        message: this.$t('pleaseAprove')
-      });
     },
     async transfer1155() {
       const estimatedGas = await this.contract.methods
