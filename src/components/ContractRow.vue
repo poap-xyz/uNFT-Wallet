@@ -375,8 +375,9 @@ export default {
     this.computeTokens();
     // Rescan on donations/mints
     if (
+      this.$web3.donations[this.chainId.toString()] &&
       this.address ===
-      this.$web3.donations[this.chainId.toString()].tokens[this.type].address
+        this.$web3.donations[this.chainId.toString()].tokens[this.type].address
     ) {
       this.$root.$on('transferConfirmed', ev => {
         if (ev.contract === this.address) this.computeTokens();

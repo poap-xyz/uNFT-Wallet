@@ -25,7 +25,7 @@ es:
       <div class="row">
         <div class="col-xs-8"></div>
       </div>
-      <div v-for="c in contracts" :key="c.address">
+      <div v-for="c in contracts" :key="chainId + coinbase + c.address">
         <ContractRow
           :type="c.type"
           :address="c.address"
