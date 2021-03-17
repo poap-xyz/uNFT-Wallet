@@ -363,6 +363,8 @@ $token-img-size: 180px;
 
 .q-img {
   width: $token-img-size;
+  margin-top: 7px;
+  margin-left: 7px;
 }
 
 body.screen--xs .q-card {
@@ -384,6 +386,8 @@ body.screen--xs .q-card {
   }
   .q-img {
     width: 100%;
+    margin-top: 0px;
+    margin-left: 0px;
   }
 }
 
