@@ -37,7 +37,7 @@ es:
         <q-btn v-close-popup flat round dense icon="close" />
       </q-toolbar>
       <q-card-section>
-        <q-form class="q-gutter-md" @submit="mint" @reset="reset">
+        <q-form class="q-gutter-md" novalidate @submit="mint" @reset="reset">
           <q-select
             v-model="type"
             :options="types"
@@ -123,10 +123,9 @@ es:
 
 <script>
 import ABI721 from '../artifacts/unft721.abi.json';
+import ABI1155 from '../artifacts/unft1155.abi.json';
 import TokenCard from './TokenCard.vue';
 import TransactionModal from '../mixins/TransactionModal.vue';
-
-const ABI1155 = null;
 
 const abis = {
   ERC721: ABI721,
@@ -205,15 +204,18 @@ export default {
       this.min = null;
       this.donation = null;
     },
+    async getCollectionURI(collectionId) {
+      const uriFunctionName = this.type === 'ERC721' ? 'collectionURI' : 'uri';
+
+      return this.contract.methods[uriFunctionName](collectionId).call();
+    },
     async loadStats() {
       if (this.collection !== null && this.type !== null) {
         this.contract = new this.$web3.instance.eth.Contract(
           abis[this.type],
           this.address
         );
-        this.uri = await this.contract.methods
-          .collectionURI(this.collection.id)
-          .call();
+        this.uri = await this.getCollectionURI(this.collection.id);
         if (this.uri !== '') {
           this.supply = await this.contract.methods
             .collectionSupply(this.collection.id)
@@ -240,14 +242,7 @@ export default {
 
       this.hide();
     },
-    mint() {
-      if (this.type === 'ERC1155') {
-        this.mint1155();
-      } else {
-        this.mint721();
-      }
-    },
-    async mint721() {
+    async mint() {
       const donationInt =
         this.donation * 10 ** this.$web3.donations[this.chainId].decimals;
       const estimatedGas = await this.contract.methods

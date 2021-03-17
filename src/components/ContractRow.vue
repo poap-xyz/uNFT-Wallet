@@ -36,7 +36,9 @@ es:
         <div class="text-caption ">
           {{ address }}
           <a
-            v-if="$web3.chains[chainId].explorerAddress"
+            v-if="
+              $web3.chains[chainId] && $web3.chains[chainId].explorerAddress
+            "
             :href="$web3.chains[chainId].explorerAddress.replace('%s', address)"
             target="_blank"
             rel="noopener"
@@ -473,7 +475,9 @@ export default {
     async getNewIds(type, lastBlock) {
       if (lastBlock > this.lastScanBlock) {
         let ranges = [{ from: this.lastScanBlock, to: lastBlock }];
-        const maxBlocks = this.$web3.chains[this.chainId].getLogsLimit;
+        const maxBlocks = this.$web3.chains[this.chainId]
+          ? this.$web3.chains[this.chainId].getLogsLimit
+          : undefined;
         if (maxBlocks) {
           ranges = computeScanRanges(this.lastScanBlock, lastBlock, maxBlocks);
         }

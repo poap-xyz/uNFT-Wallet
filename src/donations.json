@@ -15,10 +15,29 @@
             "name": "Blue",
             "donate": false,
             "id": 1
+          },
+          {
+            "name": "SVG",
+            "donate": false,
+            "id": 2
           }
         ]
       },
-      "ERC1155": { "address": "" }
+      "ERC1155": {
+        "address": "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
+        "collections": [
+          {
+            "name": "Gold",
+            "donate": true,
+            "id": 0
+          },
+          {
+            "name": "Blue",
+            "donate": false,
+            "id": 1
+          }
+        ]
+      }
     }
   },
   "20066": {
@@ -28,6 +47,29 @@
       "ERC721": {
         "address": "0xb6681f9efC49E803CfE1f62dE772218A755Ff015",
         "blockCreated": 391348,
+        "collections": [
+          {
+            "name": "Gold",
+            "donate": true,
+            "id": 0
+          },
+          {
+            "name": "Blue",
+            "donate": false,
+            "id": 1
+          }
+        ]
+      },
+      "ERC1155": { "address": "" }
+    }
+  },
+  "80001": {
+    "ticker": "MATIC TEST",
+    "decimals": 18,
+    "tokens": {
+      "ERC721": {
+        "address": "0x5CE0eC56e2EdE6484f5373059093DB0CC4914b31",
+        "blockCreated": 11673014,
         "collections": [
           {
             "name": "Gold",
