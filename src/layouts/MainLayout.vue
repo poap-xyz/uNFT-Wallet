@@ -127,9 +127,11 @@ export default {
       }
     },
     $route(to) {
-      window.goatcounter.count({
-        path: to.fullPath
-      });
+      if (window.goatcounter) {
+        window.goatcounter.count({
+          path: to.fullPath
+        });
+      }
     }
   },
   mounted() {
