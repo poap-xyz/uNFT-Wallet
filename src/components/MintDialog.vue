@@ -7,11 +7,20 @@ en:
   available: "Available"
   reset: "Reset"
   tokenType: "Type"
+  erc721Description: "Original NFT Standard"
+  erc1155Description: "Multitoken Standard"
   donationAmount: "Donation amount"
   donation: "Donation"
   justGas: "Just Gas"
   collectionFinished: "All NFTs from this collection have been minted, choose another collection"
   collectionNotAvailable: "Collection not available"
+  description: "Here you can create NFTs to test the dApp, or mint a limited edition to donate."
+  mintingEnabledChains: "The following chains have minting enabled:"
+  testChains: "Test Chains"
+  prodChains: "Production Chains"
+  needGas: "If you need some testnet gas, you can get some from the "
+  faucet: "faucet"
+  unsuportedChain: "uNFT Wallet can't mint in this chain yet, use a chain from the lists above"
 es:
   mintNFT: "Acuñar NFT"
   collection: "Colección"
@@ -20,11 +29,20 @@ es:
   available: "Disponibles"
   reset: "Borrar"
   tokenType: "Tipo"
+  erc721Description: "Estándar NFT Original"
+  erc1155Description: "Estándar Multitoken"
   donationAmount: "Donación"
   donation: "Donación"
   justGas: "Solo Gas"
   collectionFinished: "Todos los NFTs de esta colección han sido acuñados, elije otra colección"
   collectionNotAvailable: "Colección no disponible"
+  description: "Aquí puedes crear NFTs para probar la dApp, o acuñar una edición limitada para donar."
+  mintingEnabledChains: "En las siguientes cadenas están preparadas para acuñar:"
+  testChains: "Cadenas de pruebas"
+  prodChains: "Cadenas productivas"
+  needGas: "Si requieres gas para hacer pruebas, puedes obtener de un "
+  faucet: "grifo"
+  unsuportedChain: "uNFT Wallet no puede acuñar en esta cadena, usa una cadena de las listas previas"
 
 </i18n>
 
@@ -37,14 +55,53 @@ es:
         <q-btn v-close-popup flat round dense icon="close" />
       </q-toolbar>
       <q-card-section>
-        <q-form class="q-gutter-md" novalidate @submit="mint" @reset="reset">
+        <p>{{ $t('description') }}</p>
+        <p>
+          {{ $t('mintingEnabledChains') }}
+        </p>
+        <b>{{ $t('testChains') }}</b>
+        <ul class="chain-list">
+          <li v-for="testnet in donationTestChains" :key="testnet.id">
+            {{ testnet.name }}
+          </li>
+        </ul>
+        <b>{{ $t('prodChains') }}</b>
+        <ul class="chain-list">
+          <li v-for="mainnet in donationProdChains" :key="mainnet.id">
+            {{ mainnet.name }}
+          </li>
+        </ul>
+
+        <p v-if="faucet">
+          {{ $t('needGas') }}
+          <a :href="faucet" noopener target="_blank">{{ $t('faucet') }}</a>
+        </p>
+        <q-form
+          v-if="mintingSuportedChain"
+          class="q-gutter-md"
+          novalidate
+          @submit="mint"
+          @reset="reset"
+        >
           <q-select
-            v-model="type"
+            v-model="typeObj"
             :options="types"
             :label="$t('tokenType')"
-            option-label="type"
+            option-label="name"
             @input="loadStats"
-          />
+          >
+            <template v-slot:option="scope">
+              <q-item v-bind="scope.itemProps" v-on="scope.itemEvents">
+                <q-item-section>
+                  <!-- eslint-disable-next-line vue/no-v-html -->
+                  <q-item-label v-html="scope.opt.name" />
+                </q-item-section>
+                <q-item-section class="type-description">
+                  {{ scope.opt.description }}
+                </q-item-section>
+              </q-item>
+            </template>
+          </q-select>
           <q-select
             v-model="collection"
             :options="collections"
@@ -116,6 +173,9 @@ es:
             <q-btn :label="$t('mint')" type="submit" color="primary" />
           </q-card-actions>
         </q-form>
+        <p v-else>
+          {{ $t('unsuportedChain') }}
+        </p>
       </q-card-section>
     </q-card>
   </q-dialog>
@@ -148,18 +208,29 @@ export default {
   },
   data() {
     return {
-      type: null,
-      types: ['ERC721', 'ERC1155'],
+      typeObj: null,
+      types: [
+        {
+          name: 'ERC721',
+          description: this.$t('erc721Description')
+        },
+        { name: 'ERC1155', description: this.$t('erc1155Description') }
+      ],
       collection: null,
       supply: null,
       minted: null,
       uri: null,
       min: null,
       donation: null,
-      contract: null
+      contract: null,
+      donationTestChains: [],
+      donationProdChains: []
     };
   },
   computed: {
+    type() {
+      return this.typeObj ? this.typeObj.name : undefined;
+    },
     commonContracts() {
       return [];
     },
@@ -169,6 +240,7 @@ export default {
     },
     collections() {
       if (this.type) {
+        console.log(this.type);
         return this.$web3.donations[this.chainId].tokens[this.type].collections;
       }
       return [];
@@ -192,11 +264,35 @@ export default {
     },
     address() {
       return this.$web3.donations[this.chainId].tokens[this.type].address;
+    },
+    faucet() {
+      return this.$web3.chains[this.chainId]
+        ? this.$web3.chains[this.chainId].faucet
+        : undefined;
+    },
+    mintingSuportedChain() {
+      return Object.keys(this.$web3.donations).includes(
+        this.chainId.toString()
+      );
     }
+  },
+  created() {
+    const donationChainsIds = Object.keys(this.$web3.donations);
+    const donationChains = Object.fromEntries(
+      Object.entries(this.$web3.chains).filter(([key]) =>
+        donationChainsIds.includes(key)
+      )
+    );
+    this.donationTestChains = Object.entries(donationChains)
+      .filter(([, properties]) => properties.type === 'test')
+      .map(([id, properties]) => ({ id, ...properties }));
+    this.donationProdChains = Object.entries(donationChains)
+      .filter(([, properties]) => properties.type === 'production')
+      .map(([id, properties]) => ({ id, ...properties }));
   },
   methods: {
     reset() {
-      this.type = null;
+      this.typeObj = null;
       this.collection = null;
       this.supply = null;
       this.minted = null;
@@ -282,5 +378,11 @@ export default {
 }
 .ticker {
   font-size: 0.7em;
+}
+.chain-list {
+  column-count: 2;
+}
+.type-description {
+  color: gray;
 }
 </style>

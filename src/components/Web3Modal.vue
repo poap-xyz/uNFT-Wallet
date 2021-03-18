@@ -61,8 +61,15 @@ export default {
             4: 'https://eth-rinkeby.gateway.pokt.network/v1/5f7648aab90218002e9ce993',
             5: 'https://eth-goerli.gateway.pokt.network/v1/5f7648aab90218002e9ce993',
             42: 'https://poa-kovan.gateway.pokt.network/v1/5f7648aab90218002e9ce993',
+            56: 'https://bsc-dataseed.binance.org/',
+            77: 'https://sokol.poa.network',
+            97: 'https://data-seed-prebsc-1-s1.binance.org:8545/',
             100: 'https://dai.poa.network',
-            31337: 'http://localhost:8545'
+            137: 'https://rpc-endpoints.superfluid.dev/matic',
+            250: 'https://rpcapi.fantom.network/',
+            4002: 'https://rpc.testnet.fantom.network/',
+            31337: 'http://localhost:8545',
+            80001: 'https://rpc-endpoints.superfluid.dev/mumbai'
           }
         }
       }

@@ -2,36 +2,46 @@
   "1": {
     "name": "Mainnet",
     "status": "ok",
+    "type": "production",
     "explorerAddress": "https://etherscan.com/address/%s",
     "explorerTx": "https://etherscan.com/tx/%s"
   },
   "3": {
     "name": "Ropsten",
     "status": "error",
+    "type": "test",
     "explorerAddress": "https://ropsten.etherscan.com/address/%s",
-    "explorerTx": "https://ropsten.etherscan.com/tx/%s"
+    "explorerTx": "https://ropsten.etherscan.com/tx/%s",
+    "faucet": "https://faucet.ropsten.be/"
   },
   "4": {
     "name": "Rinkeby",
     "status": "error",
+    "type": "test",
     "explorerAddress": "https://rinkeby.etherscan.com/address/%s",
-    "explorerTx": "https://rinkeby.etherscan.com/tx/%s"
+    "explorerTx": "https://rinkeby.etherscan.com/tx/%s",
+    "faucet": "http://rinkeby-faucet.com/"
   },
   "5": {
     "name": "Goerli",
     "status": "error",
+    "type": "test",
     "explorerAddress": "https://goerli.etherscan.com/address/%s",
-    "explorerTx": "https://goerli.etherscan.com/tx/%s"
+    "explorerTx": "https://goerli.etherscan.com/tx/%s",
+    "faucet": "https://goerli-faucet.slock.it/"
   },
   "42": {
     "name": "Kovan",
     "status": "error",
+    "type": "test",
     "explorerAddress": "https://kovan.etherscan.com/address/%s",
-    "explorerTx": "https://kovan.etherscan.com/tx/%s"
+    "explorerTx": "https://kovan.etherscan.com/tx/%s",
+    "faucet": "https://enjin.io/software/kovan-faucet"
   },
   "56": {
     "name": "Binance Smart Chain",
     "status": "warn",
+    "type": "production",
     "getLogsLimit": 5000,
     "explorerAddress": "https://bscscan.com/address/%s",
     "explorerTx": "https://bscscan.com/tx/%s"
@@ -39,27 +49,63 @@
   "77": {
     "name": "Sokol",
     "status": "error",
+    "type": "test",
     "explorerAddress": "https://blockscout.com/poa/sokol/address/%s",
-    "explorerTx": "https://blockscout.com/poa/sokol/tx/%s"
+    "explorerTx": "https://blockscout.com/poa/sokol/tx/%s",
+    "faucet": "https://faucet.poa.network/"
+  },
+  "97": {
+    "name": "Binance Smart Chain Testnet",
+    "status": "error",
+    "type": "test",
+    "getLogsLimit": 5000,
+    "explorerAddress": "https://testnet.bscscan.com/address/%s",
+    "explorerTx": "https://testnet.bscscan.com/tx/%s",
+    "faucet": "https://testnet.binance.org/faucet-smart"
   },
   "100": {
     "name": "xDAI",
     "status": "warn",
+    "type": "production",
     "explorerAddress": "https://blockscout.com/xdai/mainnet/address/%s",
     "explorerTx": "https://blockscout.com/xdai/mainnet/tx/%s"
   },
+  "137": {
+    "name": "Matic Mainnet",
+    "status": "warn",
+    "type": "production",
+    "explorerAddress": "https://explorer-mainnet.maticvigil.com/address/%s",
+    "explorerTx": "https://https://explorer-mainnet.maticvigil.com/tx/%s"
+  },
+  "250": {
+    "name": "Fantom Opera",
+    "status": "warn",
+    "type": "production",
+    "explorerAddress": "https://ftmscan.com/address/%s",
+    "explorerTx": "https://ftmscan.com/tx/%s"
+  },
+  "4002": {
+    "name": "Fantom Testnet",
+    "status": "error",
+    "type": "test",
+    "faucet": "https://faucet.fantom.network/"
+  },
   "20066": {
     "name": "TestNet",
-    "status": "error"
+    "status": "error",
+    "type": "test"
   },
   "31337": {
     "name": "Localhost",
-    "status": "error"
+    "status": "error",
+    "type": "test"
   },
   "80001": {
     "name": "Matic Mumbai Testnet",
     "status": "error",
+    "type": "test",
     "explorerAddress": "https://explorer-mumbai.maticvigil.com/address/%s",
-    "explorerTx": "https://explorer-mumbai.maticvigil.com/tx/%s"
+    "explorerTx": "https://explorer-mumbai.maticvigil.com/tx/%s",
+    "faucet": "https://faucet.matic.network"
   }
 }
