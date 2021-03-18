@@ -22,13 +22,13 @@ es:
 </i18n>
 <template>
   <div>
-    <div class="q-pa-md">
+    <div class="q-pa-md main-container">
       <div class="row header justify-center">
-        <div class="col-md-4 center">
-          <inline-svg class="logo " :src="require('./logo.svg')"></inline-svg>
+        <div class="col-md-5 center">
+          <inline-svg class="logo" :src="require('./logo.svg')"></inline-svg>
         </div>
-        <div class="col-md-8 center">
-          <h1 class="center text-accent">{{ $t('uNFTWallet') }}</h1>
+        <div class="col-md-7 center header-text">
+          <h1 class="center ">{{ $t('uNFTWallet') }}</h1>
           <div class="tagline">
             {{ $t('tagline') }}
           </div>
@@ -78,7 +78,10 @@ es:
   </div>
 </template>
 
-<style>
+<style scoped>
+.main-container {
+  padding-top: 7px;
+}
 .icon {
   stroke: var(--q-color-accent);
   fill: var(--q-color-accent);
@@ -88,17 +91,24 @@ es:
 }
 .logo {
   stroke: white;
-  width: 400px;
-  height: 200px;
+  /*/width: 400px;*/
+  max-width: 100%;
+  height: 180px;
+  padding-top: 5px;
 }
-h1.text-accent {
+
+h1 {
   color: white !important;
   margin: 0.3em;
+  margin-top: 0px;
 }
 .header {
   background-color: var(--q-color-primary);
   padding: 10px;
   color: white;
+}
+.header-text {
+  padding: 10px;
 }
 .tagline {
   font-size: 2em;

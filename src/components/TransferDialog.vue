@@ -39,11 +39,8 @@ es:
       </q-toolbar>
 
       <q-card-section class="avatar-section">
-        <q-avatar color="gray">
-          <blockie
-            v-if="recipientAddress !== null"
-            :address="recipientAddress"
-          ></blockie>
+        <q-avatar v-if="recipientAddress !== null">
+          <blockie :address="recipientAddress"></blockie>
         </q-avatar>
       </q-card-section>
       <q-card-section>

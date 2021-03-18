@@ -115,6 +115,7 @@ export default {
     },
     alertAprove() {
       this.$q.loading.show({
+        backgroundColor: 'black',
         message: this.$t('pleaseAprove')
       });
     }

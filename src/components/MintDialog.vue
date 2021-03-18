@@ -240,7 +240,6 @@ export default {
     },
     collections() {
       if (this.type) {
-        console.log(this.type);
         return this.$web3.donations[this.chainId].tokens[this.type].collections;
       }
       return [];

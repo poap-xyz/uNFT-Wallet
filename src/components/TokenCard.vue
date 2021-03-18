@@ -96,21 +96,21 @@ es:
     </q-card>
 
     <q-dialog v-model="propertiesDialog">
-      <q-card>
+      <q-card style="width: 45em; max-width: 80vw;">
+        <q-toolbar>
+          <q-toolbar-title>{{ $t('properties') }}</q-toolbar-title>
+
+          <q-btn v-close-popup flat round dense icon="close" />
+        </q-toolbar>
+
         <q-card-section>
-          <div class="text-h6">{{ $t('properties') }}</div>
+          <!-- eslint-disable-next-line @intlify/vue-i18n/no-raw-text -->
+          <div>ID: 0x{{ hexId }}</div>
+
+          <div>
+            <vue-json-pretty :data="properties"> </vue-json-pretty>
+          </div>
         </q-card-section>
-
-        <!-- eslint-disable-next-line @intlify/vue-i18n/no-raw-text -->
-        <q-card-section class="q-pt-none">0x{{ hexId }} </q-card-section>
-
-        <q-card-section class="q-pt-none">
-          <vue-json-pretty :data="properties"> </vue-json-pretty>
-        </q-card-section>
-
-        <q-card-actions align="right">
-          <q-btn v-close-popup flat label="Close" color="primary" />
-        </q-card-actions>
       </q-card>
     </q-dialog>
   </div>
@@ -357,7 +357,7 @@ export default {
 $token-img-size: 180px;
 
 .q-card {
-  height: 230px;
+  height: 237px;
   width: 500px;
 }
 

@@ -1,9 +1,9 @@
 <i18n lang="yaml">
 en:
-  login: "Login"
+  connectWallet: "Connect Wallet"
 
 es:
-  login: "Ingresar"
+  connectWallet: "Conectar Wallet"
 
 </i18n>
 
@@ -14,7 +14,7 @@ es:
       :color="color"
       :text-color="textColor"
       @click="connect"
-      >{{ $t('login') }}</q-btn
+      >{{ $t('connectWallet') }}</q-btn
     >
   </div>
 </template>

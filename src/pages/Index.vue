@@ -3,8 +3,8 @@ en:
   addContract: "Add Contract"
   deleteContract: "Delete Contract"
   deleteContractMessage: "Do you wish to delete {alias}?"
-  noContractsAddContract: "You don't seem to have any contracts, add one using the button in the lower left corner"
-  noContractsMint: "If you don't have any NFT yet you can mint one using the button in the lower right corner"
+  noContractsAddContract: "You don't have any contracts, add one using the button in the lower right corner"
+  noContractsMint: "If you don't have any NFT yet you can mint one using the button in the lower left corner"
   createdBlockErrorTitle: "Can't find contract creation"
   createdBlockErrorMessage: "We couldn't determine when the contract was created. If you know the block where it was created (or the first block where you interacted with this contract), please write it in the field below. If you don't know, you may leave it blank, but scanning fot the first time may take a long time"
 
@@ -12,7 +12,7 @@ es:
   addContract: "Agregar Contrato"
   deleteContract: "Borrar contrato"
   deleteContractMessage: "¿Deseas borrar {alias}?"
-  noContractsAddContract: "Parece que no has agregado ningún contrato, da uno de alta usando el botón de la esquina inferior derecha"
+  noContractsAddContract: "No has agregado ningún contrato, da uno de alta con el botón de la esquina inferior derecha"
   noContractsMint: "Si todavía no tienes ningún NFT, puedes acuñar uno con el botón de la esquina inferior izquierda"
   createdBlockErrorTitle: "No fue posible encontrar la creación del contrato"
   createdBlockErrorMessage: "No fue posible determinar cuando se creó el contrato. Si sabes en que bloque se creó, (o el primer bloque cuando interactuaste con este contrato), por favor escríbelo en el campo siguiente a este mensaje. Si no sabes, lo puedes dejar en blanco, pero la búsqueda inicial puede tomar mucho tiempo"
@@ -279,4 +279,12 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped></style>
+<style>
+.q-banner p:last-of-type {
+  margin-bottom: 0;
+}
+
+.q-banner__avatar {
+  margin: auto;
+}
+</style>

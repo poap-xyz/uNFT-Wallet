@@ -2,12 +2,12 @@
 en:
   uNFTWallet: "uNFT Wallet"
   betaWarning: "This is experimental software, use at your own risk"
-  logout: "Logout"
+  logout: "Disconnect"
 
 es:
   uNFTWallet: "uNFT Wallet"
-  betaWarning: "Este es software experimental, use bajo su propio riesgo"
-  logout: "Salir"
+  betaWarning: "Esto es software experimental, use bajo su propio riesgo"
+  logout: "Desconectar"
 
 </i18n>
 
@@ -58,20 +58,22 @@ es:
       bordered
       :class="darkEnabled ? '' : 'bg-light'"
     >
-      <LanguageChanger :languages="languages" />
-      <q-list>
-        <q-toggle
-          v-model="darkEnabled"
-          checked-icon="dark_mode"
-          label="Dark Mode"
-          unchecked-icon="brightness_low"
-        />
-      </q-list>
+      <div class="q-pa-sm">
+        <LanguageChanger :languages="languages" />
+        <q-list>
+          <q-toggle
+            v-model="darkEnabled"
+            checked-icon="dark_mode"
+            label="Dark Mode"
+            unchecked-icon="brightness_low"
+          />
+        </q-list>
+      </div>
     </q-drawer>
 
     <q-page-container>
       <div class="center">
-        <q-chip>{{ $t('betaWarning') }}</q-chip>
+        <q-chip class="disclaimer">{{ $t('betaWarning') }}</q-chip>
       </div>
       <router-view />
     </q-page-container>
@@ -175,6 +177,10 @@ export default {
 <style lang="scss">
 .center {
   text-align: center;
+}
+.disclaimer {
+  margin-bottom: 0;
+  margin-top: 10px;
 }
 body.body--light {
   background-color: #f5f6f4;

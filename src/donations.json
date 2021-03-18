@@ -28,6 +28,11 @@
             "name": "SVG",
             "donate": false,
             "id": 2
+          },
+          {
+            "name": "Bad",
+            "donate": false,
+            "id": 3
           }
         ]
       },
@@ -65,6 +70,11 @@
             "name": "Blue",
             "donate": false,
             "id": 1
+          },
+          {
+            "name": "Bad",
+            "donate": false,
+            "id": 2
           }
         ]
       },

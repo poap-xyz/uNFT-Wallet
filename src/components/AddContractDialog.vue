@@ -1,6 +1,6 @@
 <i18n lang="yaml">
 en:
-  addContract: "Add Contract"
+  contract: "Contract"
   address: "Address"
   alias: "Alias"
   invalidAddress: "Invalid address"
@@ -9,9 +9,11 @@ en:
   reset: "Reset"
   alreadyExists: "This address already exists as: {alias}"
   tokenType: "Type"
+  common: "Common"
+  custom: "Custom"
 
 es:
-  addContract: "Agregar Contrato"
+  contract: "Contrato"
   address: "Dirección"
   alias: "Alias"
   invalidAddress: "Dirección inválida"
@@ -20,6 +22,8 @@ es:
   reset: "Borrar"
   alreadyExists: "Esta dirección ya existe como: {alias}"
   tokenType: "Tipo"
+  common: "Común"
+  custom: "Personalizado"
 
 </i18n>
 
@@ -27,7 +31,7 @@ es:
   <q-dialog ref="dialog" @hide="onDialogHide">
     <q-card>
       <q-toolbar>
-        <q-toolbar-title>{{ $t('addContract') }}</q-toolbar-title>
+        <q-toolbar-title>{{ $t('add') }} {{ $t('contract') }}</q-toolbar-title>
 
         <q-btn v-close-popup flat round dense icon="close" />
       </q-toolbar>
@@ -41,8 +45,8 @@ es:
         align="justify"
         narrow-indicator
       >
-        <q-tab name="common" label="Common" />
-        <q-tab name="custom" label="Custom" />
+        <q-tab name="common" :label="$t('common')" />
+        <q-tab name="custom" :label="$t('custom')" />
       </q-tabs>
 
       <q-separator />
@@ -54,7 +58,7 @@ es:
               v-model="commonSelection"
               :options="commonContracts"
               option-label="name"
-              label="Contract"
+              :label="$t('contract')"
             />
 
             <q-input
