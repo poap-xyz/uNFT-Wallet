@@ -5,7 +5,7 @@ en:
   anyToken: Add any ERC721 or ERC1155 token contract
   anyChain: Works on any EVM compatible Chain
   local: All you information is stored on your device
-  #noTracking: No tracking
+  privateAnalytics: Privacy respecting, public analytics
   ipfs: View IPFS and centralized NFTs
   multilanguage: Support for multi-language ERC1155
 
@@ -15,7 +15,7 @@ es:
   anyToken: Visualiza cualquier contrato ERC721 o ERC1155
   anyChain: Funciona con cualquier cadena compatible con EVM
   local: Toda tu información se almacena en tu dispositivo
-  #noTracking: No tracking
+  privateAnalytics: Analítica pública y respetuosa de privacidad
   ipfs: Visualiza NFTs almacenados en IPFS y servidores centralizados
   multilanguage: Compatibilidad con ERC1155 multi-idioma
 
@@ -50,15 +50,18 @@ es:
           <inline-svg class="icon" :src="require('./local.svg')"></inline-svg>
           <div class="advantage">{{ $t('local') }}</div>
         </div>
-        <!--
         <div class="col-md-4 center advantage">
           <inline-svg
             class="icon"
             :src="require('./noTracking.svg')"
           ></inline-svg>
-          <div class="advantage">{{ $t('noTracking') }}</div>
+          <div class="advantage">
+            {{ $t('privateAnalytics') }}
+            <a href="//unftwallet.goatcounter.com/" target="_blank">
+              <q-icon name="fas fa-external-link-alt" />
+            </a>
+          </div>
         </div>
-        -->
         <div class="col-md-4 center advantage">
           <inline-svg class="icon" :src="require('./ipfs.svg')"></inline-svg>
           <div class="advantage">{{ $t('ipfs') }}</div>

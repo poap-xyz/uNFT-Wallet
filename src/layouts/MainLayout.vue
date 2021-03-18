@@ -123,7 +123,25 @@ export default {
       } else if (!newValue && oldValue) {
         this.$router.push({ name: 'welcome' });
       }
+    },
+    $route(to) {
+      window.goatcounter.count({
+        path: to.fullPath
+      });
     }
+  },
+  mounted() {
+    const goatCount = document.createElement('script');
+    goatCount.setAttribute(
+      'data-goatcounter',
+      'https://unftwallet.goatcounter.com/count'
+    );
+    goatCount.setAttribute(
+      'data-goatcounter-settings',
+      '{ no_onload: true, allow_local: true }'
+    );
+    goatCount.setAttribute('src', '//gc.zgo.at/count.js');
+    document.head.appendChild(goatCount);
   },
   created() {
     if (window.localStorage.getItem('darkEnabled') === 'true') {
