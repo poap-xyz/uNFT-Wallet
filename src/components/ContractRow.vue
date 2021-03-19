@@ -142,7 +142,7 @@ es:
 <script>
 import asyncPool from 'tiny-async-pool';
 import ABI1155 from '../artifacts/ierc1155.abi.json';
-import TokenCard from './TokenCard.vue';
+import TokenCard from './TokenCard';
 import ABI721 from '../artifacts/ierc721metadata.abi.json';
 import idb from '../idb';
 

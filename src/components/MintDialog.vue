@@ -184,8 +184,8 @@ es:
 <script>
 import ABI721 from '../artifacts/unft721.abi.json';
 import ABI1155 from '../artifacts/unft1155.abi.json';
-import TokenCard from './TokenCard.vue';
-import TransactionModal from '../mixins/TransactionModal.vue';
+import TokenCard from './TokenCard';
+import TransactionModal from '../mixins/TransactionModal';
 
 const abis = {
   ERC721: ABI721,

@@ -67,9 +67,9 @@ es:
 </template>
 
 <script>
-import ContractRow from '../components/ContractRow.vue';
-import AddContractDialog from '../components/AddContractDialog.vue';
-import MintDialog from '../components/MintDialog.vue';
+import ContractRow from '../components/ContractRow';
+import AddContractDialog from '../components/AddContractDialog';
+import MintDialog from '../components/MintDialog';
 import idb from '../idb';
 
 async function searchContractCretionBlock(web3, contractAddress) {

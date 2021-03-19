@@ -1,13 +1,13 @@
 const routes = [
   {
     path: '/',
-    component: () => import('layouts/MainLayout.vue'),
+    component: () => import('layouts/MainLayout'),
     children: [
-      { path: '', name: 'main', component: () => import('pages/Index.vue') },
+      { path: '', name: 'main', component: () => import('pages/Index') },
       {
         path: 'welcome',
         name: 'welcome',
-        component: () => import('pages/Welcome/Welcome.vue')
+        component: () => import('pages/Welcome/Welcome')
       }
     ]
   },
@@ -16,7 +16,7 @@ const routes = [
   // but you can also remove it
   {
     path: '*',
-    component: () => import('pages/Error404.vue')
+    component: () => import('pages/Error404')
   }
 ];
 

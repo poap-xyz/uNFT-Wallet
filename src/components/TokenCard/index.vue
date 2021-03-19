@@ -46,8 +46,7 @@ es:
     >
       <q-card-section :horizontal="$q.screen.gt.xs">
         <q-img
-          v-if="image"
-          :src="image"
+          :src="image || require('./no-image.svg')"
           class="tokenImage"
           :class="{ empty: imageLoaded }"
           @loaded="imageLoaded = true"
@@ -119,7 +118,7 @@ es:
 <script>
 import VueJsonPretty from 'vue-json-pretty';
 import 'vue-json-pretty/lib/styles.css';
-import TransferDialog from './TransferDialog';
+import TransferDialog from '../TransferDialog';
 
 function handleDecentralizedProtocols(url) {
   const urlUrl = new URL(url);
@@ -223,6 +222,9 @@ export default {
       this.$axios
         .get(handledUri)
         .then(response => {
+          if (response.data.image) {
+            this.image = handleDecentralizedProtocols(response.data.image);
+          }
           if (response.data.localization) {
             this.avalilableLocales = response.data.localization.locales;
           }
@@ -245,15 +247,6 @@ export default {
               this.name = localeResponse.data.name || response.data.name;
               this.description =
                 localeResponse.data.description || response.data.description;
-              if (localeResponse.data.image) {
-                this.image = handleDecentralizedProtocols(
-                  localeResponse.data.image
-                );
-              } else if (response.data.image) {
-                this.image = handleDecentralizedProtocols(response.data.image);
-              } else {
-                this.image = 'https://via.placeholder.com/200';
-              }
               this.properties =
                 localeResponse.data.properties ||
                 response.data.properties ||
@@ -262,14 +255,6 @@ export default {
           } else {
             this.name = response.data.name;
             this.description = response.data.description;
-            if (response.data.image || response.data.image_url) {
-              this.image = handleDecentralizedProtocols(
-                response.data.image || response.data.image_url
-              );
-            } else {
-              this.image = 'https://via.placeholder.com/200';
-            }
-
             this.properties =
               response.data.properties || response.data.attributes;
           }

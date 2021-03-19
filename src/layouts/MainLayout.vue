@@ -81,10 +81,10 @@ es:
 </template>
 
 <script>
-import Blockie from '../components/Blockie.vue';
-import Web3Modal from '../components/Web3Modal.vue';
-import LanguageChanger from '../components/LanguageChanger.vue';
-import ChainChip from '../components/ChainChip.vue';
+import Blockie from '../components/Blockie';
+import Web3Modal from '../components/Web3Modal';
+import LanguageChanger from '../components/LanguageChanger';
+import ChainChip from '../components/ChainChip';
 
 export default {
   name: 'MainLayout',

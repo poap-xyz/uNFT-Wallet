@@ -116,8 +116,8 @@ es:
 </template>
 
 <script>
-import Blockie from './Blockie.vue';
-import TransactionModal from '../mixins/TransactionModal.vue';
+import Blockie from './Blockie';
+import TransactionModal from '../mixins/TransactionModal';
 
 export default {
   name: 'TransferDialog',
