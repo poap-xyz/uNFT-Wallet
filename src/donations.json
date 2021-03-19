@@ -1,107 +1,118 @@
 {
-  "5": {},
-  "56": {},
-  "77": {},
-  "97": {},
-  "100": {},
-  "137": {},
-  "250": {},
-  "4002": {},
-  "31337": {
-    "ticker": "TEST",
+  "5": {
+    "ticker": "GöETH",
     "decimals": 18,
     "tokens": {
       "ERC721": {
-        "address": "0x5fbdb2315678afecb367f032d93f642f64180aa3",
+        "address": "0x7B7F06C33A2C5F24bBa1d88EcFFc48A77646813b",
+        "blockCreated": 4469524,
         "collections": [
           {
-            "name": "Gold",
-            "donate": true,
+            "name": "Blue",
+            "donate": false,
             "id": 0
           },
           {
-            "name": "Blue",
+            "name": "Green",
             "donate": false,
             "id": 1
           },
           {
-            "name": "SVG",
+            "name": "Red",
             "donate": false,
             "id": 2
-          },
-          {
-            "name": "Bad",
-            "donate": false,
-            "id": 3
           }
         ]
       },
       "ERC1155": {
-        "address": "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
+        "address": "0xdF76Ac4306D12Db7F93Bcf027B94C998fFc87A15",
+        "blockCreated": 4469529,
         "collections": [
-          {
-            "name": "Gold",
-            "donate": true,
-            "id": 0
-          },
           {
             "name": "Blue",
             "donate": false,
+            "id": 0
+          },
+          {
+            "name": "Green",
+            "donate": false,
             "id": 1
+          },
+          {
+            "name": "Red",
+            "donate": false,
+            "id": 2
           }
         ]
       }
     }
   },
-  "20066": {
-    "ticker": "TEST",
+  "100": {
+    "ticker": "xDAI",
     "decimals": 18,
     "tokens": {
       "ERC721": {
-        "address": "0x45660DbE30AE136c049B52bB916b8562d5DF7F91",
-        "blockCreated": 391348,
+        "address": "0x7B7F06C33A2C5F24bBa1d88EcFFc48A77646813b",
+        "blockCreated": 15094968,
         "collections": [
           {
-            "name": "Gold",
+            "name": "Boreal Limited",
             "donate": true,
             "id": 0
           },
           {
-            "name": "Blue",
-            "donate": false,
+            "name": "Gold",
+            "donate": true,
             "id": 1
           },
           {
-            "name": "Bad",
+            "name": "Blue",
             "donate": false,
             "id": 2
+          },
+          {
+            "name": "Green",
+            "donate": false,
+            "id": 3
+          },
+          {
+            "name": "Red",
+            "donate": false,
+            "id": 4
           }
         ]
       },
-      "ERC1155": { "address": "" }
-    }
-  },
-  "80001": {
-    "ticker": "MATIC TEST",
-    "decimals": 18,
-    "tokens": {
-      "ERC721": {
-        "address": "0x5CE0eC56e2EdE6484f5373059093DB0CC4914b31",
-        "blockCreated": 11673014,
+      "ERC1155": {
+        "address": "0xdF76Ac4306D12Db7F93Bcf027B94C998fFc87A15",
+        "blockCreated": 15094984,
         "collections": [
           {
-            "name": "Gold",
+            "name": "Boreal Limited",
             "donate": true,
             "id": 0
           },
           {
+            "name": "Gold",
+            "donate": true,
+            "id": 1
+          },
+          {
             "name": "Blue",
             "donate": false,
-            "id": 1
+            "id": 2
+          },
+          {
+            "name": "Green",
+            "donate": false,
+            "id": 3
+          },
+          {
+            "name": "Red",
+            "donate": false,
+            "id": 4
           }
         ]
-      },
-      "ERC1155": { "address": "" }
+      }
     }
   }
 }

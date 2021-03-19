@@ -3,39 +3,39 @@
     "name": "Mainnet",
     "status": "ok",
     "type": "production",
-    "explorerAddress": "https://etherscan.com/address/%s",
-    "explorerTx": "https://etherscan.com/tx/%s"
+    "explorerAddress": "https://etherscan.io/address/%s",
+    "explorerTx": "https://etherscan.io/tx/%s"
   },
   "3": {
     "name": "Ropsten",
     "status": "error",
     "type": "test",
-    "explorerAddress": "https://ropsten.etherscan.com/address/%s",
-    "explorerTx": "https://ropsten.etherscan.com/tx/%s",
+    "explorerAddress": "https://ropsten.etherscan.io/address/%s",
+    "explorerTx": "https://ropsten.etherscan.io/tx/%s",
     "faucet": "https://faucet.ropsten.be/"
   },
   "4": {
     "name": "Rinkeby",
     "status": "error",
     "type": "test",
-    "explorerAddress": "https://rinkeby.etherscan.com/address/%s",
-    "explorerTx": "https://rinkeby.etherscan.com/tx/%s",
+    "explorerAddress": "https://rinkeby.etherscan.io/address/%s",
+    "explorerTx": "https://rinkeby.etherscan.io/tx/%s",
     "faucet": "http://rinkeby-faucet.com/"
   },
   "5": {
-    "name": "Goerli",
+    "name": "Görli",
     "status": "error",
     "type": "test",
-    "explorerAddress": "https://goerli.etherscan.com/address/%s",
-    "explorerTx": "https://goerli.etherscan.com/tx/%s",
+    "explorerAddress": "https://goerli.etherscan.io/address/%s",
+    "explorerTx": "https://goerli.etherscan.io/tx/%s",
     "faucet": "https://goerli-faucet.slock.it/"
   },
   "42": {
     "name": "Kovan",
     "status": "error",
     "type": "test",
-    "explorerAddress": "https://kovan.etherscan.com/address/%s",
-    "explorerTx": "https://kovan.etherscan.com/tx/%s",
+    "explorerAddress": "https://kovan.etherscan.io/address/%s",
+    "explorerTx": "https://kovan.etherscan.io/tx/%s",
     "faucet": "https://enjin.io/software/kovan-faucet"
   },
   "56": {

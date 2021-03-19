@@ -3,11 +3,15 @@ en:
   uNFTWallet: "uNFT Wallet"
   betaWarning: "This is experimental software, use at your own risk"
   logout: "Disconnect"
+  chatDiscord: "Connect on Discord"
+  collaborateGitlab: "Collaborate on Gitlab"
 
 es:
   uNFTWallet: "uNFT Wallet"
   betaWarning: "Esto es software experimental, use bajo su propio riesgo"
   logout: "Desconectar"
+  chatDiscord: "Conectar en Discord"
+  collaborateGitlab: "Colabora en Gitlab"
 
 </i18n>
 
@@ -60,13 +64,40 @@ es:
     >
       <div class="q-pa-sm">
         <LanguageChanger :languages="languages" />
+        <q-toggle
+          v-model="darkEnabled"
+          checked-icon="dark_mode"
+          label="Dark Mode"
+          unchecked-icon="brightness_low"
+        />
         <q-list>
-          <q-toggle
-            v-model="darkEnabled"
-            checked-icon="dark_mode"
-            label="Dark Mode"
-            unchecked-icon="brightness_low"
-          />
+          <q-separator />
+          <q-item
+            v-ripple
+            clickable
+            tag="a"
+            target="_blank"
+            href="https://discord.gg/cVEPe333Fu"
+          >
+            <q-item-section avatar>
+              <q-icon name="fab fa-discord" />
+            </q-item-section>
+            <q-item-section> {{ $t('chatDiscord') }} </q-item-section>
+          </q-item>
+          <q-item
+            v-ripple
+            clickable
+            tag="a"
+            target="_blank"
+            href="https://gitlab.com/ktl_xv/unft-wallet"
+          >
+            <q-item-section avatar>
+              <q-icon name="fab fa-gitlab" />
+            </q-item-section>
+            <q-item-section>
+              {{ $t('collaborateGitlab') }}
+            </q-item-section>
+          </q-item>
         </q-list>
       </div>
     </q-drawer>
@@ -155,16 +186,6 @@ export default {
   methods: {
     accountChanged(e) {
       this.$store.commit('web3/SET_COINBASE', e.coinbase);
-      /*
-      if (e.coinbase) {
-        this.$store.commit(
-          'web3/SET_COINBASE',
-          '0xa44aad4cf0fb0d4940c6cf215977c9cd55340f42'
-        );
-      } else {
-        this.$store.commit('web3/SET_COINBASE', null);
-      }
-    */
     },
     chainChanged(e) {
       this.$store.commit('web3/SET_CHAIN_ID', e.chain);
