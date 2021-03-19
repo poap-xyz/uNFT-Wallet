@@ -222,9 +222,6 @@ export default {
       this.$axios
         .get(handledUri)
         .then(response => {
-          if (response.data.image) {
-            this.image = handleDecentralizedProtocols(response.data.image);
-          }
           if (response.data.localization) {
             this.avalilableLocales = response.data.localization.locales;
           }
@@ -255,8 +252,14 @@ export default {
           } else {
             this.name = response.data.name;
             this.description = response.data.description;
+
             this.properties =
               response.data.properties || response.data.attributes;
+          }
+          if (response.data.image || response.data.image_url) {
+            this.image = handleDecentralizedProtocols(
+              response.data.image || response.data.image_url
+            );
           }
         })
         .catch(err => {
