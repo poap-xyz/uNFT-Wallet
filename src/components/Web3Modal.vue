@@ -56,11 +56,11 @@ export default {
         package: WalletConnectProvider, // required
         options: {
           rpc: {
-            1: 'https://eth-mainnet.gateway.pokt.network/v1/5f7648aab90218002e9ce993',
-            3: 'https://eth-ropsten.gateway.pokt.network/v1/5f7648aab90218002e9ce993',
-            4: 'https://eth-rinkeby.gateway.pokt.network/v1/5f7648aab90218002e9ce993',
-            5: 'https://eth-goerli.gateway.pokt.network/v1/5f7648aab90218002e9ce993',
-            42: 'https://poa-kovan.gateway.pokt.network/v1/5f7648aab90218002e9ce993',
+            1: 'https://eth-mainnet.alchemyapi.io/v2/2pT9LJbbjuBhaVTmaQoE3wyIWJcHotYU',
+            3: 'https://eth-ropsten.alchemyapi.io/v2/AkNG6siuaC2LDNxNzsc9BkUm0m9VOXqt',
+            4: 'https://eth-rinkeby.alchemyapi.io/v2/PVG3Cru0vP_9TCEnM73qXuqkNxlEkdf4',
+            5: 'https://eth-goerli.alchemyapi.io/v2/CE7523yco5hm0ZbSyBDQK6gGnYYD79nj',
+            42: 'https://eth-kovan.alchemyapi.io/v2/rdvmCipeQJZw2p_oTdgp3ELyueWmlrVz',
             56: 'https://bsc-dataseed.binance.org/',
             77: 'https://sokol.poa.network',
             97: 'https://data-seed-prebsc-1-s1.binance.org:8545/',
