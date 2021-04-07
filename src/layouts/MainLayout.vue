@@ -5,6 +5,11 @@ en:
   logout: "Disconnect"
   chatDiscord: "Connect on Discord"
   collaborateGitlab: "Collaborate on Gitlab"
+  donate: "Donate"
+  donationAccount: "Thank you very much for supporting uNFT Wallet. If you want to donate you may send a transfer to 0x1018fd8686acA67DcB9D71168c2D1fF45a820417 or, better yet, you can buy an NFT (and show it off) with the red heart button inside the app."
+  donationOtherWays: "Other awesome ways to support the project are connecting on Discord, coding, reporting issues, and/or translating on Gitlab and spreading the word."
+  donationClose: "Again, thank you very much for your support."
+
 
 es:
   uNFTWallet: "uNFT Wallet"
@@ -12,103 +17,141 @@ es:
   logout: "Desconectar"
   chatDiscord: "Conectar en Discord"
   collaborateGitlab: "Colabora en Gitlab"
+  donate: "Donar"
+  donationAccount: "Muchisimas gracias por apoyar a uNFT Wallet. Si gustas donar, puedes enviar una transferencia a 0x1018fd8686acA67DcB9D71168c2D1fF45a820417 o, mejor todavía, puedes comprar un NFT (y presumirlo) con el botón rojo con un corazón que está dentro de la aplicación."
+  donationOtherWays: "Otras geniales maneras de apoyar el proyecto son comentando tu experiencia en Discord, programando, reportando problemas y/o traduciendo en Gitlab y compartiendo uNFT Wallet con mas personas."
+  donationClose: "De nuevo, muchas gracias por tu apoyo."
 
 </i18n>
 
 <template>
-  <q-layout view="hHh Lpr lFf">
-    <q-header elevated>
-      <q-toolbar>
-        <q-btn
-          flat
-          dense
-          round
-          icon="menu"
-          aria-label="Menu"
-          @click="leftDrawerOpen = !leftDrawerOpen"
-        />
+  <div>
+    <q-layout view="hHh Lpr lFf">
+      <q-header elevated>
+        <q-toolbar>
+          <q-btn
+            flat
+            dense
+            round
+            icon="menu"
+            aria-label="Menu"
+            @click="leftDrawerOpen = !leftDrawerOpen"
+          />
 
-        <q-toolbar-title>
-          {{ $t('uNFTWallet') }}
-        </q-toolbar-title>
-        <Web3Modal
-          ref="web3modal"
-          color="accent"
-          @accountChanged="accountChanged"
-          @chainChanged="chainChanged"
-        />
+          <q-toolbar-title>
+            {{ $t('uNFTWallet') }}
+          </q-toolbar-title>
+          <Web3Modal
+            ref="web3modal"
+            color="accent"
+            @accountChanged="accountChanged"
+            @chainChanged="chainChanged"
+          />
 
-        <ChainChip v-if="connected" :chain-id="chain" :chains="$web3.chains" />
-        <q-btn v-if="connected" round flat>
-          <Blockie :address="coinbase"></Blockie>
-          <q-menu>
-            <q-list style="min-width: 100px">
-              <q-item v-close-popup clickable>
-                <q-item-section>
-                  {{ coinbase }}
-                </q-item-section>
-              </q-item>
-              <q-item v-close-popup clickable @click="logout">
-                <q-item-section>{{ $t('logout') }}</q-item-section>
-              </q-item>
-            </q-list>
-          </q-menu>
-        </q-btn>
-      </q-toolbar>
-    </q-header>
+          <ChainChip
+            v-if="connected"
+            :chain-id="chain"
+            :chains="$web3.chains"
+          />
+          <q-btn v-if="connected" round flat>
+            <Blockie :address="coinbase"></Blockie>
+            <q-menu>
+              <q-list style="min-width: 100px">
+                <q-item v-close-popup clickable>
+                  <q-item-section>
+                    {{ coinbase }}
+                  </q-item-section>
+                </q-item>
+                <q-item v-close-popup clickable @click="logout">
+                  <q-item-section>{{ $t('logout') }}</q-item-section>
+                </q-item>
+              </q-list>
+            </q-menu>
+          </q-btn>
+        </q-toolbar>
+      </q-header>
 
-    <q-drawer
-      v-model="leftDrawerOpen"
-      bordered
-      :class="darkEnabled ? '' : 'bg-light'"
-    >
-      <div class="q-pa-sm">
-        <LanguageChanger :languages="languages" />
-        <q-toggle
-          v-model="darkEnabled"
-          checked-icon="dark_mode"
-          label="Dark Mode"
-          unchecked-icon="brightness_low"
-        />
-        <q-list>
-          <q-separator />
-          <q-item
-            v-ripple
-            clickable
-            tag="a"
-            target="_blank"
-            href="https://discord.gg/cVEPe333Fu"
-          >
-            <q-item-section avatar>
-              <q-icon name="fab fa-discord" />
-            </q-item-section>
-            <q-item-section> {{ $t('chatDiscord') }} </q-item-section>
-          </q-item>
-          <q-item
-            v-ripple
-            clickable
-            tag="a"
-            target="_blank"
-            href="https://gitlab.com/ktl_xv/unft-wallet"
-          >
-            <q-item-section avatar>
-              <q-icon name="fab fa-gitlab" />
-            </q-item-section>
-            <q-item-section>
-              {{ $t('collaborateGitlab') }}
-            </q-item-section>
-          </q-item>
-        </q-list>
-      </div>
-    </q-drawer>
+      <q-drawer
+        v-model="leftDrawerOpen"
+        bordered
+        :class="darkEnabled ? '' : 'bg-light'"
+      >
+        <div class="q-pa-sm">
+          <LanguageChanger :languages="languages" />
+          <q-toggle
+            v-model="darkEnabled"
+            checked-icon="dark_mode"
+            label="Dark Mode"
+            unchecked-icon="brightness_low"
+          />
+          <q-list>
+            <q-separator />
+            <q-item
+              v-ripple
+              clickable
+              tag="a"
+              target="_blank"
+              href="https://discord.gg/cVEPe333Fu"
+            >
+              <q-item-section avatar>
+                <q-icon name="fab fa-discord" />
+              </q-item-section>
+              <q-item-section> {{ $t('chatDiscord') }} </q-item-section>
+            </q-item>
+            <q-item
+              v-ripple
+              clickable
+              tag="a"
+              target="_blank"
+              href="https://gitlab.com/ktl_xv/unft-wallet"
+            >
+              <q-item-section avatar>
+                <q-icon name="fab fa-gitlab" />
+              </q-item-section>
+              <q-item-section>
+                {{ $t('collaborateGitlab') }}
+              </q-item-section>
+            </q-item>
+            <q-separator />
+            <q-item v-ripple clickable @click="showDonateModal = true">
+              <q-item-section avatar>
+                <q-icon name="favorite" />
+              </q-item-section>
+              <q-item-section> {{ $t('donate') }} </q-item-section>
+            </q-item>
+          </q-list>
+        </div>
+      </q-drawer>
 
-    <q-page-container>
-      <div class="center">
-        <q-chip class="disclaimer">{{ $t('betaWarning') }}</q-chip>
-      </div>
-      <router-view />
-    </q-page-container>
-  </q-layout>
+      <q-page-container>
+        <div class="center">
+          <q-chip class="disclaimer">{{ $t('betaWarning') }}</q-chip>
+        </div>
+        <router-view />
+      </q-page-container>
+    </q-layout>
+    <q-dialog v-model="showDonateModal">
+      <q-card>
+        <q-toolbar>
+          <q-toolbar-title>{{ $t('donate') }}</q-toolbar-title>
+
+          <q-btn v-close-popup flat round dense icon="close" />
+        </q-toolbar>
+
+        <q-card-section>
+          <p>
+            {{ $t('donationAccount') }}
+          </p>
+          <p>
+            {{ $t('donationOtherWays') }}
+          </p>
+          <p>
+            {{ $t('donationClose') }}
+          </p>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
+  </div>
 </template>
 
 <script>
@@ -122,7 +165,8 @@ export default {
   components: { Blockie, Web3Modal, LanguageChanger, ChainChip },
   data() {
     return {
-      leftDrawerOpen: false
+      leftDrawerOpen: false,
+      showDonateModal: false
     };
   },
   computed: {
