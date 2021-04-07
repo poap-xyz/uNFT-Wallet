@@ -114,5 +114,121 @@
         ]
       }
     }
+  },
+  "137": {
+    "ticker": "MATIC",
+    "decimals": 18,
+    "tokens": {
+      "ERC721": {
+        "address": "0xc8C21eA11647cCfFE79451AAbFaaFD827133b111",
+        "blockCreated": 12992294,
+        "collections": [
+          {
+            "name": "Boreal Limited",
+            "donate": true,
+            "id": 0
+          },
+          {
+            "name": "Gold",
+            "donate": true,
+            "id": 1
+          },
+          {
+            "name": "Blue",
+            "donate": false,
+            "id": 2
+          },
+          {
+            "name": "Green",
+            "donate": false,
+            "id": 3
+          },
+          {
+            "name": "Red",
+            "donate": false,
+            "id": 4
+          }
+        ]
+      },
+      "ERC1155": {
+        "address": "0xdF76Ac4306D12Db7F93Bcf027B94C998fFc87A15",
+        "blockCreated": 12992097,
+        "collections": [
+          {
+            "name": "Boreal Limited",
+            "donate": true,
+            "id": 0
+          },
+          {
+            "name": "Gold",
+            "donate": true,
+            "id": 1
+          },
+          {
+            "name": "Blue",
+            "donate": false,
+            "id": 2
+          },
+          {
+            "name": "Green",
+            "donate": false,
+            "id": 3
+          },
+          {
+            "name": "Red",
+            "donate": false,
+            "id": 4
+          }
+        ]
+      }
+    }
+  },
+  "80001": {
+    "ticker": "MATIC",
+    "decimals": 18,
+    "tokens": {
+      "ERC721": {
+        "address": "0x7B7F06C33A2C5F24bBa1d88EcFFc48A77646813b",
+        "blockCreated": 12459571,
+        "collections": [
+          {
+            "name": "Blue",
+            "donate": false,
+            "id": 0
+          },
+          {
+            "name": "Green",
+            "donate": false,
+            "id": 1
+          },
+          {
+            "name": "Red",
+            "donate": false,
+            "id": 2
+          }
+        ]
+      },
+      "ERC1155": {
+        "address": "0xdF76Ac4306D12Db7F93Bcf027B94C998fFc87A15",
+        "blockCreated": 12459611,
+        "collections": [
+          {
+            "name": "Blue",
+            "donate": false,
+            "id": 0
+          },
+          {
+            "name": "Green",
+            "donate": false,
+            "id": 1
+          },
+          {
+            "name": "Red",
+            "donate": false,
+            "id": 2
+          }
+        ]
+      }
+    }
   }
 }

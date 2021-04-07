@@ -71,7 +71,7 @@
     "explorerTx": "https://blockscout.com/xdai/mainnet/tx/%s"
   },
   "137": {
-    "name": "Matic Mainnet",
+    "name": "Polygon (Matic) Mainnet",
     "status": "warn",
     "type": "production",
     "explorerAddress": "https://explorer-mainnet.maticvigil.com/address/%s",
@@ -101,7 +101,7 @@
     "type": "test"
   },
   "80001": {
-    "name": "Matic Mumbai Testnet",
+    "name": "Polygon (Matic) Mumbai Testnet",
     "status": "error",
     "type": "test",
     "explorerAddress": "https://explorer-mumbai.maticvigil.com/address/%s",
