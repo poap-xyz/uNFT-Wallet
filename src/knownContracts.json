@@ -52,5 +52,13 @@
       "type": "ERC721",
       "block": 11296638
     }
+  ],
+  "137": [
+    {
+      "name": "ZED Horse",
+      "address": "0xA5F1Ea7DF861952863dF2e8d1312f7305dabf215",
+      "type": "ERC721",
+      "block": "11515961"
+    }
   ]
 }
