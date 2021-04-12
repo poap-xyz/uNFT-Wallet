@@ -240,7 +240,7 @@ export default {
     },
     async transfer721() {
       const estimatedGas = await this.contract.methods
-        .safeTransferFrom(this.coinbase, this.recipientAddress, this.id, 0)
+        .safeTransferFrom(this.coinbase, this.recipientAddress, this.id)
         .estimateGas({ from: this.coinbase })
         .catch(err => {
           this.transactionError(err);
@@ -250,7 +250,7 @@ export default {
       this.alertAprove();
 
       this.contract.methods
-        .safeTransferFrom(this.coinbase, this.recipientAddress, this.id, 0)
+        .safeTransferFrom(this.coinbase, this.recipientAddress, this.id)
         .send({ gas: estimatedGas, from: this.coinbase })
         .on('receipt', this.transactionReceipt)
         .on('transactionHash', this.transactionHash)
