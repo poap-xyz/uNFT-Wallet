@@ -42,7 +42,7 @@ export default {
       try {
         return this.chains[this.chainId].name;
       } catch {
-        return 'Unknown';
+        return `Unknown: ${this.chainId}`;
       }
     },
     chainColor() {

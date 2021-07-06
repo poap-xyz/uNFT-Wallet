@@ -74,8 +74,9 @@
     "name": "Polygon (Matic) Mainnet",
     "status": "warn",
     "type": "production",
-    "explorerAddress": "https://explorer-mainnet.maticvigil.com/address/%s",
-    "explorerTx": "https://https://explorer-mainnet.maticvigil.com/tx/%s"
+    "getLogsLimit": 100000,
+    "explorerAddress": "https://polygonscan.com/address/%s",
+    "explorerTx": "https://polygonscan.com/tx/%s"
   },
   "250": {
     "name": "Fantom Opera",

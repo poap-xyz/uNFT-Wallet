@@ -1,6 +1,12 @@
 {
   "1": [
     {
+      "name": "Uniswap V3: Positions NFT" ,
+      "address": "0xc36442b4a4522e871399cd717abdd847ab11fe88",
+      "type": "ERC721",
+      "block": 12369651
+    },
+    {
       "name": "POAP" ,
       "address": "0x22C1f6050E56d2876009903609a2cC3fEf83B415",
       "type": "ERC721",
