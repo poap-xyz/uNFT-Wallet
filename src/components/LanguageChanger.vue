@@ -9,7 +9,7 @@
       option-value="code"
       option-label="name"
     >
-      <template v-slot:before>
+      <template #before>
         <q-icon name="fa fa-language" />
       </template>
     </q-select>
@@ -22,19 +22,19 @@ export default {
   props: {
     languages: {
       type: Array,
-      required: true
-    }
+      required: true,
+    },
   },
   data() {
     return {
-      locale: null
+      locale: null,
     };
   },
   watch: {
     locale(val) {
       this.$i18n.locale = val.toLowerCase();
       localStorage.locale = this.$i18n.locale;
-    }
+    },
   },
   mounted() {
     if (localStorage.locale) {
@@ -43,7 +43,7 @@ export default {
       this.$i18n.locale = this.$q.lang.getLocale();
     }
     this.locale = this.$i18n.locale.toUpperCase().substr(0, 2);
-  }
+  },
 };
 </script>
 

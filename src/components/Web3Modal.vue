@@ -1,10 +1,9 @@
 <i18n lang="yaml">
 en:
-  connectWallet: "Connect Wallet"
+  connectWallet: 'Connect Wallet'
 
 es:
-  connectWallet: "Conectar Wallet"
-
+  connectWallet: 'Conectar Wallet'
 </i18n>
 
 <template>
@@ -20,9 +19,10 @@ es:
 </template>
 
 <script>
-import Web3 from 'web3';
 import Web3Modal from 'web3modal';
 import WalletConnectProvider from '@walletconnect/web3-provider';
+import Web3 from 'web3';
+
 // import Portis from '@portis/web3';
 // import Authereum from 'authereum';
 // import UniLogin from '@unilogin/provider';
@@ -32,23 +32,24 @@ export default {
   props: {
     color: {
       type: String,
-      default: 'primary'
+      default: 'primary',
     },
     textColor: {
       type: String,
-      default: 'white'
-    }
+      default: 'white',
+    },
   },
+  emits: ['accountChanged', 'chainChanged'],
   data() {
     return {
       web3Modal: {},
-      connected: false
+      connected: false,
     };
   },
   watch: {
-    '$q.dark.isActive': async function(newVal) {
+    '$q.dark.isActive': async function (newVal) {
       await this.web3Modal.updateTheme(newVal ? 'dark' : 'light');
-    }
+    },
   },
   created() {
     const providerOptions = {
@@ -69,10 +70,10 @@ export default {
             250: 'https://rpcapi.fantom.network/',
             4002: 'https://rpc.testnet.fantom.network/',
             31337: 'http://localhost:8545',
-            80001: 'https://rpc-endpoints.superfluid.dev/mumbai'
-          }
-        }
-      }
+            80001: 'https://rpc-endpoints.superfluid.dev/mumbai',
+          },
+        },
+      },
 
       /* portis: {
         package: Portis, // required
@@ -101,7 +102,7 @@ export default {
       cacheProvider: true,
       disableInjectedProvider: false,
       theme: this.$q.dark.isActive ? 'dark' : 'light',
-      providerOptions
+      providerOptions,
     });
     if (this.web3Modal.cachedProvider) {
       this.connect();
@@ -137,7 +138,7 @@ export default {
     },
     accountChanged() {
       if (this.$web3.instance) {
-        this.$web3.instance.eth.getAccounts().then(accounts => {
+        this.$web3.instance.eth.getAccounts().then((accounts) => {
           const [coinbase] = accounts;
           this.$emit('accountChanged', { coinbase });
         });
@@ -145,7 +146,7 @@ export default {
     },
     chainChanged() {
       if (this.$web3.instance) {
-        this.$web3.instance.eth.getChainId().then(chain => {
+        this.$web3.instance.eth.getChainId().then((chain) => {
           this.$emit('chainChanged', { chain });
         });
       }
@@ -161,8 +162,8 @@ export default {
       this.$emit('accountChanged', { coinbase: null });
       this.$emit('chainChanged', { chain: null });
       this.connected = false;
-    }
-  }
+    },
+  },
 };
 </script>
 

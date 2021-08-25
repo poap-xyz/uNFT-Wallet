@@ -1,5 +1,7 @@
-import Vue from 'vue';
+import { boot } from 'quasar/wrappers';
 
 import InlineSvg from 'vue-inline-svg';
 
-Vue.component('inline-svg', InlineSvg);
+export default boot(({ app }) => {
+  app.component('InlineSvg', InlineSvg);
+});

@@ -1,17 +1,16 @@
 <i18n lang="yaml">
 en:
-  properties: "Properties"
-  transfer: "Transfer"
+  details: 'Details'
+  transfer: 'Transfer'
 
 es:
-  properties: "Propiedades"
-  transfer: "Transferir"
-
+  details: 'Detalles'
+  transfer: 'Transferir'
 </i18n>
 
 <template>
   <div>
-    <q-card v-if="description === '' && name === ''" class="token ">
+    <q-card v-if="description === '' && name === ''" class="token">
       <q-card-section :horizontal="$q.screen.gt.xs">
         <q-skeleton class="imageSkeleton" square>
           <div
@@ -49,6 +48,7 @@ es:
           :src="image || require('./no-image.svg')"
           class="tokenImage"
           :class="{ empty: imageLoaded }"
+          contain
           @loaded="imageLoaded = true"
           @error="imageError"
         >
@@ -74,15 +74,12 @@ es:
           >
             {{ name }}
           </div>
-          <div class="q-mb-xs description" :title="description">
-            {{ description }}
-          </div>
+          <!-- prettier-ignore -->
+          <div class="q-mb-xs description" :title="description">{{ description }}</div>
         </q-card-section>
       </q-card-section>
       <q-card-actions align="around">
-        <q-btn flat @click="propertiesDialog = true">{{
-          $t('properties')
-        }}</q-btn>
+        <q-btn flat @click="showDetailsDialog">{{ $t('details') }}</q-btn>
         <q-btn
           v-if="!hideTransfer"
           flat
@@ -93,32 +90,12 @@ es:
         >
       </q-card-actions>
     </q-card>
-
-    <q-dialog v-model="propertiesDialog">
-      <q-card style="width: 45em; max-width: 80vw;">
-        <q-toolbar>
-          <q-toolbar-title>{{ $t('properties') }}</q-toolbar-title>
-
-          <q-btn v-close-popup flat round dense icon="close" />
-        </q-toolbar>
-
-        <q-card-section>
-          <!-- eslint-disable-next-line @intlify/vue-i18n/no-raw-text -->
-          <div>ID: 0x{{ hexId }}</div>
-
-          <div>
-            <vue-json-pretty :data="properties"> </vue-json-pretty>
-          </div>
-        </q-card-section>
-      </q-card>
-    </q-dialog>
   </div>
 </template>
 
 <script>
-import VueJsonPretty from 'vue-json-pretty';
-import 'vue-json-pretty/lib/styles.css';
 import TransferDialog from '../TransferDialog';
+import DetailsDialog from '../DetailsDialog';
 
 function handleDecentralizedProtocols(url) {
   const urlUrl = new URL(url);
@@ -144,40 +121,49 @@ function handleIdExpansion(url, hexId) {
 function handleLocaleExpansion(url, locale) {
   return url.replace('{locale}', locale);
 }
+function handleBadCORS(url, badCORSHosts) {
+  const urlUrl = new URL(url);
+  const { host, pathname } = urlUrl;
 
+  if (badCORSHosts.includes(host)) {
+    return `https://unft_wallet-corsflare.ktlxv.workers.dev/${pathname}?3gjkLKyhu6w4kwNQwKpJ=${host}`;
+  }
+
+  return url;
+}
 export default {
   name: 'TokenCard',
-  components: { VueJsonPretty },
   props: {
     coinbase: {
       type: String,
-      default: '0x0'
+      default: '0x0',
     },
     contract: {
       type: Object,
-      default: () => {}
+      default: () => {},
     },
     id: {
       type: String,
-      default: '0'
+      default: '0',
     },
     uri: {
       type: String,
-      required: true
+      required: true,
     },
     type: {
       type: String,
-      required: true
+      required: true,
     },
     amount: {
       type: Number,
-      default: 0
+      default: 0,
     },
     hideTransfer: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
+  emits: ['transfer'],
   data() {
     return {
       name: '',
@@ -185,7 +171,6 @@ export default {
       hexId: '',
       image: null,
       properties: null,
-      propertiesDialog: false,
       avalilableLocales: [],
       fixedImage: false,
       fixedCORS: false,
@@ -193,20 +178,23 @@ export default {
       imageLoaded: false,
       state: 'OK',
       pendingTransferNoneLeft: false,
-      pendingTransferAmount: 0
+      pendingTransferAmount: 0,
     };
   },
   computed: {
     badCORSHosts() {
       return this.$store.state.badCors.hosts;
-    }
+    },
+    chain() {
+      return this.$store.state.web3.chainId;
+    },
   },
   watch: {
-    '$i18n.locale': function(locale) {
+    '$i18n.locale': function (locale) {
       if (this.avalilableLocales.includes(locale)) {
         this.load();
       }
-    }
+    },
   },
   created() {
     const bn = new this.$web3.instance.utils.BN(this.id);
@@ -216,12 +204,13 @@ export default {
   },
   methods: {
     load() {
-      const handledUri = this.handleBadCORS(
-        handleIdExpansion(handleDecentralizedProtocols(this.uri), this.hexId)
+      const handledUri = handleBadCORS(
+        handleIdExpansion(handleDecentralizedProtocols(this.uri), this.hexId),
+        this.badCORSHosts
       );
       this.$axios
         .get(handledUri)
-        .then(response => {
+        .then((response) => {
           if (response.data.localization) {
             this.avalilableLocales = response.data.localization.locales;
           }
@@ -237,10 +226,11 @@ export default {
                   this.id
                 ),
                 this.$i18n.locale
-              )
+              ),
+              this.badCORSHosts
             );
 
-            this.$axios.get(handledLocaleUri).then(localeResponse => {
+            this.$axios.get(handledLocaleUri).then((localeResponse) => {
               this.name = localeResponse.data.name || response.data.name;
               this.description =
                 localeResponse.data.description || response.data.description;
@@ -262,7 +252,7 @@ export default {
             );
           }
         })
-        .catch(err => {
+        .catch((err) => {
           if (typeof err.response === 'undefined') {
             if (!this.fixedCORS) {
               const url = new URL(this.uri);
@@ -278,27 +268,46 @@ export default {
         });
     },
     showTransferDialog() {
-      this.$root.$on('transferSent', this.transferSent);
+      this.$$on('transferSent', this.transferSent);
       this.$q
         .dialog({
           component: TransferDialog,
-          parent: this,
-          coinbase: this.coinbase,
-          contract: this.contract,
-          id: this.id,
-          type: this.type,
-          currentAmount: this.amount
+          componentProps: {
+            coinbase: this.coinbase,
+            contract: this.contract,
+            id: this.id,
+            type: this.type,
+            currentAmount: this.amount,
+          },
         })
         .onOk(() => {
-          this.$root.$on('transferConfirmed', this.transferConfirmed);
+          this.$$on('transferConfirmed', this.transferConfirmed);
         });
+    },
+    showDetailsDialog() {
+      this.$q.dialog({
+        component: DetailsDialog,
+        componentProps: {
+          // eslint-disable-next-line no-underscore-dangle
+          contract: this.contract._address,
+          id: this.id,
+          type: this.type,
+          currentAmount: this.amount,
+          name: this.name,
+          description: this.description,
+          hexId: this.hexId,
+          image: this.image,
+          properties: this.properties,
+          chain: this.chain,
+        },
+      });
     },
     transferConfirmed(ev) {
       // eslint-disable-next-line no-underscore-dangle
       if (ev.contract === this.contract._address && ev.id === this.id) {
         this.pendingTransferAmount = 0;
         this.$emit('transfer');
-        this.$root.$off('transferConfirmed');
+        this.$$off('transferConfirmed');
       }
     },
     transferSent(ev) {
@@ -311,48 +320,44 @@ export default {
         }
       }
     },
-    handleBadCORS(url) {
-      const urlUrl = new URL(url);
-      const { host, pathname } = urlUrl;
-
-      if (this.badCORSHosts.includes(host)) {
-        return `https://unft_wallet-corsflare.ktlxv.workers.dev/${pathname}?3gjkLKyhu6w4kwNQwKpJ=${host}`;
-      }
-
-      return url;
-    },
     imageError() {
       if (!this.fixedImage) {
-        this.$axios.get(this.image, { responseType: 'blob' }).then(response => {
-          const reader = new FileReader();
-          reader.readAsDataURL(response.data);
-          reader.onloadend = () => {
-            const base64String = reader.result;
-            this.image = base64String;
-          };
-        });
+        this.$axios
+          .get(this.image, { responseType: 'blob' })
+          .then((response) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(response.data);
+            reader.onloadend = () => {
+              const base64String = reader.result;
+              this.image = base64String;
+            };
+          });
         this.fixedImage = true;
-      } else {
-        this.image = 'https://via.placeholder.com/200';
       }
-    }
-  }
+    },
+  },
 };
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 $token-img-size: 180px;
+$token-img-margin: 7px;
 
 .q-card {
   height: 237px;
   width: 500px;
+
+  .content {
+    padding: 16px 16px 0;
+    max-width: calc(100% - #{$token-img-size} - #{$token-img-margin});
+  }
 }
 
 .q-img {
   width: $token-img-size;
-  margin-top: 7px;
-  margin-left: 7px;
+  margin-top: $token-img-margin;
+  margin-left: $token-img-margin;
 }
 
 body.screen--xs .q-card {
@@ -368,6 +373,7 @@ body.screen--xs .q-card {
   }
   .content {
     padding: 16px 16px 0;
+    max-width: none;
   }
   .imageSkeleton {
     width: 100%;
@@ -403,11 +409,12 @@ body.screen--xs .q-card {
   }
 }
 
-.description {
+.token .description {
   -webkit-line-clamp: 5;
   overflow: hidden;
   display: -webkit-box;
   -webkit-box-orient: vertical;
+  white-space: break-spaces;
 
   .q-skeleton {
     &:nth-of-type(1) {

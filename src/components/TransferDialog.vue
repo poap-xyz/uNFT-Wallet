@@ -1,32 +1,31 @@
 <i18n lang="yaml">
 en:
-  transferToken: "Transfer Token"
-  recipient: "Recipient"
-  addressOrENS: "Address or ENS"
-  address: "Address"
-  amount: "Amount"
-  submit: "Submit"
-  reset: "Reset"
-  shortMaximum: "Max"
+  transferToken: 'Transfer Token'
+  recipient: 'Recipient'
+  addressOrENS: 'Address or ENS'
+  address: 'Address'
+  amount: 'Amount'
+  submit: 'Submit'
+  reset: 'Reset'
+  shortMaximum: 'Max'
   validations:
-    typeAmount: "Type an amount"
-    typeAmountGtZero: "Type an amount greater than zero"
-    typeAmountLeMax: "The max amount of tokens you can transfer is {currentAmount}"
+    typeAmount: 'Type an amount'
+    typeAmountGtZero: 'Type an amount greater than zero'
+    typeAmountLeMax: 'The max amount of tokens you can transfer is {currentAmount}'
 
 es:
-  transferToken: "Transferir Token"
-  recipient: "Receptor"
-  addressOrENS: "Dirección o ENS"
-  address: "Dirección"
-  amount: "Cantidad"
-  submit: "Enviar"
-  reset: "Borrar"
-  shortMaximum: "Max"
+  transferToken: 'Transferir Token'
+  recipient: 'Receptor'
+  addressOrENS: 'Dirección o ENS'
+  address: 'Dirección'
+  amount: 'Cantidad'
+  submit: 'Enviar'
+  reset: 'Borrar'
+  shortMaximum: 'Max'
   validations:
-    typeAmount: "Escribe una cantidad"
-    typeAmountGtZero: "Escribe una cantidad mayor a cero"
-    typeAmountLeMax: "La cantidad máxima de tokens que puedes transferir es {currentAmount}"
-
+    typeAmount: 'Escribe una cantidad'
+    typeAmountGtZero: 'Escribe una cantidad mayor a cero'
+    typeAmountLeMax: 'La cantidad máxima de tokens que puedes transferir es {currentAmount}'
 </i18n>
 
 <template>
@@ -53,6 +52,7 @@ es:
             :hint="$t('addressOrENS')"
             lazy-rules
             :rules="[validateRecipient]"
+            color="accent"
           />
 
           <q-input
@@ -61,6 +61,7 @@ es:
             filled
             readonly
             :label="$t('address')"
+            color="accent"
           />
 
           <q-input
@@ -69,6 +70,7 @@ es:
             filled
             readonly
             label="ENS"
+            color="accent"
           />
 
           <q-input
@@ -77,22 +79,22 @@ es:
             filled
             type="number"
             :label="$t('amount')"
+            color="accent"
             lazy-rules
             :rules="[
-              val =>
+              (val) =>
                 (val !== null && val !== '') || $t('validations.typeAmount'),
-              val => val > 0 || $t('validations.typeAmountGtZero'),
-              val =>
+              (val) => val > 0 || $t('validations.typeAmountGtZero'),
+              (val) =>
                 val <= currentAmount ||
-                $t('validations.typeAmountLeMax', { currentAmount })
+                $t('validations.typeAmountLeMax', { currentAmount }),
             ]"
           >
-            <template v-slot:append>
+            <template #append>
               <q-btn
                 outline
                 unelevated
                 rounded
-                :color="$q.dark.isActive ? '' : 'primary'"
                 @click="amount = currentAmount"
                 >{{ $t('shortMaximum') }}</q-btn
               >
@@ -103,11 +105,11 @@ es:
             <q-btn
               :label="$t('reset')"
               type="reset"
-              color="primary"
+              color="accent"
               flat
               class="q-ml-sm"
             />
-            <q-btn :label="$t('submit')" type="submit" color="primary" />
+            <q-btn :label="$t('submit')" type="submit" color="accent" />
           </q-card-actions>
         </q-form>
       </q-card-section>
@@ -122,30 +124,30 @@ import TransactionModal from '../mixins/TransactionModal';
 export default {
   name: 'TransferDialog',
   components: {
-    blockie: Blockie
+    blockie: Blockie,
   },
   mixins: [TransactionModal],
   props: {
     coinbase: {
       type: String,
-      required: true
+      required: true,
     },
     contract: {
       type: Object,
-      required: true
+      required: true,
     },
     id: {
       type: String,
-      required: true
+      required: true,
     },
     type: {
       type: String,
-      required: true
+      required: true,
     },
     currentAmount: {
       type: Number,
-      required: true
-    }
+      required: true,
+    },
   },
   data() {
     return {
@@ -153,7 +155,7 @@ export default {
       amount: 1,
       isENS: false,
       reverseENS: false,
-      recipientAddress: null
+      recipientAddress: null,
     };
   },
   methods: {
@@ -166,7 +168,7 @@ export default {
         this.$web3.ens
           .reverse(recipient)
           .name()
-          .then(async name => {
+          .then(async (name) => {
             const forwardENS = await this.$web3.ens.resolver(name).addr();
             if (recipient === forwardENS) {
               this.reverseENS = name;
@@ -183,7 +185,7 @@ export default {
         await this.$web3.ens
           .resolver(recipient)
           .addr()
-          .then(address => {
+          .then((address) => {
             this.isENS = true;
             this.recipientAddress = address;
             isOK = true;
@@ -242,7 +244,7 @@ export default {
       const estimatedGas = await this.contract.methods
         .safeTransferFrom(this.coinbase, this.recipientAddress, this.id)
         .estimateGas({ from: this.coinbase })
-        .catch(err => {
+        .catch((err) => {
           this.transactionError(err);
           throw err;
         });
@@ -255,8 +257,8 @@ export default {
         .on('receipt', this.transactionReceipt)
         .on('transactionHash', this.transactionHash)
         .on('error', this.transactionError);
-    }
-  }
+    },
+  },
 };
 </script>
 

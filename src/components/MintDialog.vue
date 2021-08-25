@@ -1,49 +1,48 @@
 <i18n lang="yaml">
 en:
-  mintNFT: "Mint NFT"
-  collection: "Collection"
-  mint: "Mint"
-  minted: "Minted"
-  available: "Available"
-  reset: "Reset"
-  tokenType: "Type"
-  erc721Description: "Original NFT Standard"
-  erc1155Description: "Multitoken Standard"
-  donationAmount: "Donation amount"
-  donation: "Donation"
-  justGas: "Just Gas"
-  collectionFinished: "All NFTs from this collection have been minted, choose another collection"
-  collectionNotAvailable: "Collection not available"
-  description: "Here you can create NFTs to test the dApp, or mint a special edition to donate."
-  mintingEnabledChains: "The following chains have minting enabled:"
-  testChains: "Test Chains"
-  prodChains: "Production Chains"
-  needGas: "If you need some testnet gas, you can get some from the "
-  faucet: "faucet"
+  mintNFT: 'Mint NFT'
+  collection: 'Collection'
+  mint: 'Mint'
+  minted: 'Minted'
+  available: 'Available'
+  reset: 'Reset'
+  tokenType: 'Type'
+  erc721Description: 'Original NFT Standard'
+  erc1155Description: 'Multitoken Standard'
+  donationAmount: 'Donation amount'
+  donation: 'Donation'
+  justGas: 'Just Gas'
+  collectionFinished: 'All NFTs from this collection have been minted, choose another collection'
+  collectionNotAvailable: 'Collection not available'
+  description: 'Here you can create NFTs to test the dApp, or mint a special edition to donate.'
+  mintingEnabledChains: 'The following chains have minting enabled:'
+  testChains: 'Test Chains'
+  prodChains: 'Production Chains'
+  needGas: 'If you need some testnet gas, you can get some from the '
+  faucet: 'faucet'
   unsuportedChain: "uNFT Wallet can't mint in this chain yet, use a chain from the lists above"
 es:
-  mintNFT: "Acuñar NFT"
-  collection: "Colección"
-  mint: "Acuñar"
-  minted: "Acuñados"
-  available: "Disponibles"
-  reset: "Borrar"
-  tokenType: "Tipo"
-  erc721Description: "Estándar NFT Original"
-  erc1155Description: "Estándar Multitoken"
-  donationAmount: "Donación"
-  donation: "Donación"
-  justGas: "Solo Gas"
-  collectionFinished: "Todos los NFTs de esta colección han sido acuñados, elije otra colección"
-  collectionNotAvailable: "Colección no disponible"
-  description: "Aquí puedes crear NFTs para probar la dApp, o acuñar una edición especial para donar."
-  mintingEnabledChains: "En las siguientes cadenas están preparadas para acuñar:"
-  testChains: "Cadenas de pruebas"
-  prodChains: "Cadenas productivas"
-  needGas: "Si requieres gas para hacer pruebas, puedes obtener de un "
-  faucet: "grifo"
-  unsuportedChain: "uNFT Wallet no puede acuñar en esta cadena, usa una cadena de las listas previas"
-
+  mintNFT: 'Acuñar NFT'
+  collection: 'Colección'
+  mint: 'Acuñar'
+  minted: 'Acuñados'
+  available: 'Disponibles'
+  reset: 'Borrar'
+  tokenType: 'Tipo'
+  erc721Description: 'Estándar NFT Original'
+  erc1155Description: 'Estándar Multitoken'
+  donationAmount: 'Donación'
+  donation: 'Donación'
+  justGas: 'Solo Gas'
+  collectionFinished: 'Todos los NFTs de esta colección han sido acuñados, elije otra colección'
+  collectionNotAvailable: 'Colección no disponible'
+  description: 'Aquí puedes crear NFTs para probar la dApp, o acuñar una edición especial para donar.'
+  mintingEnabledChains: 'En las siguientes cadenas están preparadas para acuñar:'
+  testChains: 'Cadenas de pruebas'
+  prodChains: 'Cadenas productivas'
+  needGas: 'Si requieres gas para hacer pruebas, puedes obtener de un '
+  faucet: 'grifo'
+  unsuportedChain: 'uNFT Wallet no puede acuñar en esta cadena, usa una cadena de las listas previas'
 </i18n>
 
 <template>
@@ -88,10 +87,10 @@ es:
             :options="types"
             :label="$t('tokenType')"
             option-label="name"
-            @input="loadStats"
+            @update:model-value="loadStats"
           >
-            <template v-slot:option="scope">
-              <q-item v-bind="scope.itemProps" v-on="scope.itemEvents">
+            <template #option="scope">
+              <q-item v-bind="scope.itemProps">
                 <q-item-section>
                   <!-- eslint-disable-next-line vue/no-v-html -->
                   <q-item-label v-html="scope.opt.name" />
@@ -107,10 +106,10 @@ es:
             :options="collections"
             :label="$t('collection')"
             option-label="name"
-            @input="loadStats"
+            @update:model-value="loadStats"
           >
-            <template v-slot:option="scope">
-              <q-item v-bind="scope.itemProps" v-on="scope.itemEvents">
+            <template #option="scope">
+              <q-item v-bind="scope.itemProps">
                 <q-item-section>
                   <!-- eslint-disable-next-line vue/no-v-html -->
                   <q-item-label v-html="scope.opt.name" />
@@ -147,7 +146,7 @@ es:
                   :min="minBase"
                   :step="minBase"
                 >
-                  <template v-slot:append>
+                  <template #append>
                     <div class="ticker">
                       {{ ticker }}
                     </div>
@@ -189,7 +188,7 @@ import TransactionModal from '../mixins/TransactionModal';
 
 const abis = {
   ERC721: ABI721,
-  ERC1155: ABI1155
+  ERC1155: ABI1155,
 };
 
 export default {
@@ -199,22 +198,23 @@ export default {
   props: {
     chainId: {
       type: Number,
-      required: true
+      required: true,
     },
     coinbase: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
   },
+  emits: ['ok'],
   data() {
     return {
       typeObj: null,
       types: [
         {
           name: 'ERC721',
-          description: this.$t('erc721Description')
+          description: this.$t('erc721Description'),
         },
-        { name: 'ERC1155', description: this.$t('erc1155Description') }
+        { name: 'ERC1155', description: this.$t('erc1155Description') },
       ],
       collection: null,
       supply: null,
@@ -224,7 +224,7 @@ export default {
       donation: null,
       contract: null,
       donationTestChains: [],
-      donationProdChains: []
+      donationProdChains: [],
     };
   },
   computed: {
@@ -273,7 +273,7 @@ export default {
       return Object.keys(this.$web3.donations).includes(
         this.chainId.toString()
       );
-    }
+    },
   },
   created() {
     const donationChainsIds = Object.keys(this.$web3.donations);
@@ -332,7 +332,8 @@ export default {
         address: this.address,
         type: this.type,
         blockCreated:
-          this.$web3.donations[this.chainId].tokens[this.type].blockCreated || 1
+          this.$web3.donations[this.chainId].tokens[this.type].blockCreated ||
+          1,
       });
 
       this.hide();
@@ -343,7 +344,7 @@ export default {
       const estimatedGas = await this.contract.methods
         .mint(this.collection.id)
         .estimateGas({ from: this.coinbase, value: donationInt })
-        .catch(err => {
+        .catch((err) => {
           this.transactionError(err);
           throw err;
         });
@@ -355,13 +356,13 @@ export default {
         .send({
           gas: estimatedGas,
           from: this.coinbase,
-          value: donationInt
+          value: donationInt,
         })
         .on('receipt', this.transactionReceipt)
         .on('transactionHash', this.transactionHash)
         .on('error', this.transactionError);
-    }
-  }
+    },
+  },
 };
 </script>
 

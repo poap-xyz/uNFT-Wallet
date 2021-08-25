@@ -1,4 +1,4 @@
-import Vue from 'vue';
+import { boot } from 'quasar/wrappers';
 import Web3 from 'web3';
 import ENS from 'ethereum-ens';
 
@@ -11,4 +11,14 @@ const ens = new ENS(mainnetProvider);
 import chains from '../blockchains.json';
 import donations from '../donations.json';
 
-Vue.prototype.$web3 = { instance: null, ens, chains, donations };
+export default boot(({ app }) => {
+  // for use inside Vue files (Options API) through this.$axios and this.$api
+
+  // eslint-disable-next-line no-param-reassign
+  app.config.globalProperties.$web3 = {
+    instance: null,
+    ens,
+    chains,
+    donations,
+  };
+});

@@ -7,17 +7,17 @@ const routes = [
       {
         path: 'welcome',
         name: 'welcome',
-        component: () => import('pages/Welcome/Welcome')
-      }
-    ]
+        component: () => import('pages/Welcome/Welcome'),
+      },
+    ],
   },
 
   // Always leave this as last one,
   // but you can also remove it
   {
-    path: '*',
-    component: () => import('pages/Error404')
-  }
+    path: '/:catchAll(.*)*',
+    component: () => import('pages/Error404'),
+  },
 ];
 
 export default routes;

@@ -1,30 +1,29 @@
 <i18n lang="yaml">
 en:
-  contract: "Contract"
-  address: "Address"
-  alias: "Alias"
-  invalidAddress: "Invalid address"
-  notSupportedToken: "Address is not a ERC721 nor ERC1155 Contract"
-  add: "Add"
-  reset: "Reset"
-  alreadyExists: "This address already exists as: {alias}"
-  tokenType: "Type"
-  common: "Common"
-  custom: "Custom"
+  contract: 'Contract'
+  address: 'Address'
+  alias: 'Alias'
+  invalidAddress: 'Invalid address'
+  notSupportedToken: 'Address is not a ERC721 nor ERC1155 Contract'
+  add: 'Add'
+  reset: 'Reset'
+  alreadyExists: 'This address already exists as: {alias}'
+  tokenType: 'Type'
+  common: 'Common'
+  custom: 'Custom'
 
 es:
-  contract: "Contrato"
-  address: "Dirección"
-  alias: "Alias"
-  invalidAddress: "Dirección inválida"
-  notSupportedToken: "La dirección no es un contrato ERC721 ni ERC1155"
-  add: "Agregar"
-  reset: "Borrar"
-  alreadyExists: "Esta dirección ya existe como: {alias}"
-  tokenType: "Tipo"
-  common: "Común"
-  custom: "Personalizado"
-
+  contract: 'Contrato'
+  address: 'Dirección'
+  alias: 'Alias'
+  invalidAddress: 'Dirección inválida'
+  notSupportedToken: 'La dirección no es un contrato ERC721 ni ERC1155'
+  add: 'Agregar'
+  reset: 'Borrar'
+  alreadyExists: 'Esta dirección ya existe como: {alias}'
+  tokenType: 'Tipo'
+  common: 'Común'
+  custom: 'Personalizado'
 </i18n>
 
 <template>
@@ -122,20 +121,21 @@ export default {
     existing: {
       type: Array,
       required: false,
-      default: () => []
+      default: () => [],
     },
     chain: {
       type: Number,
-      required: true
-    }
+      required: true,
+    },
   },
+  emits: ['ok', 'hide'],
   data() {
     return {
       address: null,
       alias: null,
       type: null,
       tab: 'common',
-      commonSelection: null
+      commonSelection: null,
     };
   },
   computed: {
@@ -145,7 +145,7 @@ export default {
     commonSelectionType() {
       if (this.commonSelection) return this.commonSelection.type;
       return null;
-    }
+    },
   },
   methods: {
     // following method is REQUIRED
@@ -173,7 +173,7 @@ export default {
       this.$emit('ok', {
         address: this.address,
         alias: this.alias,
-        type: this.type
+        type: this.type,
       });
       // or with payload: this.$emit('ok', { ... })
 
@@ -189,7 +189,7 @@ export default {
         address: this.commonSelection.address,
         alias: this.commonSelection.name,
         blockCreated: this.commonSelection.block,
-        type: this.commonSelection.type
+        type: this.commonSelection.type,
       });
       // or with payload: this.$emit('ok', { ... })
 
@@ -205,19 +205,19 @@ export default {
       let result = null;
       if (this.$web3.instance.utils.isAddress(address)) {
         const index = this.existing
-          .map(contract => contract.address)
+          .map((contract) => contract.address)
           .indexOf(address);
 
         if (index >= 0) {
           result = this.$t('alreadyExists', {
-            alias: this.existing[index].alias
+            alias: this.existing[index].alias,
           });
         } else {
           const contract = new this.$web3.instance.eth.Contract(ABI, address);
           await contract.methods
             .supportsInterface('0xd9b67a26') // ERC1155 Standard
             .call()
-            .then(async isERC1155 => {
+            .then(async (isERC1155) => {
               if (isERC1155) {
                 this.type = 'ERC1155';
                 result = true;
@@ -225,14 +225,14 @@ export default {
                 await contract.methods
                   .supportsInterface('0x80ac58cd') // ERC721 Standard
                   .call()
-                  .then(isERC721 => {
+                  .then((isERC721) => {
                     if (isERC721) {
                       this.type = 'ERC721';
                       result = true;
                     } else {
                       result = {
                         status: 'error',
-                        message: this.$t('notSupportedToken')
+                        message: this.$t('notSupportedToken'),
                       };
                     }
                   });
@@ -248,8 +248,8 @@ export default {
       this.address = null;
       this.alias = null;
       this.commonSelection = null;
-    }
-  }
+    },
+  },
 };
 </script>
 

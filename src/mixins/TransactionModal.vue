@@ -9,16 +9,17 @@ const i18nMessages = {
   en: {
     pleaseAprove: 'Please aprove the transaction',
     transactionSent: 'Transaction Sent',
-    transactionConfirmed: 'Transaction Confirmed'
+    transactionConfirmed: 'Transaction Confirmed',
   },
   es: {
     pleaseAprove: 'Favor de aprovar la transacción',
     transactionSent: 'Transacción enviada',
-    transactionConfirmed: 'Transacción Confirmada'
-  }
+    transactionConfirmed: 'Transacción Confirmada',
+  },
 };
 
 export default {
+  emits: ['ok', 'hide', 'transferConfirmed', 'transferSent'],
   beforeCreate() {
     mergeLocaleMessages(this.$i18n, i18nMessages);
   },
@@ -57,14 +58,14 @@ export default {
       this.hide();
     },
     transactionReceipt() {
-      this.$root.$emit('transferConfirmed', {
+      this.$$emit('transferConfirmed', {
         // eslint-disable-next-line no-underscore-dangle
         contract: this.contract._address,
-        id: this.id
+        id: this.id,
       });
       this.$q.notify({
         type: 'positive',
-        message: this.$t('transactionConfirmed')
+        message: this.$t('transactionConfirmed'),
       });
     },
     transactionHash(hash) {
@@ -75,8 +76,8 @@ export default {
           color: 'white',
           handler: () => {
             /* ... */
-          }
-        }
+          },
+        },
       ];
       if (this.$web3.chains[this.$store.state.web3.chainId].explorerTx) {
         actions.unshift({
@@ -89,20 +90,20 @@ export default {
               ].explorerTx.replace('%s', hash),
               '_blank'
             );
-          }
+          },
         });
       }
       this.$q.notify({
         type: 'info',
         icon: 'send',
         message: this.$t('transactionSent'),
-        actions
+        actions,
       });
-      this.$root.$emit('transferSent', {
+      this.$$emit('transferSent', {
         // eslint-disable-next-line no-underscore-dangle
         contract: this.contract._address,
         id: this.id,
-        amount: this.amount
+        amount: this.amount,
       });
       this.onOKClick();
     },
@@ -110,15 +111,15 @@ export default {
       this.$q.loading.hide();
       this.$q.notify({
         type: 'negative',
-        message: `Error: ${err.message}`
+        message: `Error: ${err.message}`,
       });
     },
     alertAprove() {
       this.$q.loading.show({
         backgroundColor: 'black',
-        message: this.$t('pleaseAprove')
+        message: this.$t('pleaseAprove'),
       });
-    }
-  }
+    },
+  },
 };
 </script>

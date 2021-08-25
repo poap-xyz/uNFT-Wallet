@@ -7,6 +7,9 @@
 // https://quasar.dev/quasar-cli/quasar-conf-js
 /* eslint-env node */
 
+// eslint-disable-next-line import/no-extraneous-dependencies
+const nodePolyfillWebpackPlugin = require('node-polyfill-webpack-plugin');
+
 module.exports = (/* ctx */) => {
   return {
     // https://quasar.dev/quasar-cli/supporting-ts
@@ -18,7 +21,7 @@ module.exports = (/* ctx */) => {
     // app boot file (/src/boot)
     // --> boot files are part of "main.js"
     // https://quasar.dev/quasar-cli/boot-files
-    boot: ['i18n', 'axios', 'web3', 'inline-svg'],
+    boot: ['i18n', 'axios', 'web3', 'inline-svg', 'mitt'],
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css
     css: ['app.sass'],
@@ -34,7 +37,7 @@ module.exports = (/* ctx */) => {
       // 'roboto-font-latin-ext', // this or either 'roboto-font', NEVER both!
 
       'roboto-font', // optional, you are not bound to it
-      'material-icons' // optional, you are not bound to it
+      'material-icons', // optional, you are not bound to it
     ],
 
     // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-build
@@ -63,35 +66,35 @@ module.exports = (/* ctx */) => {
           enforce: 'pre',
           test: /\.(js|vue)$/,
           loader: 'eslint-loader',
-          exclude: /node_modules/
+          exclude: /node_modules/,
         });
         cfg.module.rules.push({
           resourceQuery: /blockType=i18n/,
           type: 'javascript/auto',
-          use: [
-            { loader: '@kazupon/vue-i18n-loader' },
-            { loader: 'yaml-loader' }
-          ]
+          loader: '@intlify/vue-i18n-loader',
         });
-      }
+      },
+      chainWebpack(chain) {
+        chain.plugin('node-polyfill').use(nodePolyfillWebpackPlugin);
+      },
     },
 
     // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-devServer
     devServer: {
       https: true,
       port: 8080,
-      open: true // opens browser window automatically
+      open: true, // opens browser window automatically
     },
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-framework
     framework: {
       iconSet: 'material-icons', // Quasar icon set
-      lang: 'en-us', // Quasar language pack
+      lang: 'en-US', // Quasar language pack
       config: {
         brand: {},
         screen: {
-          bodyClasses: true // <<< add this
-        }
+          bodyClasses: true, // <<< add this
+        },
       },
 
       // Possible values for "importStrategy":
@@ -107,7 +110,7 @@ module.exports = (/* ctx */) => {
       // directives: [],
 
       // Quasar plugins
-      plugins: ['Dialog', 'Loading', 'Notify']
+      plugins: ['Dialog', 'Loading', 'Notify'],
     },
 
     // animations: 'all', // --- includes all animations
@@ -116,7 +119,7 @@ module.exports = (/* ctx */) => {
 
     // https://quasar.dev/quasar-cli/developing-ssr/configuring-ssr
     ssr: {
-      pwa: false
+      pwa: false,
     },
 
     // https://quasar.dev/quasar-cli/developing-pwa/configuring-pwa
@@ -135,30 +138,30 @@ module.exports = (/* ctx */) => {
           {
             src: 'icons/icon-128x128.png',
             sizes: '128x128',
-            type: 'image/png'
+            type: 'image/png',
           },
           {
             src: 'icons/icon-192x192.png',
             sizes: '192x192',
-            type: 'image/png'
+            type: 'image/png',
           },
           {
             src: 'icons/icon-256x256.png',
             sizes: '256x256',
-            type: 'image/png'
+            type: 'image/png',
           },
           {
             src: 'icons/icon-384x384.png',
             sizes: '384x384',
-            type: 'image/png'
+            type: 'image/png',
           },
           {
             src: 'icons/icon-512x512.png',
             sizes: '512x512',
-            type: 'image/png'
-          }
-        ]
-      }
+            type: 'image/png',
+          },
+        ],
+      },
     },
 
     // Full list of options: https://quasar.dev/quasar-cli/developing-cordova-apps/configuring-cordova
@@ -168,7 +171,7 @@ module.exports = (/* ctx */) => {
 
     // Full list of options: https://quasar.dev/quasar-cli/developing-capacitor-apps/configuring-capacitor
     capacitor: {
-      hideSplashscreen: true
+      hideSplashscreen: true,
     },
 
     // Full list of options: https://quasar.dev/quasar-cli/developing-electron-apps/configuring-electron
@@ -189,13 +192,13 @@ module.exports = (/* ctx */) => {
       builder: {
         // https://www.electron.build/configuration/configuration
 
-        appId: 'unftwallet'
+        appId: 'unftwallet',
       },
 
       // More info: https://quasar.dev/quasar-cli/developing-electron-apps/node-integration
       nodeIntegration: true,
 
-      extendWebpack() {}
-    }
+      extendWebpack() {},
+    },
   };
 };

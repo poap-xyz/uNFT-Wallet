@@ -1,27 +1,25 @@
 <i18n lang="yaml">
 en:
-  uNFTWallet: "uNFT Wallet"
-  betaWarning: "This is experimental software, use at your own risk"
-  logout: "Disconnect"
-  chatDiscord: "Connect on Discord"
-  collaborateGitlab: "Collaborate on Gitlab"
-  donate: "Donate"
-  donationAccount: "Thank you very much for supporting uNFT Wallet. If you want to donate you may send a transfer to 0x1018fd8686acA67DcB9D71168c2D1fF45a820417 or, better yet, you can buy an NFT (and show it off) with the red heart button inside the app."
-  donationOtherWays: "Other awesome ways to support the project are connecting on Discord, coding, reporting issues, and/or translating on Gitlab and spreading the word."
-  donationClose: "Again, thank you very much for your support."
-
+  uNFTWallet: 'uNFT Wallet'
+  betaWarning: 'This is experimental software, use at your own risk'
+  logout: 'Disconnect'
+  chatDiscord: 'Connect on Discord'
+  collaborateGitlab: 'Collaborate on Gitlab'
+  donate: 'Donate'
+  donationAccount: 'Thank you very much for supporting uNFT Wallet. If you want to donate you may send a transfer to 0x1018fd8686acA67DcB9D71168c2D1fF45a820417 or, better yet, you can buy an NFT (and show it off) with the red heart button inside the app.'
+  donationOtherWays: 'Other awesome ways to support the project are connecting on Discord, coding, reporting issues, and/or translating on Gitlab and spreading the word.'
+  donationClose: 'Again, thank you very much for your support.'
 
 es:
-  uNFTWallet: "uNFT Wallet"
-  betaWarning: "Esto es software experimental, use bajo su propio riesgo"
-  logout: "Desconectar"
-  chatDiscord: "Conectar en Discord"
-  collaborateGitlab: "Colabora en Gitlab"
-  donate: "Donar"
-  donationAccount: "Muchisimas gracias por apoyar a uNFT Wallet. Si gustas donar, puedes enviar una transferencia a 0x1018fd8686acA67DcB9D71168c2D1fF45a820417 o, mejor todavía, puedes comprar un NFT (y presumirlo) con el botón rojo con un corazón que está dentro de la aplicación."
-  donationOtherWays: "Otras geniales maneras de apoyar el proyecto son comentando tu experiencia en Discord, programando, reportando problemas y/o traduciendo en Gitlab y compartiendo uNFT Wallet con mas personas."
-  donationClose: "De nuevo, muchas gracias por tu apoyo."
-
+  uNFTWallet: 'uNFT Wallet'
+  betaWarning: 'Esto es software experimental, use bajo su propio riesgo'
+  logout: 'Desconectar'
+  chatDiscord: 'Conectar en Discord'
+  collaborateGitlab: 'Colabora en Gitlab'
+  donate: 'Donar'
+  donationAccount: 'Muchisimas gracias por apoyar a uNFT Wallet. Si gustas donar, puedes enviar una transferencia a 0x1018fd8686acA67DcB9D71168c2D1fF45a820417 o, mejor todavía, puedes comprar un NFT (y presumirlo) con el botón rojo con un corazón que está dentro de la aplicación.'
+  donationOtherWays: 'Otras geniales maneras de apoyar el proyecto son comentando tu experiencia en Discord, programando, reportando problemas y/o traduciendo en Gitlab y compartiendo uNFT Wallet con mas personas.'
+  donationClose: 'De nuevo, muchas gracias por tu apoyo.'
 </i18n>
 
 <template>
@@ -155,10 +153,31 @@ es:
 </template>
 
 <script>
+import { setCssVar } from 'quasar';
 import Blockie from '../components/Blockie';
 import Web3Modal from '../components/Web3Modal';
 import LanguageChanger from '../components/LanguageChanger';
 import ChainChip from '../components/ChainChip';
+
+function setLightMode() {
+  setCssVar('primary', '#567b75');
+  setCssVar('secondary', '#ffd685');
+  setCssVar('accent', '#20525a');
+  setCssVar('positive', '#559649');
+  setCssVar('negative', '#a03c38');
+  setCssVar('info', 'var(--q-primary)');
+  setCssVar('warning', '#f6c856');
+}
+
+function setDarkMode() {
+  setCssVar('primary', '#273835');
+  setCssVar('secondary', '#0e2529');
+  setCssVar('accent', '#ae7400');
+  setCssVar('positive', '#135f25');
+  setCssVar('negative', '#8d343e');
+  setCssVar('info', 'var(--q-primary)');
+  setCssVar('warning', 'var(--q-accent)');
+}
 
 export default {
   name: 'MainLayout',
@@ -166,12 +185,12 @@ export default {
   data() {
     return {
       leftDrawerOpen: false,
-      showDonateModal: false
+      showDonateModal: false,
     };
   },
   computed: {
     languages() {
-      return this.$i18n.availableLocales.map(code => code.toUpperCase());
+      return this.$i18n.availableLocales.map((code) => code.toUpperCase());
     },
     connected() {
       return this.coinbase !== null && this.chain !== null;
@@ -188,10 +207,15 @@ export default {
       },
       set() {
         this.$q.dark.toggle();
+        if (this.$q.dark.isActive) {
+          setDarkMode();
+        } else {
+          setLightMode();
+        }
         window.localStorage.setItem('darkEnabled', this.$q.dark.isActive);
         return this.$q.dark.isActive;
-      }
-    }
+      },
+    },
   },
   watch: {
     connected(newValue, oldValue) {
@@ -204,10 +228,10 @@ export default {
     $route(to) {
       if (window.goatcounter) {
         window.goatcounter.count({
-          path: to.fullPath
+          path: to.fullPath,
         });
       }
-    }
+    },
   },
   mounted() {
     const goatCount = document.createElement('script');
@@ -221,6 +245,12 @@ export default {
     );
     goatCount.setAttribute('src', '//gc.zgo.at/count.js');
     document.head.appendChild(goatCount);
+
+    if (this.$q.dark.isActive) {
+      setDarkMode();
+    } else {
+      setLightMode();
+    }
   },
   created() {
     if (window.localStorage.getItem('darkEnabled') === 'true') {
@@ -236,8 +266,8 @@ export default {
     },
     logout() {
       this.$refs.web3modal.logout();
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -251,23 +281,8 @@ export default {
 }
 body.body--light {
   background-color: #f5f6f4;
-  --q-color-primary: #567b75;
-  --q-color-secondary: #ffd685;
-  --q-color-accent: #20525a;
-  --q-color-positive: #559649;
-  --q-color-negative: #a03c38;
-  --q-color-info: var(--q-color-primary);
-  --q-color-warning: #f6c856;
 }
 body.body--dark {
   background-color: #041011;
-  --q-color-primary: #273835;
-  --q-color-secondary: #0e2529;
-  --q-color-accent: #ae7400;
-  --q-color-dark: #092324;
-  --q-color-positive: #135f25;
-  --q-color-negative: #8d343e;
-  --q-color-info: var(--q-color-primary);
-  --q-color-warning: var(--q-color-accent);
 }
 </style>

@@ -18,7 +18,6 @@ es:
   privateAnalytics: Analítica pública y respetuosa de privacidad
   ipfs: Visualiza NFTs almacenados en IPFS y servidores centralizados
   multilanguage: Compatibilidad con ERC1155 multi-idioma
-
 </i18n>
 <template>
   <div>
@@ -28,7 +27,7 @@ es:
           <inline-svg class="logo" :src="require('./logo.svg')"></inline-svg>
         </div>
         <div class="col-md-7 center header-text">
-          <h1 class="center ">{{ $t('uNFTWallet') }}</h1>
+          <h1 class="center">{{ $t('uNFTWallet') }}</h1>
           <div class="tagline">
             {{ $t('tagline') }}
           </div>
@@ -83,8 +82,8 @@ es:
   padding-top: 7px;
 }
 .icon {
-  stroke: var(--q-color-accent);
-  fill: var(--q-color-accent);
+  stroke: var(--q-accent);
+  fill: var(--q-accent);
   max-width: 200px;
   max-width: 100%;
   max-height: 200px;
@@ -103,7 +102,7 @@ h1 {
   margin-top: 0px;
 }
 .header {
-  background-color: var(--q-color-primary);
+  background-color: var(--q-primary);
   padding: 10px;
   color: white;
 }

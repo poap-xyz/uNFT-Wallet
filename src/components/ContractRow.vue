@@ -1,31 +1,30 @@
 <!-- eslint-disable @intlify/vue-i18n/no-unused-keys -->
 <i18n lang="yaml">
 en:
-  noTokens: "No tokens found"
-  scanningBlock: "Scanning block"
-  uriErrorTitle: "Error on tokens"
-  uriErrorMessage: "{nonUriTokensCount} tokens for {alias} could not be displayed because their URI property is empty. Please check with the token creator."
-  notFoundErrorTitle: "Tokens not Found"
-  notFoundErrorMessage: "{notFoundTokenCount} tokens for {alias} could not be found on the blockchain, they could have been transferred to another chain or burned."
-  unknownErrorTitle: "Unknown error scanning Tokens"
-  unknownErrorMessage: "{unknownErrorCount} tokens for {alias} reported an error when scanning, please check with token issuer"
-  scanBlockchain: "Scanning the blockchain"
-  checkOwnership: "Verifying current owner of received tokens"
-  getMetadata: "Getting new token metadata"
+  noTokens: 'No tokens found'
+  scanningBlock: 'Scanning block'
+  uriErrorTitle: 'Error on tokens'
+  uriErrorMessage: '{nonUriTokensCount} tokens for {alias} could not be displayed because their URI property is empty. Please check with the token creator.'
+  notFoundErrorTitle: 'Tokens not Found'
+  notFoundErrorMessage: '{notFoundTokenCount} tokens for {alias} could not be found on the blockchain, they could have been transferred to another chain or burned.'
+  unknownErrorTitle: 'Unknown error scanning Tokens'
+  unknownErrorMessage: '{unknownErrorCount} tokens for {alias} reported an error when scanning, please check with token issuer'
+  scanBlockchain: 'Scanning the blockchain'
+  checkOwnership: 'Verifying current owner of received tokens'
+  getMetadata: 'Getting new token metadata'
 
 es:
-  noTokens: "No se encontraron tokens"
-  scanningBlock: "Escaneando bloque"
-  scanBlockchain: "Escaneando la blockchain"
-  checkOwnership: "Verificando dueño actual de tokens recibidos"
-  getMetadata: "Obteniendo  metadatos de nuevos tokens"
-  uriErrorTitle: "Error en tokens"
-  uriErrorMessage: "{nonUriTokensCount} tokens de {alias} no pueden ser desplegados porque su propiedad URI está vacía. Favor de revisar con los creadores del token."
-  notFoundErrorTitle: "Tokens no encontrados"
-  notFoundErrorMessage: "{notFoundTokenCount} tokens de {alias} no fueron encontrados en la blockchain, puede se hayan sido transferidos a otra cadena o quemados."
-  unknownErrorTitle: "Error desconocido al escanear Tokens"
-  unknownErrorMessage: "{unknownErrorCount} tokens de {alias} reportaron un error al escanear, favor de revisar con el emisor"
-
+  noTokens: 'No se encontraron tokens'
+  scanningBlock: 'Escaneando bloque'
+  scanBlockchain: 'Escaneando la blockchain'
+  checkOwnership: 'Verificando dueño actual de tokens recibidos'
+  getMetadata: 'Obteniendo  metadatos de nuevos tokens'
+  uriErrorTitle: 'Error en tokens'
+  uriErrorMessage: '{nonUriTokensCount} tokens de {alias} no pueden ser desplegados porque su propiedad URI está vacía. Favor de revisar con los creadores del token.'
+  notFoundErrorTitle: 'Tokens no encontrados'
+  notFoundErrorMessage: '{notFoundTokenCount} tokens de {alias} no fueron encontrados en la blockchain, puede se hayan sido transferidos a otra cadena o quemados.'
+  unknownErrorTitle: 'Error desconocido al escanear Tokens'
+  unknownErrorMessage: '{unknownErrorCount} tokens de {alias} reportaron un error al escanear, favor de revisar con el emisor'
 </i18n>
 
 <template>
@@ -33,7 +32,7 @@ es:
     <q-toolbar>
       <q-toolbar-title>
         {{ alias }}
-        <div class="text-caption ">
+        <div class="text-caption">
           {{ address }}
           <a
             v-if="
@@ -160,7 +159,7 @@ function computeScanRanges(start, end, maxBlocks) {
   for (let i = 0; i < rangeCount; i += 1) {
     ranges.push({
       from: start + 1 + maxBlocks * i,
-      to: start + maxBlocks * (i + 1) < end ? start + maxBlocks * (i + 1) : end
+      to: start + maxBlocks * (i + 1) < end ? start + maxBlocks * (i + 1) : end,
     });
   }
   return ranges;
@@ -181,18 +180,18 @@ function parseSingleEvents(events) {
       const { id } = ev.returnValues;
       accumulator.add(id);
       return accumulator;
-    }, new Set())
+    }, new Set()),
   ];
 }
 
 function parseBatchEvents(events) {
   return [
     ...events.reduce((accumulator, ev) => {
-      ev.returnValues.ids.forEach(id => {
+      ev.returnValues.ids.forEach((id) => {
         accumulator.add(id);
       });
       return accumulator;
-    }, new Set())
+    }, new Set()),
   ];
 }
 
@@ -201,9 +200,9 @@ function getLogs721(contract, coinbase, range) {
     .getPastEvents('Transfer', {
       fromBlock: range.from,
       toBlock: range.to,
-      filter: { to: coinbase }
+      filter: { to: coinbase },
     })
-    .then(events => events.map(ev => ev.returnValues.tokenId));
+    .then((events) => events.map((ev) => ev.returnValues.tokenId));
 }
 
 function getLogs1155Single(contract, coinbase, range) {
@@ -211,7 +210,7 @@ function getLogs1155Single(contract, coinbase, range) {
     .getPastEvents('TransferSingle', {
       fromBlock: range.from,
       toBlock: range.to,
-      filter: { to: coinbase }
+      filter: { to: coinbase },
     })
     .then(parseSingleEvents);
 }
@@ -221,7 +220,7 @@ function getLogs1155Batch(contract, coinbase, range) {
     .getPastEvents('TransferBatch', {
       fromBlock: range.from,
       toBlock: range.to,
-      filter: { to: coinbase }
+      filter: { to: coinbase },
     })
     .then(parseBatchEvents);
 }
@@ -231,7 +230,7 @@ async function getOwner(contract, tokenId) {
     return {
       id: tokenId,
       currentOwner: await contract.methods.ownerOf(tokenId).call(),
-      error: null
+      error: null,
     };
   } catch (e) {
     // eslint-disable-next-line no-console
@@ -255,17 +254,17 @@ async function getOwner(contract, tokenId) {
 }
 
 async function currentyOwned721(contract, coinbase, tokenIds) {
-  const partialTokens = await asyncPool(500, tokenIds, tokenId =>
+  const partialTokens = await asyncPool(500, tokenIds, (tokenId) =>
     getOwner(contract, tokenId)
   );
-  const currentlyOwnedTokens = partialTokens.filter(token => {
+  const currentlyOwnedTokens = partialTokens.filter((token) => {
     return (
       token.error === null &&
       token.currentOwner.toLowerCase() === coinbase.toLowerCase()
     );
   });
 
-  const errorTokens = partialTokens.filter(token => token.error !== null);
+  const errorTokens = partialTokens.filter((token) => token.error !== null);
   return { currentlyOwnedTokens, errorTokens };
 }
 
@@ -279,9 +278,9 @@ async function currentyOwned1155(contract, coinbase, tokenIds) {
   const tokens = tokenIds
     .map((tokenId, index) => ({
       id: tokenId,
-      amount: parseInt(balances[index], 10)
+      amount: parseInt(balances[index], 10),
     }))
-    .filter(token => token.amount > 0);
+    .filter((token) => token.amount > 0);
 
   return { currentlyOwnedTokens: tokens, errorTokens: [] };
 }
@@ -289,16 +288,18 @@ async function currentyOwned1155(contract, coinbase, tokenIds) {
 async function getMetadata(contract, type, tokenIds) {
   const uriFunctionName = type === 'ERC721' ? 'tokenURI' : 'uri';
 
-  return asyncPool(500, tokenIds, tokenId => {
+  return asyncPool(500, tokenIds, (tokenId) => {
     return contract.methods[uriFunctionName](tokenId)
       .call()
-      .then(uri => ({ id: tokenId, uri }));
+      .then((uri) => ({ id: tokenId, uri }));
   });
 }
 
 function mergeAmount(tokens, amounts) {
-  return tokens.map(token => {
-    const [amount] = amounts.filter(amountToken => token.id === amountToken.id);
+  return tokens.map((token) => {
+    const [amount] = amounts.filter(
+      (amountToken) => token.id === amountToken.id
+    );
     return { ...token, amount: amount.amount };
   });
 }
@@ -309,29 +310,30 @@ export default {
   props: {
     address: {
       type: String,
-      required: true
+      required: true,
     },
     alias: {
       type: String,
-      required: true
+      required: true,
     },
     lastScanBlock: {
       type: Number,
-      default: -1
+      default: -1,
     },
     coinbase: {
       type: String,
-      required: true
+      required: true,
     },
     type: {
       type: String,
-      required: true
+      required: true,
     },
     chainId: {
       type: Number,
-      required: true
-    }
+      required: true,
+    },
   },
+  emits: ['scan', 'delete'],
   data() {
     return {
       loadedEvents: false,
@@ -343,7 +345,7 @@ export default {
       unknownErrorCount: 0,
       latestBlock: 0,
       scanBlock: null,
-      currentStep: 0
+      currentStep: 0,
     };
   },
   computed: {
@@ -361,13 +363,13 @@ export default {
     stepLabel() {
       const steps = ['scanBlockchain', 'checkOwnership', 'getMetadata'];
       return `${this.currentStep + 1}/3: ${this.$t(steps[this.currentStep])}`;
-    }
+    },
   },
   watch: {
     coinbase() {
       this.loadedEvents = false;
       this.computeTokens();
-    }
+    },
   },
   created() {
     this.contract = new this.$web3.instance.eth.Contract(
@@ -381,7 +383,7 @@ export default {
       this.address ===
         this.$web3.donations[this.chainId.toString()].tokens[this.type].address
     ) {
-      this.$root.$on('transferConfirmed', ev => {
+      this.$$on('transferConfirmed', (ev) => {
         if (ev.contract === this.address) this.computeTokens();
       });
     }
@@ -398,23 +400,21 @@ export default {
         this.address
       );
 
-      const oldTokenIds = oldTokens.map(token => token.id);
+      const oldTokenIds = oldTokens.map((token) => token.id);
 
       const tokenIds = oldTokenIds.concat(
-        newTokenIds.filter(item => oldTokenIds.indexOf(item) < 0)
+        newTokenIds.filter((item) => oldTokenIds.indexOf(item) < 0)
       );
       this.currentStep = 1;
-      const {
-        currentlyOwnedTokens,
-        errorTokens
-      } = await this.getCurrentlyOwned(tokenIds);
+      const { currentlyOwnedTokens, errorTokens } =
+        await this.getCurrentlyOwned(tokenIds);
 
       const currentlyOwnedTokenIds = currentlyOwnedTokens.map(
-        token => token.id
+        (token) => token.id
       );
 
       const needMetadataTokenIds = currentlyOwnedTokenIds.filter(
-        tokenId => oldTokenIds.indexOf(tokenId) < 0
+        (tokenId) => oldTokenIds.indexOf(tokenId) < 0
       );
 
       this.currentStep = 2;
@@ -425,11 +425,11 @@ export default {
       );
 
       const newTokensMetadataComplete = newTokensMetadata.filter(
-        token => token.uri !== null
+        (token) => token.uri !== null
       );
 
       const stillOwnedOldTokens = oldTokens.filter(
-        oldToken => currentlyOwnedTokenIds.indexOf(oldToken.id) >= 0
+        (oldToken) => currentlyOwnedTokenIds.indexOf(oldToken.id) >= 0
       );
 
       this.tokens = stillOwnedOldTokens.concat(newTokensMetadataComplete);
@@ -438,24 +438,24 @@ export default {
       }
 
       this.unknownErrorCount = errorTokens.filter(
-        token => token.error === 'Unknown Error'
+        (token) => token.error === 'Unknown Error'
       ).length;
 
       this.notFoundTokenCount = errorTokens.filter(
-        token => token.error === 'Not Found'
+        (token) => token.error === 'Not Found'
       ).length;
 
       this.nonUriTokensCount =
         newTokensMetadata.length - newTokensMetadataComplete.length;
 
-      this.tokens.forEach(token =>
+      this.tokens.forEach((token) =>
         idb.putToken(this.chainId, this.coinbase, this.address, token)
       );
 
       this.$emit('scan', {
         address: this.address,
         lastScanBlock: this.latestBlock,
-        timeout: 120
+        timeout: 120,
       });
 
       if (this.inView.length === 0) {
@@ -494,17 +494,17 @@ export default {
       return [];
     },
     async getNewIds721(ranges) {
-      const tokenIds = await mapSeries(ranges, range => {
+      const tokenIds = await mapSeries(ranges, (range) => {
         this.scanBlock = range.to;
         return getLogs721(this.contract, this.coinbase, range);
       });
       return tokenIds;
     },
     async getNewIds1155(ranges) {
-      const singleTokenIds = mapSeries(ranges, range =>
+      const singleTokenIds = mapSeries(ranges, (range) =>
         getLogs1155Single(this.contract, this.coinbase, range)
       );
-      const batchTokenIds = mapSeries(ranges, range => {
+      const batchTokenIds = mapSeries(ranges, (range) => {
         this.scanBlock = range.to;
         return getLogs1155Batch(this.contract, this.coinbase, range);
       });
@@ -527,8 +527,8 @@ export default {
         title: this.$t('uriErrorTitle'),
         message: this.$t('uriErrorMessage', {
           nonUriTokensCount: this.nonUriTokensCount,
-          alias: this.alias
-        })
+          alias: this.alias,
+        }),
       });
     },
     showUnknownErrors() {
@@ -536,8 +536,8 @@ export default {
         title: this.$t('unknownErrorTitle'),
         message: this.$t('unknownErrorMessage', {
           unknownErrorCount: this.unknownErrorCount,
-          alias: this.alias
-        })
+          alias: this.alias,
+        }),
       });
     },
     showNotFoundErrors() {
@@ -545,8 +545,8 @@ export default {
         title: this.$t('notFoundErrorTitle'),
         message: this.$t('notFoundErrorMessage', {
           notFoundTokenCount: this.notFoundTokenCount,
-          alias: this.alias
-        })
+          alias: this.alias,
+        }),
       });
     },
     onIntersection(entry) {
@@ -554,8 +554,8 @@ export default {
       setTimeout(() => {
         this.inView.splice(index, 1, entry.isIntersecting);
       }, 50);
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -594,14 +594,14 @@ body.screen--xs .card-intersection {
 body.body--light {
   .q-toolbar {
     background-color: #eeeeee;
-    color: var(--q-color-primary);
+    color: var(--q-primary);
     a {
-      color: var(--q-color-primary);
+      color: var(--q-primary);
       text-decoration: none;
     }
 
     .q-chip {
-      color: var(--q-color-primary);
+      color: var(--q-primary);
     }
   }
   .scroll-container {
@@ -611,7 +611,7 @@ body.body--light {
 
 body.body--dark {
   .q-toolbar {
-    background-color: var(--q-color-primary);
+    background-color: var(--q-primary);
     a {
       color: white;
       text-decoration: none;
