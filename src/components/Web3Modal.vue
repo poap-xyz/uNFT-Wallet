@@ -52,26 +52,17 @@ export default {
     },
   },
   created() {
+    const rpcs = Object.fromEntries(
+      Object.entries(this.$web3.chains)
+        .map(([k, v]) => [k, v.rpc])
+        .filter(([k, v]) => k && v !== undefined)
+    );
+
     const providerOptions = {
       walletconnect: {
         package: WalletConnectProvider, // required
         options: {
-          rpc: {
-            1: 'https://eth-mainnet.alchemyapi.io/v2/2pT9LJbbjuBhaVTmaQoE3wyIWJcHotYU',
-            3: 'https://eth-ropsten.alchemyapi.io/v2/AkNG6siuaC2LDNxNzsc9BkUm0m9VOXqt',
-            4: 'https://eth-rinkeby.alchemyapi.io/v2/PVG3Cru0vP_9TCEnM73qXuqkNxlEkdf4',
-            5: 'https://eth-goerli.alchemyapi.io/v2/CE7523yco5hm0ZbSyBDQK6gGnYYD79nj',
-            42: 'https://eth-kovan.alchemyapi.io/v2/rdvmCipeQJZw2p_oTdgp3ELyueWmlrVz',
-            56: 'https://bsc-dataseed.binance.org/',
-            77: 'https://sokol.poa.network',
-            97: 'https://data-seed-prebsc-1-s1.binance.org:8545/',
-            100: 'https://dai.poa.network',
-            137: 'https://rpc-endpoints.superfluid.dev/matic',
-            250: 'https://rpcapi.fantom.network/',
-            4002: 'https://rpc.testnet.fantom.network/',
-            31337: 'http://localhost:8545',
-            80001: 'https://rpc-endpoints.superfluid.dev/mumbai',
-          },
+          rpc: rpcs,
         },
       },
 

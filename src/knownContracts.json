@@ -1,25 +1,25 @@
 {
   "1": [
     {
-      "name": "Uniswap V3: Positions NFT" ,
+      "name": "Uniswap V3: Positions NFT",
       "address": "0xc36442b4a4522e871399cd717abdd847ab11fe88",
       "type": "ERC721",
       "block": 12369651
     },
     {
-      "name": "POAP" ,
+      "name": "POAP",
       "address": "0x22C1f6050E56d2876009903609a2cC3fEf83B415",
       "type": "ERC721",
       "block": 7844214
     },
     {
-      "name": "Rarible Single" ,
+      "name": "Rarible Single",
       "address": "0x60f80121c31a0d46b5279700f9df786054aa5ee5",
       "type": "ERC721",
       "block": 10147580
     },
     {
-      "name": "Rarible Multiple" ,
+      "name": "Rarible Multiple",
       "address": "0xd07dc4262bcdbf85190c01c996b4c06a461d2430",
       "type": "ERC1155",
       "block": 10147631
@@ -29,6 +29,12 @@
       "address": "0xfaafdc07907ff5120a76b34b731b278c38d6043c",
       "type": "ERC1155",
       "block": 8099545
+    },
+    {
+      "name": "MetaAvatar",
+      "address": "0x263A1A8164d3904885aD9e1fDBa6B8a4aD223cE1",
+      "type": "ERC721",
+      "block": 13208290
     }
   ],
   "56": [

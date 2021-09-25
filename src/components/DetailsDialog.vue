@@ -1,12 +1,8 @@
 <i18n lang="yaml">
 en:
   details: 'Details'
-  description: 'Description'
-  share: 'Share'
 es:
   details: 'Detalles'
-  description: 'Descripción'
-  share: 'Compartir'
 </i18n>
 
 <template>
@@ -17,59 +13,86 @@ es:
 
         <q-btn v-close-popup flat round dense icon="close" />
       </q-toolbar>
-      <q-card-section :horizontal="$q.screen.gt.xs">
-        <q-img
-          :src="image || require('./TokenCard/no-image.svg')"
-          class="tokenImage"
-          contain
-        />
-        <q-card-section class="content">
-          <h3>
-            {{ name }}
-          </h3>
-          <ChainChip :chain-id="chain" :chains="$web3.chains" />
-          <q-chip outline>{{ type }}</q-chip>
-          <!-- prettier-ignore -->
-          <div class="q-mb-xs description"><h6>{{ $t('description') }}</h6>{{ description }}</div>
-          <!-- eslint-disable-next-line @intlify/vue-i18n/no-raw-text -->
-          <div>ID: 0x{{ hexId }}</div>
-
-          <div>
-            <vue-json-pretty :data="properties"> </vue-json-pretty>
-          </div>
-        </q-card-section>
-      </q-card-section>
-      <q-card-actions align="around">
-        <q-btn flat @click="share">{{ $t('share') }}</q-btn>
-      </q-card-actions>
+      <TokenDetails
+        :hex-id="hexId"
+        :name="name"
+        :type="type"
+        :description="description"
+        :contract-address="contract"
+        :chain="chain"
+        :properties="properties"
+        :image="image"
+        :image-original="imageOriginal"
+        :metadata-uri="metadataURI"
+        :metadata-uri-original="metadataURIOriginal"
+        :owner="owner"
+        :amount="amount"
+      />
     </q-card>
   </q-dialog>
 </template>
 <script>
-import VueJsonPretty from 'vue-json-pretty';
-import 'vue-json-pretty/lib/styles.css';
-
-import ChainChip from '../components/ChainChip';
+import TokenDetails from '../components/TokenDetails';
 
 export default {
   name: 'DetailsDialog',
-  components: { ChainChip, VueJsonPretty },
+  components: { TokenDetails },
   props: {
     contract: {
       type: String,
       required: true,
     },
-    id: { type: String, required: true },
-    type: { type: String, required: true },
-    currentAmount: { type: Number, required: true },
-    name: { type: String, required: true },
-    description: { type: String, required: true },
-    hexId: { type: String, required: true },
-    image: { type: String, required: true },
-    properties: { type: Array, required: true },
+    owner: {
+      type: String,
+      required: true,
+    },
+    type: {
+      type: String,
+      required: true,
+    },
+    currentAmount: {
+      type: Number,
+      required: true,
+    },
+    name: {
+      type: String,
+      required: true,
+    },
+    description: {
+      type: String,
+      required: true,
+    },
+    hexId: {
+      type: String,
+      required: true,
+    },
+    image: {
+      type: String,
+      required: true,
+    },
+    imageOriginal: {
+      type: String,
+      required: true,
+    },
+    properties: {
+      type: [Array, Object],
+      required: true,
+    },
+    metadataURI: {
+      type: String,
+      required: true,
+    },
+    metadataURIOriginal: {
+      type: String,
+      required: true,
+    },
     chain: {
       type: Number,
       required: true,
+    },
+    amount: {
+      type: Number,
+      default: null,
     },
   },
   emits: ['ok', 'hide'],
@@ -137,27 +160,5 @@ $detail-img-size: 400px;
   max-width: 90vw;
   height: 80em;
   max-height: 90vh;
-}
-
-.q-img {
-  width: $detail-img-size;
-  height: $detail-img-size;
-  max-width: $detail-img-size;
-  max-height: $detail-img-size;
-  margin: 20px;
-}
-
-.description {
-  white-space: break-spaces;
-  border: 3px solid var(--q-primary);
-  border-radius: 10px;
-  margin: 5px 0;
-  padding: 5px;
-}
-
-h3,
-h6 {
-  margin-top: 0;
-  margin-bottom: 0.3em;
 }
 </style>

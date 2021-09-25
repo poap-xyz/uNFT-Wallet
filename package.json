@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@babel/core": "^7.4.0-0",
+    "@ensdomains/ensjs": "^2.0.1",
     "@intlify/vue-i18n-loader": "^3.0.0",
     "@quasar/extras": "^1.0.0",
     "@unilogin/provider": "^0.6.1",
@@ -32,6 +33,7 @@
     "vue-inline-svg": "^3.0.0-beta.3",
     "vue-json-pretty": "^2.0.4",
     "vue-router": "4",
+    "vue-zoomer": "^0.4.0-beta.1",
     "vuex": "4",
     "web3": "^1.5.2",
     "web3modal": "^1.9.4",

@@ -13,22 +13,22 @@
 
 <script>
 export default {
-  name: 'BlockchainChip',
+  name: 'AddressChip',
   props: {
     address: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
   },
   data() {
     return {
-      reverseENS: false
+      reverseENS: false,
     };
   },
   watch: {
     address() {
       this.checkENS();
-    }
+    },
   },
   created() {
     this.reverseENS = false;
@@ -40,21 +40,22 @@ export default {
     },
     checkENS() {
       this.$web3.ens
-        .reverse(this.address)
-        .name()
-        .then(async name => {
-          const forwardENS = await this.$web3.ens.resolver(name).addr();
-          if (this.address === forwardENS) {
-            this.reverseENS = name;
-          } else {
-            this.reverseENS = false;
+        .getName(this.address)
+        .then(async (name) => {
+          if (name.name !== null) {
+            this.$web3.ens
+              .name(name.name)
+              .getAddress()
+              .then((forwardAddress) => {
+                if (this.address === forwardAddress) {
+                  this.reverseENS = name.name;
+                }
+              });
           }
         })
-        .catch(() => {
-          this.reverseENS = false;
-        });
-    }
-  }
+        .catch(() => {});
+    },
+  },
 };
 </script>
 

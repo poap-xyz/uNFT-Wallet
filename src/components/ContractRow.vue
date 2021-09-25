@@ -140,17 +140,9 @@ es:
 
 <script>
 import asyncPool from 'tiny-async-pool';
-import ABI1155 from '../artifacts/ierc1155.abi.json';
 import TokenCard from './TokenCard';
-import ABI721 from '../artifacts/ierc721metadata.abi.json';
 import idb from '../idb';
-
-function getABI(type) {
-  if (type === 'ERC721') {
-    return ABI721;
-  }
-  return ABI1155;
-}
+import ContractUtils from '../mixins/ContractUtils';
 
 function computeScanRanges(start, end, maxBlocks) {
   const blockCount = end - start;
@@ -169,7 +161,10 @@ async function mapSeries(iterable, action) {
   const res = [];
   for (const x of iterable) {
     // eslint-disable-next-line no-await-in-loop
-    res.push(await action(x));
+    // res.push(await action(x));
+    // eslint-disable-next-line no-await-in-loop
+    const y = await action(x);
+    res.push(y);
   }
   return res.flat();
 }
@@ -202,7 +197,11 @@ function getLogs721(contract, coinbase, range) {
       toBlock: range.to,
       filter: { to: coinbase },
     })
-    .then((events) => events.map((ev) => ev.returnValues.tokenId));
+    .then((events) => {
+      return events.map((ev) => {
+        return ev.returnValues.tokenId;
+      });
+    });
 }
 
 function getLogs1155Single(contract, coinbase, range) {
@@ -225,7 +224,7 @@ function getLogs1155Batch(contract, coinbase, range) {
     .then(parseBatchEvents);
 }
 
-async function getOwner(contract, tokenId) {
+export async function getOwner721(contract, tokenId) {
   try {
     return {
       id: tokenId,
@@ -253,9 +252,33 @@ async function getOwner(contract, tokenId) {
   }
 }
 
+export async function getAmount1155(contract, tokenId, account) {
+  try {
+    return contract.methods.balanceOf(account, tokenId).call();
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.warn(e);
+    const start = e.message.indexOf('{');
+    const end = e.message.indexOf('}');
+    const errorMessage = e.message.substring(start, end + 1);
+    try {
+      const errorCode = JSON.parse(errorMessage).code;
+      if (errorCode === -32015) {
+        return { id: tokenId, error: 'Not Found' };
+      }
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.warn(err);
+      return { id: tokenId, error: 'Unknown Error' };
+    }
+
+    throw e;
+  }
+}
+
 async function currentyOwned721(contract, coinbase, tokenIds) {
   const partialTokens = await asyncPool(500, tokenIds, (tokenId) =>
-    getOwner(contract, tokenId)
+    getOwner721(contract, tokenId)
   );
   const currentlyOwnedTokens = partialTokens.filter((token) => {
     return (
@@ -285,7 +308,7 @@ async function currentyOwned1155(contract, coinbase, tokenIds) {
   return { currentlyOwnedTokens: tokens, errorTokens: [] };
 }
 
-async function getMetadata(contract, type, tokenIds) {
+export async function getMetadata(contract, type, tokenIds) {
   const uriFunctionName = type === 'ERC721' ? 'tokenURI' : 'uri';
 
   return asyncPool(500, tokenIds, (tokenId) => {
@@ -307,6 +330,7 @@ function mergeAmount(tokens, amounts) {
 export default {
   name: 'ContractRow',
   components: { TokenCard },
+  mixins: [ContractUtils],
   props: {
     address: {
       type: String,
@@ -326,7 +350,7 @@ export default {
     },
     type: {
       type: String,
-      required: true,
+      default: null,
     },
     chainId: {
       type: Number,
@@ -372,8 +396,9 @@ export default {
     },
   },
   created() {
-    this.contract = new this.$web3.instance.eth.Contract(
-      getABI(this.type),
+    this.contract = this.getContract(
+      this.$web3.instance,
+      this.type,
       this.address
     );
     this.computeTokens();
@@ -496,7 +521,8 @@ export default {
     async getNewIds721(ranges) {
       const tokenIds = await mapSeries(ranges, (range) => {
         this.scanBlock = range.to;
-        return getLogs721(this.contract, this.coinbase, range);
+        const lgs = getLogs721(this.contract, this.coinbase, range);
+        return lgs;
       });
       return tokenIds;
     },

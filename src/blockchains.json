@@ -4,7 +4,8 @@
     "status": "ok",
     "type": "production",
     "explorerAddress": "https://etherscan.io/address/%s",
-    "explorerTx": "https://etherscan.io/tx/%s"
+    "explorerTx": "https://etherscan.io/tx/%s",
+    "rpc": "https://eth-mainnet.alchemyapi.io/v2/2pT9LJbbjuBhaVTmaQoE3wyIWJcHotYU"
   },
   "3": {
     "name": "Ropsten",
@@ -12,7 +13,8 @@
     "type": "test",
     "explorerAddress": "https://ropsten.etherscan.io/address/%s",
     "explorerTx": "https://ropsten.etherscan.io/tx/%s",
-    "faucet": "https://faucet.ropsten.be/"
+    "faucet": "https://faucet.ropsten.be/",
+    "rpc": "https://eth-ropsten.alchemyapi.io/v2/AkNG6siuaC2LDNxNzsc9BkUm0m9VOXqt"
   },
   "4": {
     "name": "Rinkeby",
@@ -20,7 +22,8 @@
     "type": "test",
     "explorerAddress": "https://rinkeby.etherscan.io/address/%s",
     "explorerTx": "https://rinkeby.etherscan.io/tx/%s",
-    "faucet": "http://rinkeby-faucet.com/"
+    "faucet": "http://rinkeby-faucet.com/",
+    "rpc": "https://eth-rinkeby.alchemyapi.io/v2/PVG3Cru0vP_9TCEnM73qXuqkNxlEkdf4"
   },
   "5": {
     "name": "Görli",
@@ -28,7 +31,8 @@
     "type": "test",
     "explorerAddress": "https://goerli.etherscan.io/address/%s",
     "explorerTx": "https://goerli.etherscan.io/tx/%s",
-    "faucet": "https://goerli-faucet.slock.it/"
+    "faucet": "https://goerli-faucet.slock.it/",
+    "rpc": "https://eth-goerli.alchemyapi.io/v2/CE7523yco5hm0ZbSyBDQK6gGnYYD79nj"
   },
   "42": {
     "name": "Kovan",
@@ -36,7 +40,8 @@
     "type": "test",
     "explorerAddress": "https://kovan.etherscan.io/address/%s",
     "explorerTx": "https://kovan.etherscan.io/tx/%s",
-    "faucet": "https://enjin.io/software/kovan-faucet"
+    "faucet": "https://enjin.io/software/kovan-faucet",
+    "rpc": "https://eth-kovan.alchemyapi.io/v2/rdvmCipeQJZw2p_oTdgp3ELyueWmlrVz"
   },
   "56": {
     "name": "Binance Smart Chain",
@@ -44,7 +49,8 @@
     "type": "production",
     "getLogsLimit": 5000,
     "explorerAddress": "https://bscscan.com/address/%s",
-    "explorerTx": "https://bscscan.com/tx/%s"
+    "explorerTx": "https://bscscan.com/tx/%s",
+    "rpc": "https://bsc-dataseed.binance.org/"
   },
   "77": {
     "name": "Sokol",
@@ -52,7 +58,8 @@
     "type": "test",
     "explorerAddress": "https://blockscout.com/poa/sokol/address/%s",
     "explorerTx": "https://blockscout.com/poa/sokol/tx/%s",
-    "faucet": "https://faucet.poa.network/"
+    "faucet": "https://faucet.poa.network/",
+    "rpc": "https://sokol.poa.network"
   },
   "97": {
     "name": "Binance Smart Chain Testnet",
@@ -61,14 +68,16 @@
     "getLogsLimit": 5000,
     "explorerAddress": "https://testnet.bscscan.com/address/%s",
     "explorerTx": "https://testnet.bscscan.com/tx/%s",
-    "faucet": "https://testnet.binance.org/faucet-smart"
+    "faucet": "https://testnet.binance.org/faucet-smart",
+    "rpc": "https://data-seed-prebsc-1-s1.binance.org:8545/"
   },
   "100": {
     "name": "xDAI",
     "status": "warn",
     "type": "production",
     "explorerAddress": "https://blockscout.com/xdai/mainnet/address/%s",
-    "explorerTx": "https://blockscout.com/xdai/mainnet/tx/%s"
+    "explorerTx": "https://blockscout.com/xdai/mainnet/tx/%s",
+    "rpc": "https://dai.poa.network"
   },
   "137": {
     "name": "Polygon (Matic) Mainnet",
@@ -76,20 +85,23 @@
     "type": "production",
     "getLogsLimit": 100000,
     "explorerAddress": "https://polygonscan.com/address/%s",
-    "explorerTx": "https://polygonscan.com/tx/%s"
+    "explorerTx": "https://polygonscan.com/tx/%s",
+    "rpc": "https://polygon-rpc.com/"
   },
   "250": {
     "name": "Fantom Opera",
     "status": "warn",
     "type": "production",
     "explorerAddress": "https://ftmscan.com/address/%s",
-    "explorerTx": "https://ftmscan.com/tx/%s"
+    "explorerTx": "https://ftmscan.com/tx/%s",
+    "rpc": "https://rpcapi.fantom.network/"
   },
   "4002": {
     "name": "Fantom Testnet",
     "status": "error",
     "type": "test",
-    "faucet": "https://faucet.fantom.network/"
+    "faucet": "https://faucet.fantom.network/",
+    "rpc": "https://rpc.testnet.fantom.network/"
   },
   "20066": {
     "name": "TestNet",
@@ -99,7 +111,8 @@
   "31337": {
     "name": "Localhost",
     "status": "error",
-    "type": "test"
+    "type": "test",
+    "rpc": "http://localhost:8545"
   },
   "80001": {
     "name": "Polygon (Matic) Mumbai Testnet",
@@ -107,6 +120,7 @@
     "type": "test",
     "explorerAddress": "https://explorer-mumbai.maticvigil.com/address/%s",
     "explorerTx": "https://explorer-mumbai.maticvigil.com/tx/%s",
-    "faucet": "https://faucet.matic.network"
+    "faucet": "https://faucet.matic.network",
+    "rpc": "https://rpc-mumbai.matic.today"
   }
 }

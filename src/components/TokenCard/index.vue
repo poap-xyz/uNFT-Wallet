@@ -48,7 +48,7 @@ es:
           :src="image || require('./no-image.svg')"
           class="tokenImage"
           :class="{ empty: imageLoaded }"
-          contain
+          fit="contain"
           @loaded="imageLoaded = true"
           @error="imageError"
         >
@@ -97,7 +97,7 @@ es:
 import TransferDialog from '../TransferDialog';
 import DetailsDialog from '../DetailsDialog';
 
-function handleDecentralizedProtocols(url) {
+export function handleDecentralizedProtocols(url) {
   const urlUrl = new URL(url);
   const { protocol } = urlUrl;
 
@@ -114,14 +114,15 @@ function handleDecentralizedProtocols(url) {
   return url;
 }
 
-function handleIdExpansion(url, hexId) {
+export function handleIdExpansion(url, hexId) {
   return url.replace('{id}', hexId);
 }
 
-function handleLocaleExpansion(url, locale) {
+export function handleLocaleExpansion(url, locale) {
   return url.replace('{locale}', locale);
 }
-function handleBadCORS(url, badCORSHosts) {
+
+export function handleBadCORS(url, badCORSHosts) {
   const urlUrl = new URL(url);
   const { host, pathname } = urlUrl;
 
@@ -170,6 +171,7 @@ export default {
       description: '',
       hexId: '',
       image: null,
+      imageOriginal: null,
       properties: null,
       avalilableLocales: [],
       fixedImage: false,
@@ -179,6 +181,7 @@ export default {
       state: 'OK',
       pendingTransferNoneLeft: false,
       pendingTransferAmount: 0,
+      handledUri: null,
     };
   },
   computed: {
@@ -204,12 +207,12 @@ export default {
   },
   methods: {
     load() {
-      const handledUri = handleBadCORS(
+      this.handledUri = handleBadCORS(
         handleIdExpansion(handleDecentralizedProtocols(this.uri), this.hexId),
         this.badCORSHosts
       );
       this.$axios
-        .get(handledUri)
+        .get(this.handledUri)
         .then((response) => {
           if (response.data.localization) {
             this.avalilableLocales = response.data.localization.locales;
@@ -247,6 +250,7 @@ export default {
               response.data.properties || response.data.attributes;
           }
           if (response.data.image || response.data.image_url) {
+            this.imageOriginal = response.data.image || response.data.image_url;
             this.image = handleDecentralizedProtocols(
               response.data.image || response.data.image_url
             );
@@ -290,15 +294,19 @@ export default {
         componentProps: {
           // eslint-disable-next-line no-underscore-dangle
           contract: this.contract._address,
-          id: this.id,
+          owner: this.coinbase,
           type: this.type,
           currentAmount: this.amount,
           name: this.name,
           description: this.description,
-          hexId: this.hexId,
+          hexId: `0x${this.hexId}`,
           image: this.image,
+          imageOriginal: this.imageOriginal,
           properties: this.properties,
           chain: this.chain,
+          metadataURI: this.handledUri,
+          metadataURIOriginal: this.uri,
+          amount: this.amount,
         },
       });
     },
@@ -382,12 +390,13 @@ body.screen--xs .q-card {
     width: 100%;
     margin-top: 0px;
     margin-left: 0px;
+    text-align: center;
   }
 }
 
 .tokenImage {
-  max-height: $token-img-size;
-  min-width: $token-img-size;
+  height: $token-img-size;
+  width: $token-img-size;
   .empty {
     height: $token-img-size;
     width: $token-img-size;

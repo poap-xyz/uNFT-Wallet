@@ -166,29 +166,30 @@ export default {
         this.recipientAddress = recipient;
         isOK = true;
         this.$web3.ens
-          .reverse(recipient)
-          .name()
+          .getName(this.recipientAddress)
           .then(async (name) => {
-            const forwardENS = await this.$web3.ens.resolver(name).addr();
-            if (recipient === forwardENS) {
-              this.reverseENS = name;
-            } else {
-              this.reverseENS = false;
-            }
+            this.$web3.ens
+              .name(name.name)
+              .getAddress()
+              .then((forwardAddress) => {
+                if (this.recipientAddress === forwardAddress) {
+                  this.reverseENS = name.name;
+                }
+              });
           })
-          .catch(() => {
-            this.reverseENS = false;
-          });
+          .catch(() => {});
       }
       // 3 letter domain + 3 letter tld + period
       if (!isOK && recipient.length >= 7) {
         await this.$web3.ens
-          .resolver(recipient)
-          .addr()
+          .name(recipient)
+          .getAddress()
           .then((address) => {
-            this.isENS = true;
-            this.recipientAddress = address;
-            isOK = true;
+            if (address !== '0x0000000000000000000000000000000000000000') {
+              this.isENS = true;
+              this.recipientAddress = address;
+              isOK = true;
+            }
           })
           .catch(() => {
             this.isENS = false;
