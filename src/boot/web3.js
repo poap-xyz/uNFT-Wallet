@@ -23,5 +23,6 @@ export default boot(({ app }) => {
     ens,
     chains,
     donations,
+    mainnetProvider,
   };
 });

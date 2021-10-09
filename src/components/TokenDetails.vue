@@ -43,7 +43,7 @@ es:
         <h3>
           {{ name }}
         </h3>
-        <chain-chip :chain-id="chain" :chains="$web3.chains" />
+        <chain-chip :chain-id="chainId" :chains="$web3.chains" />
         <q-chip outline>{{ type }}</q-chip>
         <div>
           {{ $t('contract') }}
@@ -51,7 +51,7 @@ es:
             <q-tooltip>{{ $t('contractWarning') }}</q-tooltip>
           </q-icon>
           <!-- eslint-disable-next-line @intlify/vue-i18n/no-raw-text -->
-          :<address-chip :address="contractAddress" />
+          :<address-chip :address="contractAddress" :chain-id="chainId" />
         </div>
         <div v-if="owner">
           {{ $t('owner') }}
@@ -59,7 +59,7 @@ es:
             <q-tooltip>{{ $t('erc1155OwnerExplanation') }}</q-tooltip>
           </q-icon>
           <!-- eslint-disable-next-line @intlify/vue-i18n/no-raw-text -->
-          : <address-chip :address="owner" />
+          : <address-chip :address="owner" :chain-id="chainId" />
         </div>
         <div v-if="type == 'ERC1155' && amount > 0">
           <!-- eslint-disable-next-line @intlify/vue-i18n/no-raw-text -->
@@ -78,7 +78,7 @@ es:
         </div>
         <!-- prettier-ignore -->
         <div v-if="description" class="q-mb-xs description"><h6>{{ $t('description') }}</h6>{{ description }}</div>
-        <div v-if="parsedProperties">
+        <div v-if="parsedProperties.length">
           <h6>{{ $t('properties') }}</h6>
           <div class="row items-start q-gutter-md">
             <q-card
@@ -276,7 +276,7 @@ export default {
       type: [Array, Object],
       required: true,
     },
-    chain: {
+    chainId: {
       type: Number,
       required: true,
     },
@@ -389,6 +389,10 @@ body.screen--xs {
 
 .advanced .q-expansion-item .q-expansion-item__content .q-card__section {
   overflow-x: auto;
+}
+
+.q-dark .q-item__label--overline {
+  color: #fff;
 }
 
 h3,

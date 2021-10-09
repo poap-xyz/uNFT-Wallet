@@ -52,7 +52,9 @@ es:
             :chains="$web3.chains"
           />
           <q-btn v-if="connected" round flat>
-            <Blockie :address="coinbase"></Blockie>
+            <MetaAvatar :address="coinbase">
+              <Blockie :address="coinbase"></Blockie>
+            </MetaAvatar>
             <q-menu>
               <q-list style="min-width: 100px">
                 <q-item v-close-popup clickable>
@@ -158,6 +160,7 @@ import Blockie from './components/Blockie';
 import Web3Modal from './components/Web3Modal';
 import LanguageChanger from './components/LanguageChanger';
 import ChainChip from './components/ChainChip';
+import MetaAvatar from './components/MetaAvatar';
 
 function setLightMode() {
   setCssVar('primary', '#567b75');
@@ -181,7 +184,7 @@ function setDarkMode() {
 
 export default {
   name: 'App',
-  components: { Blockie, Web3Modal, LanguageChanger, ChainChip },
+  components: { Blockie, Web3Modal, LanguageChanger, ChainChip, MetaAvatar },
   data() {
     return {
       leftDrawerOpen: false,

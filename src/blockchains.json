@@ -34,6 +34,14 @@
     "faucet": "https://goerli-faucet.slock.it/",
     "rpc": "https://eth-goerli.alchemyapi.io/v2/CE7523yco5hm0ZbSyBDQK6gGnYYD79nj"
   },
+  "10": {
+    "name": "Optimistic Ethereum",
+    "status": "warn",
+    "type": "production",
+    "explorerAddress": "https://optimistic.etherscan.io/address/%s",
+    "explorerTx": "https://optimistic.etherscan.io/tx/%s",
+    "rpc": "https://optimistic.etherscan.io"
+  },
   "42": {
     "name": "Kovan",
     "status": "error",
@@ -113,6 +121,22 @@
     "status": "error",
     "type": "test",
     "rpc": "http://localhost:8545"
+  },
+  "42161": {
+    "name": "Arbitrum One",
+    "status": "warn",
+    "type": "production",
+    "explorerAddress": "https://arbiscan.io/address/%s",
+    "explorerTx": "https://arbiscan.io/tx/%s",
+    "rpc": "https://arb1.arbitrum.io/rpc"
+  },
+  "43114": {
+    "name": "Avalanche",
+    "status": "warn",
+    "type": "production",
+    "explorerAddress": "https://cchain.explorer.avax.network/address/%s",
+    "explorerTx": "https://cchain.explorer.avax.network//tx/%s",
+    "rpc": "https://api.avax.network/ext/bc/C/rpc"
   },
   "80001": {
     "name": "Polygon (Matic) Mumbai Testnet",

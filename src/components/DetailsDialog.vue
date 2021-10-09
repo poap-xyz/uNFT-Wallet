@@ -19,7 +19,7 @@ es:
         :type="type"
         :description="description"
         :contract-address="contract"
-        :chain="chain"
+        :chain-id="chainId"
         :properties="properties"
         :image="image"
         :image-original="imageOriginal"
@@ -86,7 +86,7 @@ export default {
       type: String,
       required: true,
     },
-    chain: {
+    chainId: {
       type: Number,
       required: true,
     },

@@ -12,6 +12,18 @@
 </template>
 
 <script>
+import Blockchains from '../blockchains.json';
+
+function updateChain(chainId) {
+  if (Blockchains[chainId.toString()]) {
+    return {
+      link: Blockchains[chainId.toString()].explorerAddress,
+      iconUrl: Blockchains[chainId.toString()].icon,
+    };
+  }
+  return {};
+}
+
 export default {
   name: 'AddressChip',
   props: {
@@ -19,24 +31,33 @@ export default {
       type: String,
       required: true,
     },
+    chainId: {
+      type: Number,
+      required: true,
+    },
   },
   data() {
     return {
       reverseENS: false,
+      link: null,
+      iconUrl: null,
     };
   },
   watch: {
     address() {
       this.checkENS();
     },
+    chainId() {
+      ({ link: this.link, iconUrl: this.iconUrl } = updateChain(this.chainId));
+    },
   },
   created() {
-    this.reverseENS = false;
     this.checkENS();
+    ({ link: this.link, iconUrl: this.iconUrl } = updateChain(this.chainId));
   },
   methods: {
     onClick() {
-      window.open(`https://etherscan.io/address/${this.address}`, '_blank');
+      window.open(this.link.replace('%s', this.address), '_blank');
     },
     checkENS() {
       this.$web3.ens

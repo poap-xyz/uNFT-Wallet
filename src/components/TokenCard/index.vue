@@ -188,7 +188,7 @@ export default {
     badCORSHosts() {
       return this.$store.state.badCors.hosts;
     },
-    chain() {
+    chainId() {
       return this.$store.state.web3.chainId;
     },
   },
@@ -303,7 +303,7 @@ export default {
           image: this.image,
           imageOriginal: this.imageOriginal,
           properties: this.properties,
-          chain: this.chain,
+          chainId: this.chainId,
           metadataURI: this.handledUri,
           metadataURIOriginal: this.uri,
           amount: this.amount,
