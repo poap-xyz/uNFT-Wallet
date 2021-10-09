@@ -108,7 +108,7 @@ export function handleDecentralizedProtocols(url) {
     if (cleanPathname.indexOf('ipfs') === 0) {
       cleanPathname = cleanPathname.slice(5);
     }
-    return `https://ipfs.io/ipfs/${cleanPathname}`;
+    return `https://cloudflare-ipfs.com/ipfs/${cleanPathname}`;
   }
 
   return url;
