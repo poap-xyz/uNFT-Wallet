@@ -1,6 +1,6 @@
 {
   "name": "unftwallet",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Display ERC721 & ERC155 from any chain, with IPFS support",
   "productName": "uNFT Wallet",
   "author": "Jorge Pérez <dev@ktlxv.com>",

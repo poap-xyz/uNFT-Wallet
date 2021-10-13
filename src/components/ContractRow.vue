@@ -89,10 +89,9 @@ es:
       </div>
       <q-scroll-area v-else horizontal rounded-borders>
         <div class="row no-wrap q-pa-md row items-start q-gutter-md">
-          <div
+          <q-intersection
             v-for="(token, index) in tokens"
             :key="token.id"
-            v-intersection="onIntersection"
             class="card-intersection"
             :data-id="index"
           >
@@ -104,7 +103,7 @@ es:
               :coinbase="coinbase"
               @transfer="computeTokens"
             />
-          </div>
+          </q-intersection>
         </div>
       </q-scroll-area>
     </div>
@@ -574,12 +573,6 @@ export default {
           alias: this.alias,
         }),
       });
-    },
-    onIntersection(entry) {
-      const index = parseInt(entry.target.dataset.id, 10);
-      setTimeout(() => {
-        this.inView.splice(index, 1, entry.isIntersecting);
-      }, 50);
     },
   },
 };

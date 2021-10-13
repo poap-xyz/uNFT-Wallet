@@ -49,16 +49,16 @@ es:
           {{ $t('contract') }}
           <q-icon name="warning" class="text-negative">
             <q-tooltip>{{ $t('contractWarning') }}</q-tooltip>
-          </q-icon>
           <!-- eslint-disable-next-line @intlify/vue-i18n/no-raw-text -->
+          </q-icon>
           :<address-chip :address="contractAddress" :chain-id="chainId" />
         </div>
         <div v-if="owner">
           {{ $t('owner') }}
           <q-icon v-if="type == 'ERC1155'" name="info">
             <q-tooltip>{{ $t('erc1155OwnerExplanation') }}</q-tooltip>
-          </q-icon>
           <!-- eslint-disable-next-line @intlify/vue-i18n/no-raw-text -->
+          </q-icon>
           : <address-chip :address="owner" :chain-id="chainId" />
         </div>
         <div v-if="type == 'ERC1155' && amount > 0">

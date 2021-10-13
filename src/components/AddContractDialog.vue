@@ -11,6 +11,9 @@ en:
   tokenType: 'Type'
   common: 'Common'
   custom: 'Custom'
+  advanced: 'Advanced (Optional)'
+  startBlock: 'Scan Start'
+  startBlockHint: 'The number of the first block in which the account interacted with this contract'
 
 es:
   contract: 'Contrato'
@@ -24,6 +27,9 @@ es:
   tokenType: 'Tipo'
   common: 'Común'
   custom: 'Personalizado'
+  advanced: 'Avanzado (Opcional)'
+  startBlock: 'Inicio de Busqueda'
+  startBlockHint: 'El número del primer bloque en el que la cuenta interactuó con este contrato'
 </i18n>
 
 <template>
@@ -93,6 +99,15 @@ es:
 
             <q-input v-model="alias" filled :label="$t('alias')" />
             <q-input v-model="type" filled :label="$t('tokenType')" readonly />
+            <q-expansion-item dense dense-toggle :label="$t('advanced')">
+              <q-input
+                v-model.number="startBlock"
+                type="number"
+                filled
+                :label="$t('startBlock')"
+                :hint="$t('startBlockHint')"
+              />
+            </q-expansion-item>
 
             <q-card-actions align="right">
               <q-btn
@@ -136,6 +151,7 @@ export default {
       type: null,
       tab: 'common',
       commonSelection: null,
+      startBlock: null,
     };
   },
   computed: {
@@ -170,11 +186,15 @@ export default {
       // on OK, it is REQUIRED to
       // emit "ok" event (with optional payload)
       // before hiding the QDialog
-      this.$emit('ok', {
+      const ev = {
         address: this.address,
         alias: this.alias,
         type: this.type,
-      });
+      };
+      if (this.startBlock && this.startBlock !== '' && this.startBlock > 0) {
+        ev.blockCreated = parseInt(this.startBlock, 10) - 1;
+      }
+      this.$emit('ok', ev);
       // or with payload: this.$emit('ok', { ... })
 
       // then hiding dialog
