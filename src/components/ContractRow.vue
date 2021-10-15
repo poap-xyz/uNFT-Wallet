@@ -75,6 +75,11 @@ es:
         @click="showUnknownErrors"
       />
       <q-btn flat round dense icon="refresh" @click="computeTokens" />
+      <q-btn flat round dense @click="expanded=!expanded"
+        >
+        <q-icon v-if="expanded" name="expand_less" />
+        <q-icon v-else name="expand_more" />
+      </q-btn>
       <q-btn
         flat
         round
@@ -83,12 +88,13 @@ es:
         @click="$emit('delete', { address, alias })"
       />
     </q-toolbar>
-    <div v-if="loadedEvents" class="scroll-container">
+    <div v-if="loadedEvents" class="scroll-container" v-bind:class="{expanded: expanded}">
       <div v-if="tokens.length == 0">
         {{ $t('noTokens') }}
       </div>
-      <q-scroll-area v-else horizontal rounded-borders>
-        <div class="row no-wrap q-pa-md row items-start q-gutter-md">
+      <div v-else style="height:100%;">
+        <q-scroll-area v-if="!expanded"  horizontal rounded-borders>
+        <div class="row no-wrap q-pa-md items-start q-gutter-md">
           <q-intersection
             v-for="(token, index) in tokens"
             :key="token.id"
@@ -106,6 +112,23 @@ es:
           </q-intersection>
         </div>
       </q-scroll-area>
+      <div v-else >
+        <div class="row q-pa-md justify-evenly q-gutter-md">
+          <div
+            v-for="(token) in tokens"
+            :key="token.id"
+          >
+            <TokenCard
+              v-bind="token"
+              :type="type"
+              :contract="contract"
+              :coinbase="coinbase"
+              @transfer="computeTokens"
+            />
+          </div>
+        </div>
+        </div>
+    </div>
     </div>
     <div v-else class="scroll-container">
       <q-linear-progress
@@ -369,6 +392,7 @@ export default {
       latestBlock: 0,
       scanBlock: null,
       currentStep: 0,
+      expanded: false
     };
   },
   computed: {
@@ -584,11 +608,15 @@ body.screen--xs .scroll-container {
   height: 388px;
 }
 .scroll-container {
-  height: 265px;
+  height: 269px;
 }
 .q-scrollarea {
   height: 100%;
   width: 100%;
+}
+
+.expanded.scroll-container{
+    height: 100%;
 }
 
 .q-toolbar {
