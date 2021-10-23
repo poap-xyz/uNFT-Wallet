@@ -8,6 +8,8 @@ en:
   submit: 'Submit'
   reset: 'Reset'
   shortMaximum: 'Max'
+  sendingMultiple: 'Sending mutiple NFTs to the same address?'
+  tryMultitransfer: 'Try Multitransfer'
   validations:
     typeAmount: 'Type an amount'
     typeAmountGtZero: 'Type an amount greater than zero'
@@ -22,6 +24,8 @@ es:
   submit: 'Enviar'
   reset: 'Borrar'
   shortMaximum: 'Max'
+  sendingMultiple: '¿Vas a enviar varios NFTs a la misma dirección?'
+  tryMultitransfer: 'Prueba Multitransferencia'
   validations:
     typeAmount: 'Escribe una cantidad'
     typeAmountGtZero: 'Escribe una cantidad mayor a cero'
@@ -101,6 +105,13 @@ es:
             </template>
           </q-input>
 
+          <div class="multitransferNudge">
+            <p>{{$t('sendingMultiple')}}</p>
+            <p>
+            {{$t('tryMultitransfer')}}
+              <q-icon name="double_arrow" />
+            </p>
+          </div>
           <q-card-actions align="right">
             <q-btn
               :label="$t('reset')"
@@ -239,6 +250,7 @@ export default {
         .send({ gas: estimatedGas, from: this.coinbase })
         .on('receipt', this.transactionReceipt)
         .on('transactionHash', this.transactionHash)
+        .on('transactionHash', this.onOKClick)
         .on('error', this.transactionError);
     },
     async transfer721() {
@@ -257,6 +269,7 @@ export default {
         .send({ gas: estimatedGas, from: this.coinbase })
         .on('receipt', this.transactionReceipt)
         .on('transactionHash', this.transactionHash)
+        .on('transactionHash', this.onOKClick)
         .on('error', this.transactionError);
     },
   },
@@ -264,9 +277,22 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
+<style scoped lang="scss">
 .avatar-section {
   padding: 0;
   text-align: center;
+}
+.multitransferNudge {
+  padding: 5px;
+  border: 1px dashed gray;
+  color: gray;
+
+  p {
+    margin-bottom: 0px;
+  }
+
+  .q-icon{
+    font-size: 1.3em;
+  }
 }
 </style>

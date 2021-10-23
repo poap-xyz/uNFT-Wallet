@@ -360,6 +360,7 @@ export default {
         })
         .on('receipt', this.transactionReceipt)
         .on('transactionHash', this.transactionHash)
+        .on('transactionHash', this.onOKClick)
         .on('error', this.transactionError);
     },
   },

@@ -12,6 +12,24 @@ en:
   scanBlockchain: 'Scanning the blockchain'
   checkOwnership: 'Verifying current owner of received tokens'
   getMetadata: 'Getting new token metadata'
+  ttMultitransfer: 'Send several tokens using only two transactions'
+  ttSearchTokens: 'Search for newly transfered tokens'
+  ttExpand: 'Expand'
+  ttContact: 'Return to row view'
+  ttDeleteContract: 'Delete this contract (can be added again later)'
+  selectAll: 'Select all'
+  clearSelection: 'Clear selection'
+  cancel: 'Cancel'
+  transfer: 'Transfer'
+  multitransferCanceled: 'Multitransfer canceled'
+  multitransferInstructions:
+    title: 'Instructions for Multitransfer'
+    header: 'The multitransfer has 4 steps:'
+    steps:
+      - 'Select the tokens you want to transfer'
+      - 'Click on the "Transfer" button in the bottom of the screen'
+      - "Aprove the first transaction, this will allow uNFT Wallet to manage this contract's NFTs (only needed once per contract)"
+      - 'Aprove the second transaction, this will do the actual transfer'
 
 es:
   noTokens: 'No se encontraron tokens'
@@ -25,8 +43,25 @@ es:
   notFoundErrorMessage: '{notFoundTokenCount} tokens de {alias} no fueron encontrados en la blockchain, puede se hayan sido transferidos a otra cadena o quemados.'
   unknownErrorTitle: 'Error desconocido al escanear Tokens'
   unknownErrorMessage: '{unknownErrorCount} tokens de {alias} reportaron un error al escanear, favor de revisar con el emisor'
+  ttMultitransfer: 'Envía varios tokens usando solo dos transacciones'
+  ttSearchTokens: 'Busca tokens transferidos recientemente'
+  ttExpand: 'Expandir'
+  ttContact: 'Regresar a modo renglon'
+  ttDeleteContract: 'Borrar este contrato (se puede volver a agregar)'
+  selectAll: 'Seleccionar todos'
+  clearSelection: 'Deseleccionar todos'
+  cancel: 'Cancelar'
+  transfer: 'Transferir'
+  multitransferCanceled: 'Multitransferencia cancelada'
+  multitransferInstructions:
+    title: 'Instrucciones de multitransferencia'
+    header: 'La multitransferencia involucra 4 pasos:'
+    steps:
+      - 'Seleccionar los tokens que deseas transferir'
+      - 'Presiona "Transferir" en la parte inferior de la pantalla'
+      - 'Aprueba la primer transacción, esta permite a uNFT Wallet administrar los NFTs de este contrato (solo una vez por contrato)'
+      - 'Aprueba la segunda transacción, esta hará la transferencia'
 </i18n>
-
 <template>
   <div class="contract">
     <q-toolbar>
@@ -74,11 +109,24 @@ es:
         icon="warning"
         @click="showUnknownErrors"
       />
-      <q-btn flat round dense icon="refresh" @click="computeTokens" />
-      <q-btn flat round dense @click="expanded=!expanded"
-        >
+      <q-btn
+        v-if="type === 'ERC721'"
+        flat
+        round
+        dense
+        icon="double_arrow"
+        @click="startMultitransfer"
+      >
+        <q-tooltip>{{ $t('ttMultitransfer') }}</q-tooltip>
+      </q-btn>
+      <q-btn flat round dense icon="refresh" @click="computeTokens">
+        <q-tooltip>{{ $t('ttSearchTokens') }}</q-tooltip>
+      </q-btn>
+      <q-btn flat round dense @click="expanded = !expanded">
         <q-icon v-if="expanded" name="expand_less" />
         <q-icon v-else name="expand_more" />
+        <q-tooltip v-if="expanded">{{ $t('ttContact') }}</q-tooltip>
+        <q-tooltip v-else>{{ $t('ttExpand') }}</q-tooltip>
       </q-btn>
       <q-btn
         flat
@@ -86,49 +134,60 @@ es:
         dense
         icon="delete"
         @click="$emit('delete', { address, alias })"
-      />
+      >
+        <q-tooltip>{{ $t('ttDeleteContract') }}</q-tooltip>
+      </q-btn>
     </q-toolbar>
-    <div v-if="loadedEvents" class="scroll-container" v-bind:class="{expanded: expanded}">
+    <div
+      v-if="loadedEvents"
+      class="scroll-container"
+      :class="{ expanded: expanded }"
+    >
       <div v-if="tokens.length == 0">
         {{ $t('noTokens') }}
       </div>
-      <div v-else style="height:100%;">
-        <q-scroll-area v-if="!expanded"  horizontal rounded-borders>
-        <div class="row no-wrap q-pa-md items-start q-gutter-md">
-          <q-intersection
-            v-for="(token, index) in tokens"
-            :key="token.id"
-            class="card-intersection"
-            :data-id="index"
-          >
-            <TokenCard
-              v-if="inView[index]"
-              v-bind="token"
-              :type="type"
-              :contract="contract"
-              :coinbase="coinbase"
-              @transfer="computeTokens"
-            />
-          </q-intersection>
-        </div>
-      </q-scroll-area>
-      <div v-else >
-        <div class="row q-pa-md justify-evenly q-gutter-md">
+      <div v-else style="height: 100%">
+        <q-scroll-area v-if="!expanded" horizontal rounded-borders>
+          <div class="row no-wrap q-pa-md items-start q-gutter-md">
+            <q-intersection
+              v-for="(token, index) in tokens"
+              :key="token.id"
+              class="card-intersection"
+              :data-id="index"
+            >
+              <TokenCard
+                v-bind="token"
+                :type="type"
+                :contract="contract"
+                :coinbase="coinbase"
+                @transfer="computeTokens"
+              />
+            </q-intersection>
+          </div>
+        </q-scroll-area>
+        <div v-else>
           <div
-            v-for="(token) in tokens"
-            :key="token.id"
+            class="row q-pa-md justify-evenly q-gutter-md"
+            :class="{ multiselection: multitransferSelecting }"
           >
-            <TokenCard
-              v-bind="token"
-              :type="type"
-              :contract="contract"
-              :coinbase="coinbase"
-              @transfer="computeTokens"
-            />
+            <div
+              v-for="token in tokens"
+              :key="token.id"
+              class="token-wrapper"
+              :class="{ selected: isTokenSelected(token.id) }"
+              @click.capture="wrapperClick(token.id, $event)"
+            >
+              <TokenCard
+                v-bind="token"
+                :type="type"
+                :contract="contract"
+                :coinbase="coinbase"
+                @transfer="computeTokens"
+              />
+            </div>
           </div>
         </div>
-        </div>
-    </div>
+      </div>
     </div>
     <div v-else class="scroll-container">
       <q-linear-progress
@@ -157,6 +216,45 @@ es:
         </div>
       </q-linear-progress>
     </div>
+    <q-page-sticky
+      v-if="multitransferSelecting"
+      position="bottom-right"
+      :offset="[18, 18]"
+    >
+      <q-btn
+        fab
+        class="multifab"
+        color="primary"
+        icon="select_all"
+        :label="$t('selectAll')"
+        @click="selectedTokens = tokens.map((t) => t.id)"
+      />
+      <q-btn
+        fab
+        class="multifab"
+        color="warning"
+        icon="clear"
+        :label="$t('clearSelection')"
+        @click="selectedTokens = []"
+      />
+      <q-btn
+        fab
+        class="multifab"
+        color="negative"
+        icon="cancel_schedule_send"
+        :label="$t('cancel')"
+        @click="cancelMultitransfer"
+      />
+      <q-btn
+        fab
+        class="multifab"
+        color="positive"
+        icon="send"
+        :label="$t('transfer')"
+        :disable="selectedTokens.length < 2"
+        @click="doMultitransfer"
+      />
+    </q-page-sticky>
   </div>
 </template>
 
@@ -165,6 +263,8 @@ import asyncPool from 'tiny-async-pool';
 import TokenCard from './TokenCard';
 import idb from '../idb';
 import ContractUtils from '../mixins/ContractUtils';
+import TransactionModal from '../mixins/TransactionModal';
+import MultitransferDialog from './MultitransferDialog';
 
 function computeScanRanges(start, end, maxBlocks) {
   const blockCount = end - start;
@@ -183,10 +283,7 @@ async function mapSeries(iterable, action) {
   const res = [];
   for (const x of iterable) {
     // eslint-disable-next-line no-await-in-loop
-    // res.push(await action(x));
-    // eslint-disable-next-line no-await-in-loop
-    const y = await action(x);
-    res.push(y);
+    res.push(await action(x));
   }
   return res.flat();
 }
@@ -352,7 +449,7 @@ function mergeAmount(tokens, amounts) {
 export default {
   name: 'ContractRow',
   components: { TokenCard },
-  mixins: [ContractUtils],
+  mixins: [ContractUtils, TransactionModal],
   props: {
     address: {
       type: String,
@@ -379,7 +476,7 @@ export default {
       required: true,
     },
   },
-  emits: ['scan', 'delete'],
+  emits: ['scan', 'delete', 'grabFAB', 'releaseFAB'],
   data() {
     return {
       loadedEvents: false,
@@ -387,12 +484,14 @@ export default {
       tokens: [],
       nonUriTokensCount: 0,
       notFoundTokenCount: 0,
-      inView: [],
       unknownErrorCount: 0,
       latestBlock: 0,
       scanBlock: null,
       currentStep: 0,
-      expanded: false
+      expanded: false,
+      multitransferSelecting: false,
+      selectedTokens: [],
+      expandedFAB: true,
     };
   },
   computed: {
@@ -409,6 +508,7 @@ export default {
     },
     stepLabel() {
       const steps = ['scanBlockchain', 'checkOwnership', 'getMetadata'];
+      // eslint-disable-next-line @intlify/vue-i18n/no-dynamic-keys
       return `${this.currentStep + 1}/3: ${this.$t(steps[this.currentStep])}`;
     },
   },
@@ -454,8 +554,10 @@ export default {
         newTokenIds.filter((item) => oldTokenIds.indexOf(item) < 0)
       );
       this.currentStep = 1;
-      const { currentlyOwnedTokens, errorTokens } =
-        await this.getCurrentlyOwned(tokenIds);
+      const {
+        currentlyOwnedTokens,
+        errorTokens,
+      } = await this.getCurrentlyOwned(tokenIds);
 
       const currentlyOwnedTokenIds = currentlyOwnedTokens.map(
         (token) => token.id
@@ -506,18 +608,8 @@ export default {
         timeout: 120,
       });
 
-      if (this.inView.length === 0) {
-        this.inView = new Array(this.tokens.length).fill(false);
-        this.inView.splice(0, 10, ...Array(10).fill(true));
-      } else {
-        const diff = this.inView.length - this.tokens.length;
-        if (diff > 0) {
-          this.inView.splice(diff * -1, diff);
-        } else if (diff < 0) {
-          this.inView.splice(this.inView.length, 0, Array(diff).fill(true));
-        }
-      }
       this.loadedEvents = true;
+      this.selectedTokens = [];
     },
 
     async getNewIds(type, lastBlock) {
@@ -598,6 +690,81 @@ export default {
         }),
       });
     },
+    startMultitransfer() {
+      this.expanded = true;
+      this.multitransferSelecting = true;
+      this.$emit('grabFAB');
+      this.$q
+        .dialog({
+          title: this.$t('multitransferInstructions.title'),
+          message: `
+          ${this.$t('multitransferInstructions.header')}
+          <ol>
+            <li>
+              ${this.$t('multitransferInstructions.steps[0]')}
+            </li>
+            <li>
+              ${this.$t('multitransferInstructions.steps[1]')}
+            </li>
+            <li>
+              ${this.$t('multitransferInstructions.steps[2]')}
+            </li>
+            <li>
+              ${this.$t('multitransferInstructions.steps[3]')}
+            </li>
+          </ol>
+          `,
+          html: true,
+          cancel: true,
+          persistent: false,
+        })
+        .onCancel(() => {
+          this.cancelMultitransfer();
+        });
+    },
+    doMultitransfer() {
+      this.$q
+        .dialog({
+          component: MultitransferDialog,
+          componentProps: {
+            contract: this.contract,
+            coinbase: this.coinbase,
+            tokenIds: this.selectedTokens,
+          },
+        })
+        .onOk(() => {
+          this.closeMultitransfer();
+          this.computeTokens();
+        });
+    },
+    wrapperClick(tokenId, event) {
+      if (this.multitransferSelecting) {
+        event.preventDefault();
+        const index = this.selectedTokens.indexOf(tokenId);
+        if (index > -1) {
+          this.selectedTokens.splice(index, 1);
+        } else {
+          this.selectedTokens.push(tokenId);
+        }
+      }
+    },
+    isTokenSelected(tokenId) {
+      const index = this.selectedTokens.indexOf(tokenId);
+      return index > -1;
+    },
+    closeMultitransfer() {
+      this.$emit('releaseFAB');
+      this.multitransferSelecting = false;
+      this.selectedTokens = [];
+    },
+    cancelMultitransfer() {
+      this.closeMultitransfer();
+      this.$q.notify({
+        type: 'warning',
+        icon: 'cancel_schedule_send',
+        message: this.$t('multitransferCanceled'),
+      });
+    },
   },
 };
 </script>
@@ -615,8 +782,8 @@ body.screen--xs .scroll-container {
   width: 100%;
 }
 
-.expanded.scroll-container{
-    height: 100%;
+.expanded.scroll-container {
+  height: 100%;
 }
 
 .q-toolbar {
@@ -635,9 +802,41 @@ body.screen--xs .scroll-container {
 .card-intersection {
   width: 500px;
 }
+
+.multiselection .token-wrapper {
+  filter: brightness(0.6);
+  &::after{
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+ }
+  &.selected {
+    filter: brightness(1);
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: var(--q-positive);
+      opacity: 0.7;
+    }
+  }
+}
+
+.multifab {
+  display: grid;
+  margin: 10px 0;
+}
+
 body.screen--xs .card-intersection {
   width: 300px;
 }
+
 body.body--light {
   .q-toolbar {
     background-color: #eeeeee;

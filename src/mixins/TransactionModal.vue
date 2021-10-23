@@ -57,7 +57,7 @@ export default {
       // we just need to hide dialog
       this.hide();
     },
-    transactionReceipt() {
+    transactionReceipt(message) {
       this.$$emit('transferConfirmed', {
         // eslint-disable-next-line no-underscore-dangle
         contract: this.contract._address,
@@ -65,11 +65,13 @@ export default {
       });
       this.$q.notify({
         type: 'positive',
-        message: this.$t('transactionConfirmed'),
+        message: message || this.$t('transactionConfirmed'),
       });
     },
     transactionHash(hash) {
-      this.$q.loading.hide();
+      if (this.$q.loading !== undefined) {
+        this.$q.loading.hide();
+      }
       const actions = [
         {
           label: 'Dismiss',
@@ -105,7 +107,6 @@ export default {
         id: this.id,
         amount: this.amount,
       });
-      this.onOKClick();
     },
     transactionError(err) {
       this.$q.loading.hide();

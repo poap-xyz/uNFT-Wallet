@@ -129,6 +129,7 @@ es:
 <script>
 import ABI from '../artifacts/ierc1155.abi.json';
 import knownContracts from '../knownContracts.json';
+import donations from '../donations.json';
 
 export default {
   name: 'AddContractDialog',
@@ -156,7 +157,28 @@ export default {
   },
   computed: {
     commonContracts() {
-      return knownContracts[this.chain.toString()];
+      const formatedDonations = donations[this.chain.toString()]
+        ? [
+            {
+              name: 'uNFTWallet Donations ERC721',
+              type: 'ERC721',
+              address: donations[this.chain.toString()].tokens.ERC721.address,
+              block:
+                donations[this.chain.toString()].tokens.ERC721.blockCreated,
+            },
+            {
+              name: 'uNFTWallet Donations ERC1155',
+              type: 'ERC1155',
+              address: donations[this.chain.toString()].tokens.ERC1155.address,
+              block:
+                donations[this.chain.toString()].tokens.ERC1155.blockCreated,
+            },
+          ]
+        : [];
+
+      return (knownContracts[this.chain.toString()] || []).concat(
+        formatedDonations
+      );
     },
     commonSelectionType() {
       if (this.commonSelection) return this.commonSelection.type;

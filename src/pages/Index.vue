@@ -34,6 +34,8 @@ es:
           :chain-id="chainId"
           @delete="onDeleteContract"
           @scan="onScanContract"
+          @grabFAB="showFAB=false"
+          @releaseFAB="showFAB=true"
         />
       </div>
       <div v-if="contracts.length === 0" class="q-pa-md q-gutter-sm">
@@ -49,7 +51,7 @@ es:
           </p>
         </q-banner>
       </div>
-      <q-page-sticky position="bottom-right" :offset="[18, 18]">
+      <q-page-sticky v-if="showFAB" position="bottom-right" :offset="[18, 18]">
         <q-btn
           fab
           icon="add"
@@ -111,6 +113,7 @@ export default {
   data() {
     return {
       contracts: [],
+      showFAB: true
     };
   },
   computed: {
