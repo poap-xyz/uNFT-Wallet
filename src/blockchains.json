@@ -5,7 +5,8 @@
     "type": "production",
     "explorerAddress": "https://etherscan.io/address/%s",
     "explorerTx": "https://etherscan.io/tx/%s",
-    "rpc": "https://eth-mainnet.alchemyapi.io/v2/2pT9LJbbjuBhaVTmaQoE3wyIWJcHotYU"
+    "rpc": "https://eth-mainnet.alchemyapi.io/v2/2pT9LJbbjuBhaVTmaQoE3wyIWJcHotYU",
+    "multitransferAddress": "0x8A50Aad065BEd0f138bcF3ce6ccbaE87748EF2a7"
   },
   "3": {
     "name": "Ropsten",
@@ -32,7 +33,8 @@
     "explorerAddress": "https://goerli.etherscan.io/address/%s",
     "explorerTx": "https://goerli.etherscan.io/tx/%s",
     "faucet": "https://goerli-faucet.slock.it/",
-    "rpc": "https://eth-goerli.alchemyapi.io/v2/CE7523yco5hm0ZbSyBDQK6gGnYYD79nj"
+    "rpc": "https://eth-goerli.alchemyapi.io/v2/CE7523yco5hm0ZbSyBDQK6gGnYYD79nj",
+    "multitransferAddress": "0x5160b31B96fa28494BFd5Eb43310b4469845eD7F"
   },
   "10": {
     "name": "Optimistic Ethereum",
@@ -85,7 +87,8 @@
     "type": "production",
     "explorerAddress": "https://blockscout.com/xdai/mainnet/address/%s",
     "explorerTx": "https://blockscout.com/xdai/mainnet/tx/%s",
-    "rpc": "https://dai.poa.network"
+    "rpc": "https://dai.poa.network",
+    "multitransferAddress": "0x49ad0FE596a042f55757BE4c39c237AaDC6Af1BB"
   },
   "137": {
     "name": "Polygon (Matic) Mainnet",
@@ -94,7 +97,8 @@
     "getLogsLimit": 10000,
     "explorerAddress": "https://polygonscan.com/address/%s",
     "explorerTx": "https://polygonscan.com/tx/%s",
-    "rpc": "https://polygon-rpc.com/"
+    "rpc": "https://polygon-rpc.com/",
+    "multitransferAddress": "0xc2133B463071BF34FEB7D13BaaD2bBA88AD520eB"
   },
   "250": {
     "name": "Fantom Opera",

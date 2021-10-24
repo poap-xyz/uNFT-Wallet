@@ -21,6 +21,8 @@ en:
   clearSelection: 'Clear selection'
   cancel: 'Cancel'
   transfer: 'Transfer'
+  multitransfer: 'Multitransfer'
+  noMultitransferYet: 'Multitransfer is not deployed to this chain yet. Let me know over on Discord.'
   multitransferCanceled: 'Multitransfer canceled'
   multitransferInstructions:
     title: 'Instructions for Multitransfer'
@@ -52,6 +54,8 @@ es:
   clearSelection: 'Deseleccionar todos'
   cancel: 'Cancelar'
   transfer: 'Transferir'
+  multitransfer: 'Multitransferencia'
+  noMultitransferYet: 'La funcionalidad de Multitransferencia no está disponible en esta cadena aún. Solicitala en Discord.'
   multitransferCanceled: 'Multitransferencia cancelada'
   multitransferInstructions:
     title: 'Instrucciones de multitransferencia'
@@ -265,6 +269,7 @@ import idb from '../idb';
 import ContractUtils from '../mixins/ContractUtils';
 import TransactionModal from '../mixins/TransactionModal';
 import MultitransferDialog from './MultitransferDialog';
+import blockchains from '../blockchains.json';
 
 function computeScanRanges(start, end, maxBlocks) {
   const blockCount = end - start;
@@ -444,6 +449,13 @@ function mergeAmount(tokens, amounts) {
     );
     return { ...token, amount: amount.amount };
   });
+}
+
+function chainHasMultitransfer(currentChainId) {
+  const chainIdsWithMultitransfer = Object.entries(blockchains)
+    .filter(([, chain]) => chain.multitransferAddress !== undefined)
+    .map(([chainId]) => chainId);
+  return chainIdsWithMultitransfer.indexOf(currentChainId.toString()) > -1;
 }
 
 export default {
@@ -691,13 +703,14 @@ export default {
       });
     },
     startMultitransfer() {
-      this.expanded = true;
-      this.multitransferSelecting = true;
-      this.$emit('grabFAB');
-      this.$q
-        .dialog({
-          title: this.$t('multitransferInstructions.title'),
-          message: `
+      if (chainHasMultitransfer(this.chainId)) {
+        this.expanded = true;
+        this.multitransferSelecting = true;
+        this.$emit('grabFAB');
+        this.$q
+          .dialog({
+            title: this.$t('multitransferInstructions.title'),
+            message: `
           ${this.$t('multitransferInstructions.header')}
           <ol>
             <li>
@@ -714,13 +727,20 @@ export default {
             </li>
           </ol>
           `,
-          html: true,
-          cancel: true,
+            html: true,
+            cancel: true,
+            persistent: false,
+          })
+          .onCancel(() => {
+            this.cancelMultitransfer();
+          });
+      } else {
+        this.$q.dialog({
+          title: this.$t('multitransfer'),
+          message: this.$t('noMultitransferYet'),
           persistent: false,
-        })
-        .onCancel(() => {
-          this.cancelMultitransfer();
         });
+      }
     },
     doMultitransfer() {
       this.$q
@@ -730,6 +750,7 @@ export default {
             contract: this.contract,
             coinbase: this.coinbase,
             tokenIds: this.selectedTokens,
+            chainId: this.chainId
           },
         })
         .onOk(() => {
@@ -805,14 +826,14 @@ body.screen--xs .scroll-container {
 
 .multiselection .token-wrapper {
   filter: brightness(0.6);
-  &::after{
+  &::after {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
- }
+  }
   &.selected {
     filter: brightness(1);
     &::after {

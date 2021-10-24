@@ -134,8 +134,11 @@ import Blockie from './Blockie';
 import TransactionModal from '../mixins/TransactionModal';
 import RecipientUtils from '../mixins/RecipientUtils';
 import abiMultitransfer from '../artifacts/multitransfer721.abi.json';
+import blockchains from '../blockchains.json';
 
-const MULTITRANSFER_CONTRACT = '0x90dd0178E80040F6a7A6EBdECBE71CB3FA516472';
+function getMultitransferContractAddress(chainId) {
+  return blockchains[chainId.toString()].multitransferAddress;
+}
 
 export default {
   name: 'MultitransferDialog',
@@ -154,6 +157,10 @@ export default {
     },
     tokenIds: {
       type: Array,
+      required: true,
+    },
+    chainId: {
+      type: Number,
       required: true,
     },
   },
@@ -204,7 +211,10 @@ export default {
     },
     async checkAproval() {
       return this.contract.methods
-        .isApprovedForAll(this.coinbase, MULTITRANSFER_CONTRACT)
+        .isApprovedForAll(
+          this.coinbase,
+          getMultitransferContractAddress(this.chainId)
+        )
         .call();
     },
     async multitransfer() {
@@ -212,7 +222,7 @@ export default {
       let gas = 500000;
       const contract = new this.$web3.instance.eth.Contract(
         abiMultitransfer,
-        MULTITRANSFER_CONTRACT
+        getMultitransferContractAddress(this.chainId)
       );
       try {
         gas = await contract.methods
@@ -252,7 +262,10 @@ export default {
           let gas = 500000;
           try {
             gas = await this.contract.methods
-              .setApprovalForAll(MULTITRANSFER_CONTRACT, true)
+              .setApprovalForAll(
+                getMultitransferContractAddress(this.chainId),
+                true
+              )
               .estimateGas({ from: this.coinbase });
             gas = Math.floor(gas * 1.3);
           } catch (err) {
@@ -260,7 +273,10 @@ export default {
           }
 
           this.contract.methods
-            .setApprovalForAll(MULTITRANSFER_CONTRACT, true)
+            .setApprovalForAll(
+              getMultitransferContractAddress(this.chainId),
+              true
+            )
             .send({ from: this.coinbase, gas })
             .on('error', (err) => {
               this.transactionError(err);
