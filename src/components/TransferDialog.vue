@@ -109,7 +109,7 @@ es:
             <p>{{$t('sendingMultiple')}}</p>
             <p>
             {{$t('tryMultitransfer')}}
-              <q-icon name="double_arrow" />
+              <q-icon class="rotate-90" name="merge_type" />
             </p>
           </div>
           <q-card-actions align="right">

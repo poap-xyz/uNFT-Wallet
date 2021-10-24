@@ -118,7 +118,8 @@ es:
         flat
         round
         dense
-        icon="double_arrow"
+        icon="merge_type"
+        class="rotate-90"
         @click="startMultitransfer"
       >
         <q-tooltip>{{ $t('ttMultitransfer') }}</q-tooltip>
