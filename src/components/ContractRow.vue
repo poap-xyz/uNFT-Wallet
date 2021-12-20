@@ -567,10 +567,8 @@ export default {
         newTokenIds.filter((item) => oldTokenIds.indexOf(item) < 0)
       );
       this.currentStep = 1;
-      const {
-        currentlyOwnedTokens,
-        errorTokens,
-      } = await this.getCurrentlyOwned(tokenIds);
+      const { currentlyOwnedTokens, errorTokens } =
+        await this.getCurrentlyOwned(tokenIds);
 
       const currentlyOwnedTokenIds = currentlyOwnedTokens.map(
         (token) => token.id
@@ -625,24 +623,39 @@ export default {
       this.selectedTokens = [];
     },
 
-    async getNewIds(type, lastBlock) {
+    async getNewIds(type, lastBlock, maxBlocks = undefined) {
       if (lastBlock > this.lastScanBlock) {
         let ranges = [{ from: this.lastScanBlock, to: lastBlock }];
-        const maxBlocks = this.$web3.chains[this.chainId]
-          ? this.$web3.chains[this.chainId].getLogsLimit
-          : undefined;
         if (maxBlocks) {
           ranges = computeScanRanges(this.lastScanBlock, lastBlock, maxBlocks);
         }
 
-        let newIds = [];
-        if (type === 'ERC721') {
-          newIds = await this.getNewIds721(ranges);
-        } else {
-          newIds = await this.getNewIds1155(ranges);
-        }
+        try {
+          let newIds = [];
+          if (type === 'ERC721') {
+            newIds = await this.getNewIds721(ranges);
+          } else {
+            newIds = await this.getNewIds1155(ranges);
+          }
 
-        return [...new Set(newIds)]; // Remove duplicates
+          return [...new Set(newIds)]; // Remove duplicates
+        } catch (err) {
+          const regexp =
+            /eth_getLogs(?: and eth_newFilter)? are limited to a ([\d,]+) blocks range|exceed maximum block range: ([\d,]+)/;
+          const matchesArray = err.message.match(regexp);
+          const limitString = matchesArray[1] ?? matchesArray[2];
+          if (limitString) {
+            const parsedMaxBlocks = parseInt(
+              limitString.replace(',', '').replace('.', ''),
+              10
+            );
+            if (maxBlocks === undefined) {
+              return this.getNewIds(type, lastBlock, parsedMaxBlocks);
+            }
+          }
+          // eslint-disable-next-line no-console
+          console.error(err);
+        }
       }
       return [];
     },
@@ -751,7 +764,7 @@ export default {
             contract: this.contract,
             coinbase: this.coinbase,
             tokenIds: this.selectedTokens,
-            chainId: this.chainId
+            chainId: this.chainId,
           },
         })
         .onOk(() => {

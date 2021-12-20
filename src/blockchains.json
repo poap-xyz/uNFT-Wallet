@@ -57,7 +57,6 @@
     "name": "Binance Smart Chain",
     "status": "warn",
     "type": "production",
-    "getLogsLimit": 5000,
     "explorerAddress": "https://bscscan.com/address/%s",
     "explorerTx": "https://bscscan.com/tx/%s",
     "rpc": "https://bsc-dataseed.binance.org/"
@@ -75,7 +74,6 @@
     "name": "Binance Smart Chain Testnet",
     "status": "error",
     "type": "test",
-    "getLogsLimit": 5000,
     "explorerAddress": "https://testnet.bscscan.com/address/%s",
     "explorerTx": "https://testnet.bscscan.com/tx/%s",
     "faucet": "https://testnet.binance.org/faucet-smart",
@@ -94,7 +92,6 @@
     "name": "Polygon (Matic) Mainnet",
     "status": "warn",
     "type": "production",
-    "getLogsLimit": 10000,
     "explorerAddress": "https://polygonscan.com/address/%s",
     "explorerTx": "https://polygonscan.com/tx/%s",
     "rpc": "https://polygon-rpc.com/",

@@ -22,6 +22,7 @@ es:
 import Web3Modal from 'web3modal';
 import WalletConnectProvider from '@walletconnect/web3-provider';
 import Web3 from 'web3';
+import { WalletLink } from 'walletlink';
 
 // import Portis from '@portis/web3';
 // import Authereum from 'authereum';
@@ -65,7 +66,31 @@ export default {
           rpc: rpcs,
         },
       },
-
+      'custom-walletlink': {
+        display: {
+          logo: 'coinbase-wallet.svg',
+          name: 'Coinbase Wallet',
+          description: 'Scan with WalletLink to connect',
+        },
+        options: {
+          appName: 'uNFT Wallet',
+          appLogoUrl: 'http://unftwallet.xyz/icons/favicon-128x128.png',
+          darkMode: this.$q.dark.isActive,
+          networkUrl: rpcs['1'],
+        },
+        package: WalletLink,
+        connector: async (_, options) => {
+          const { appName, appLogoUrl, darkMode, networkUrl } = options;
+          const walletLink = new WalletLink({
+            appName,
+            appLogoUrl,
+            darkMode,
+          });
+          const provider = walletLink.makeWeb3Provider(networkUrl);
+          await provider.enable();
+          return provider;
+        },
+      },
       /* portis: {
         package: Portis, // required
         options: {

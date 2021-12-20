@@ -1,6 +1,6 @@
 {
   "name": "unftwallet",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "Display ERC721 & ERC155 from any chain, with IPFS support",
   "productName": "uNFT Wallet",
   "author": "Jorge Pérez <dev@ktlxv.com>",
@@ -35,6 +35,7 @@
     "vue-router": "4",
     "vue-zoomer": "^0.4.0-beta.1",
     "vuex": "4",
+    "walletlink": "^2.3.0",
     "web3": "^1.5.2",
     "web3-eth-contract": "^1.5.3",
     "web3modal": "^1.9.4",
