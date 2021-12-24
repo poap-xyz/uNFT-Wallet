@@ -42,7 +42,8 @@
     "type": "production",
     "explorerAddress": "https://optimistic.etherscan.io/address/%s",
     "explorerTx": "https://optimistic.etherscan.io/tx/%s",
-    "rpc": "https://optimistic.etherscan.io"
+    "rpc": "https://optimistic.etherscan.io",
+    "multitransferAddress": "0x5638de7996E1A02471BD9496Bd50C44eE6590fF8"
   },
   "42": {
     "name": "Kovan",
@@ -59,7 +60,8 @@
     "type": "production",
     "explorerAddress": "https://bscscan.com/address/%s",
     "explorerTx": "https://bscscan.com/tx/%s",
-    "rpc": "https://bsc-dataseed.binance.org/"
+    "rpc": "https://bsc-dataseed.binance.org/",
+    "multitransferAddress": "0x6cF553034436928982bF2368E9d2f7137585f3C5"
   },
   "77": {
     "name": "Sokol",
@@ -103,7 +105,8 @@
     "type": "production",
     "explorerAddress": "https://ftmscan.com/address/%s",
     "explorerTx": "https://ftmscan.com/tx/%s",
-    "rpc": "https://rpcapi.fantom.network/"
+    "rpc": "https://rpcapi.fantom.network/",
+    "multitransferAddress": "0x4bBdBf66A09b30A7A5c58A936Da35257B1ed3eAd"
   },
   "4002": {
     "name": "Fantom Testnet",
@@ -129,7 +132,8 @@
     "type": "production",
     "explorerAddress": "https://arbiscan.io/address/%s",
     "explorerTx": "https://arbiscan.io/tx/%s",
-    "rpc": "https://arb1.arbitrum.io/rpc"
+    "rpc": "https://arb1.arbitrum.io/rpc",
+    "multitransferAddress": "0xdb460f4dcdc3e30b77aa044a685630c3c77b002e"
   },
   "43114": {
     "name": "Avalanche",
@@ -137,7 +141,8 @@
     "type": "production",
     "explorerAddress": "https://cchain.explorer.avax.network/address/%s",
     "explorerTx": "https://cchain.explorer.avax.network//tx/%s",
-    "rpc": "https://api.avax.network/ext/bc/C/rpc"
+    "rpc": "https://api.avax.network/ext/bc/C/rpc",
+    "multitransferAddress": "0xb7F646738e11D9F8b09A066e724A5e09C293082c"
   },
   "80001": {
     "name": "Polygon (Matic) Mumbai Testnet",
