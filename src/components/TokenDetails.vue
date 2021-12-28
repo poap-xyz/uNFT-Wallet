@@ -49,7 +49,7 @@ es:
           {{ $t('contract') }}
           <q-icon name="warning" class="text-negative">
             <q-tooltip>{{ $t('contractWarning') }}</q-tooltip>
-          <!-- eslint-disable-next-line @intlify/vue-i18n/no-raw-text -->
+            <!-- eslint-disable-next-line @intlify/vue-i18n/no-raw-text -->
           </q-icon>
           :<address-chip :address="contractAddress" :chain-id="chainId" />
         </div>
@@ -57,7 +57,7 @@ es:
           {{ $t('owner') }}
           <q-icon v-if="type == 'ERC1155'" name="info">
             <q-tooltip>{{ $t('erc1155OwnerExplanation') }}</q-tooltip>
-          <!-- eslint-disable-next-line @intlify/vue-i18n/no-raw-text -->
+            <!-- eslint-disable-next-line @intlify/vue-i18n/no-raw-text -->
           </q-icon>
           : <address-chip :address="owner" :chain-id="chainId" />
         </div>
@@ -310,7 +310,7 @@ export default {
   methods: {
     share() {
       const link = makeLink(
-        this.chain,
+        this.chainId,
         this.contractAddress,
         this.hexId,
         this.type,

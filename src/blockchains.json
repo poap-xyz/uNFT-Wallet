@@ -135,6 +135,14 @@
     "rpc": "https://arb1.arbitrum.io/rpc",
     "multitransferAddress": "0xdb460f4dcdc3e30b77aa044a685630c3c77b002e"
   },
+  "42220": {
+    "name": "Celo",
+    "status": "warn",
+    "type": "production",
+    "explorerAddress": "https://explorer.celo.org/address/%s",
+    "explorerTx": "https://explorer.celo.org/tx/%s",
+    "rpc": "https://forno.celo.org"
+  },
   "43114": {
     "name": "Avalanche",
     "status": "warn",

@@ -15,7 +15,7 @@
 import Blockchains from '../blockchains.json';
 
 function updateChain(chainId) {
-  if (Blockchains[chainId.toString()]) {
+  if (chainId && Blockchains[chainId.toString()]) {
     return {
       link: Blockchains[chainId.toString()].explorerAddress,
       iconUrl: Blockchains[chainId.toString()].icon,

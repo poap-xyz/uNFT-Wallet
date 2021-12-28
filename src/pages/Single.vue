@@ -13,7 +13,7 @@ es:
       :type="type"
       :description="description"
       :contract-address="contractAddress"
-      :chain="chain"
+      :chain-id="chainId"
       :properties="properties"
       :image="image"
       :image-original="imageOriginal"
