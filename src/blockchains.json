@@ -141,7 +141,8 @@
     "type": "production",
     "explorerAddress": "https://explorer.celo.org/address/%s",
     "explorerTx": "https://explorer.celo.org/tx/%s",
-    "rpc": "https://forno.celo.org"
+    "rpc": "https://forno.celo.org",
+    "multitransferAddress": "0x1F2dA6e24529Be09e009491bd4fc5056b82608eD"
   },
   "43114": {
     "name": "Avalanche",
