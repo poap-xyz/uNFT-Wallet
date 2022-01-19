@@ -161,5 +161,13 @@
     "explorerTx": "https://explorer-mumbai.maticvigil.com/tx/%s",
     "faucet": "https://faucet.matic.network",
     "rpc": "https://rpc-mumbai.matic.today"
+  },
+  "11297108109": {
+    "name": "Palm",
+    "status": "warn",
+    "type": "production",
+    "explorerAddress": "https://explorer.palm.io/address/%s",
+    "explorerTx": "https://explorer.palm.io/tx/%s",
+    "rpc": "https://palm-mainnet.infura.io/v3/3a961d6501e54add9a41aa53f15de99b"
   }
 }
