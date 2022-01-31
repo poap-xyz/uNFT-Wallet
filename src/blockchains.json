@@ -6,7 +6,8 @@
     "explorerAddress": "https://etherscan.io/address/%s",
     "explorerTx": "https://etherscan.io/tx/%s",
     "rpc": "https://eth-mainnet.alchemyapi.io/v2/2pT9LJbbjuBhaVTmaQoE3wyIWJcHotYU",
-    "multitransferAddress": "0x8A50Aad065BEd0f138bcF3ce6ccbaE87748EF2a7"
+    "multitransferAddress": "0x8A50Aad065BEd0f138bcF3ce6ccbaE87748EF2a7",
+    "logo": "mainnet"
   },
   "3": {
     "name": "Ropsten",
@@ -43,7 +44,8 @@
     "explorerAddress": "https://optimistic.etherscan.io/address/%s",
     "explorerTx": "https://optimistic.etherscan.io/tx/%s",
     "rpc": "https://optimistic.etherscan.io",
-    "multitransferAddress": "0x5638de7996E1A02471BD9496Bd50C44eE6590fF8"
+    "multitransferAddress": "0x5638de7996E1A02471BD9496Bd50C44eE6590fF8",
+    "logo": "optimism"
   },
   "42": {
     "name": "Kovan",
@@ -61,7 +63,8 @@
     "explorerAddress": "https://bscscan.com/address/%s",
     "explorerTx": "https://bscscan.com/tx/%s",
     "rpc": "https://bsc-dataseed.binance.org/",
-    "multitransferAddress": "0x6cF553034436928982bF2368E9d2f7137585f3C5"
+    "multitransferAddress": "0x6cF553034436928982bF2368E9d2f7137585f3C5",
+    "logo": "bsc"
   },
   "77": {
     "name": "Sokol",
@@ -82,22 +85,24 @@
     "rpc": "https://data-seed-prebsc-1-s1.binance.org:8545/"
   },
   "100": {
-    "name": "xDAI",
+    "name": "Gnosis (xDAI)",
     "status": "warn",
     "type": "production",
     "explorerAddress": "https://blockscout.com/xdai/mainnet/address/%s",
     "explorerTx": "https://blockscout.com/xdai/mainnet/tx/%s",
     "rpc": "https://dai.poa.network",
-    "multitransferAddress": "0x49ad0FE596a042f55757BE4c39c237AaDC6Af1BB"
+    "multitransferAddress": "0x49ad0FE596a042f55757BE4c39c237AaDC6Af1BB",
+    "logo": "gnosis"
   },
   "137": {
-    "name": "Polygon (Matic) Mainnet",
+    "name": "Polygon",
     "status": "warn",
     "type": "production",
     "explorerAddress": "https://polygonscan.com/address/%s",
     "explorerTx": "https://polygonscan.com/tx/%s",
     "rpc": "https://polygon-rpc.com/",
-    "multitransferAddress": "0xc2133B463071BF34FEB7D13BaaD2bBA88AD520eB"
+    "multitransferAddress": "0xc2133B463071BF34FEB7D13BaaD2bBA88AD520eB",
+    "logo": "polygon"
   },
   "250": {
     "name": "Fantom Opera",
@@ -106,7 +111,8 @@
     "explorerAddress": "https://ftmscan.com/address/%s",
     "explorerTx": "https://ftmscan.com/tx/%s",
     "rpc": "https://rpcapi.fantom.network/",
-    "multitransferAddress": "0x4bBdBf66A09b30A7A5c58A936Da35257B1ed3eAd"
+    "multitransferAddress": "0x4bBdBf66A09b30A7A5c58A936Da35257B1ed3eAd",
+    "logo": "fantom"
   },
   "4002": {
     "name": "Fantom Testnet",
@@ -133,7 +139,8 @@
     "explorerAddress": "https://arbiscan.io/address/%s",
     "explorerTx": "https://arbiscan.io/tx/%s",
     "rpc": "https://arb1.arbitrum.io/rpc",
-    "multitransferAddress": "0xdb460f4dcdc3e30b77aa044a685630c3c77b002e"
+    "multitransferAddress": "0xdb460f4dcdc3e30b77aa044a685630c3c77b002e",
+    "logo": "arbitrum"
   },
   "42220": {
     "name": "Celo",
@@ -142,7 +149,8 @@
     "explorerAddress": "https://explorer.celo.org/address/%s",
     "explorerTx": "https://explorer.celo.org/tx/%s",
     "rpc": "https://forno.celo.org",
-    "multitransferAddress": "0x1F2dA6e24529Be09e009491bd4fc5056b82608eD"
+    "multitransferAddress": "0x1F2dA6e24529Be09e009491bd4fc5056b82608eD",
+    "logo": "celo"
   },
   "43114": {
     "name": "Avalanche",
@@ -151,7 +159,8 @@
     "explorerAddress": "https://cchain.explorer.avax.network/address/%s",
     "explorerTx": "https://cchain.explorer.avax.network//tx/%s",
     "rpc": "https://api.avax.network/ext/bc/C/rpc",
-    "multitransferAddress": "0xb7F646738e11D9F8b09A066e724A5e09C293082c"
+    "multitransferAddress": "0xb7F646738e11D9F8b09A066e724A5e09C293082c",
+    "logo": "avalanche"
   },
   "80001": {
     "name": "Polygon (Matic) Mumbai Testnet",
@@ -168,6 +177,7 @@
     "type": "production",
     "explorerAddress": "https://explorer.palm.io/address/%s",
     "explorerTx": "https://explorer.palm.io/tx/%s",
-    "rpc": "https://palm-mainnet.infura.io/v3/3a961d6501e54add9a41aa53f15de99b"
+    "rpc": "https://palm-mainnet.infura.io/v3/3a961d6501e54add9a41aa53f15de99b",
+    "logo": "palm"
   }
 }

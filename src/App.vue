@@ -84,6 +84,12 @@ es:
             label="Dark Mode"
             unchecked-icon="brightness_low"
           />
+          <q-toggle
+            v-model="multichainModeEnabled"
+            checked-icon="link"
+            label="Multichain Mode"
+            unchecked-icon="link_off"
+          />
           <q-list>
             <q-separator />
             <q-item
@@ -189,6 +195,7 @@ export default {
     return {
       leftDrawerOpen: false,
       showDonateModal: false,
+      multichainModeEnabled: null,
     };
   },
   computed: {
@@ -237,6 +244,10 @@ export default {
         });
       }
     },
+    multichainModeEnabled(newValue) {
+      window.localStorage.setItem('multichainModeEnabled', newValue);
+      this.$store.commit('ui/SET_MULTICHAIN_MODE', newValue);
+    },
   },
   mounted() {
     const goatCount = document.createElement('script');
@@ -261,6 +272,13 @@ export default {
     if (window.localStorage.getItem('darkEnabled') === 'true') {
       this.$q.dark.set(true);
     }
+
+    let multichainModeEnableConf = false;
+    if (window.localStorage.getItem('multichainModeEnabled') === 'true') {
+      multichainModeEnableConf = true;
+    }
+    this.multichainModeEnabled = multichainModeEnableConf;
+    this.$store.commit('multichainMode', multichainModeEnableConf);
   },
   methods: {
     accountChanged(e) {

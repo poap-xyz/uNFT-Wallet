@@ -81,9 +81,8 @@ es:
       <q-card-actions align="around">
         <q-btn flat @click="showDetailsDialog">{{ $t('details') }}</q-btn>
         <q-btn
-          v-if="!hideTransfer"
           flat
-          :disabled="pendingTransferNoneLeft"
+          :disabled="disableTransfer || pendingTransferNoneLeft"
           @click="showTransferDialog"
         >
           {{ $t('transfer') }}</q-btn
@@ -155,13 +154,13 @@ export default {
       type: String,
       required: true,
     },
+    chainId: {
+      type: Number,
+      required: true,
+    },
     amount: {
       type: Number,
       default: 0,
-    },
-    hideTransfer: {
-      type: Boolean,
-      default: false,
     },
   },
   emits: ['transfer'],
@@ -188,8 +187,8 @@ export default {
     badCORSHosts() {
       return this.$store.state.badCors.hosts;
     },
-    chainId() {
-      return this.$store.state.web3.chainId;
+    disableTransfer() {
+      return this.chainId !== this.$store.state.web3.chainId;
     },
   },
   watch: {
