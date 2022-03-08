@@ -273,9 +273,9 @@ export default {
       this.$q.dark.set(true);
     }
 
-    let multichainModeEnableConf = false;
-    if (window.localStorage.getItem('multichainModeEnabled') === 'true') {
-      multichainModeEnableConf = true;
+    let multichainModeEnableConf = true;
+    if (window.localStorage.getItem('multichainModeEnabled') === 'false') {
+      multichainModeEnableConf = false;
     }
     this.multichainModeEnabled = multichainModeEnableConf;
     this.$store.commit('multichainMode', multichainModeEnableConf);
