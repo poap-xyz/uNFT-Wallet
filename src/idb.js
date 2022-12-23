@@ -10,50 +10,50 @@ export default {
       } else {
         const request = window.indexedDB.open(DB_NAME, DB_VERSION);
 
-        request.onerror = e => {
+        request.onerror = (e) => {
           reject('Error', e);
         };
 
-        request.onsuccess = e => {
+        request.onsuccess = (e) => {
           DB = e.target.result;
           resolve(DB);
         };
 
-        request.onupgradeneeded = e => {
+        request.onupgradeneeded = (e) => {
           const db = e.target.result;
           const contractObjectStore = db.createObjectStore('contracts', {
-            autoIncrement: true
+            autoIncrement: true,
           });
           contractObjectStore.createIndex(
             'chainAccount',
             ['chain', 'account'],
             {
-              unique: false
+              unique: false,
             }
           );
           contractObjectStore.createIndex(
             'chainAccountAddress',
             ['chain', 'account', 'address'],
             {
-              unique: true
+              unique: true,
             }
           );
 
           const tokenObjectStore = db.createObjectStore('tokens', {
-            autoIncrement: true
+            autoIncrement: true,
           });
           tokenObjectStore.createIndex(
             'chainAccountAddress',
             ['chain', 'account', 'address'],
             {
-              unique: false
+              unique: false,
             }
           );
           tokenObjectStore.createIndex(
             'chainAccountAddressId',
             ['chain', 'account', 'address', 'id'],
             {
-              unique: true
+              unique: true,
             }
           );
         };
@@ -63,7 +63,7 @@ export default {
   async deleteContract(chain, account, address) {
     const db = await this.getDb();
 
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       const trans = db.transaction(['contracts', 'tokens'], 'readwrite');
       trans.oncomplete = () => {
         resolve();
@@ -73,12 +73,12 @@ export default {
       const tokensObjectStore = trans.objectStore('tokens');
 
       const contractsIndex = contractsObjectStore.index('chainAccountAddress');
-      contractsIndex.getKey([chain, account, address]).onsuccess = e => {
+      contractsIndex.getKey([chain, account, address]).onsuccess = (e) => {
         contractsObjectStore.delete(e.target.result);
       };
 
       const tokensIndex = tokensObjectStore.index('chainAccountAddress');
-      tokensIndex.openCursor([chain, account, address]).onsuccess = e => {
+      tokensIndex.openCursor([chain, account, address]).onsuccess = (e) => {
         const cursor = e.target.result;
         if (cursor) {
           tokensObjectStore.delete(cursor.primaryKey);
@@ -90,7 +90,7 @@ export default {
   async updateContractScan(chain, account, address, lastScanBlock) {
     const db = await this.getDb();
 
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       const trans = db.transaction(['contracts'], 'readwrite');
       trans.oncomplete = () => {
         resolve();
@@ -99,9 +99,9 @@ export default {
       const objectStore = trans.objectStore('contracts');
 
       const index = objectStore.index('chainAccountAddress');
-      index.getKey([chain, account, address]).onsuccess = e => {
+      index.getKey([chain, account, address]).onsuccess = (e) => {
         const tokenIndex = e.target.result;
-        objectStore.get(tokenIndex).onsuccess = eToken => {
+        objectStore.get(tokenIndex).onsuccess = (eToken) => {
           const contract = eToken.target.result;
           contract.lastScanBlock = lastScanBlock;
           objectStore.put(contract, tokenIndex);
@@ -109,16 +109,16 @@ export default {
       };
     });
   },
-  async getContracts(chain, account) {
+  async getContractsByChain(chain, account) {
     const db = await this.getDb();
 
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       const trans = db.transaction(['contracts'], 'readonly');
       const objectStore = trans.objectStore('contracts');
       const contracts = [];
 
       const index = objectStore.index('chainAccount');
-      index.openCursor([chain, account]).onsuccess = e => {
+      index.openCursor([chain, account]).onsuccess = (e) => {
         const cursor = e.target.result;
         if (cursor) {
           contracts.push(cursor.value);
@@ -131,10 +131,34 @@ export default {
     });
   },
 
+  async getContracts(account) {
+    const db = await this.getDb();
+
+    return new Promise((resolve) => {
+      const trans = db.transaction(['contracts'], 'readonly');
+      const objectStore = trans.objectStore('contracts');
+      const contracts = [];
+
+      const index = objectStore.index('chainAccount');
+      index.openCursor().onsuccess = (e) => {
+        const cursor = e.target.result;
+        if (cursor) {
+          if (cursor.value.account === account) {
+            contracts.push(cursor.value);
+          }
+          cursor.continue();
+        }
+      };
+      trans.oncomplete = () => {
+        resolve(contracts);
+      };
+    });
+  },
+
   async addContract(contract) {
     const db = await this.getDb();
 
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       const trans = db.transaction(['contracts'], 'readwrite');
       trans.oncomplete = () => {
         resolve();
@@ -148,7 +172,7 @@ export default {
   async putToken(chain, account, address, token) {
     const db = await this.getDb();
 
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       const trans = db.transaction(['tokens'], 'readwrite');
       trans.oncomplete = () => {
         resolve();
@@ -160,7 +184,7 @@ export default {
 
       const index = objectStore.index('chainAccountAddressId');
       const search = index.getKey([chain, account, address, token.id]);
-      search.onsuccess = e => {
+      search.onsuccess = (e) => {
         const tokenIndex = e.target.result;
         objectStore.put(completeToken, tokenIndex);
       };
@@ -173,13 +197,13 @@ export default {
   async getTokens(chain, account, address) {
     const db = await this.getDb();
 
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       const trans = db.transaction(['tokens'], 'readonly');
       const objectStore = trans.objectStore('tokens');
       const tokens = [];
 
       const index = objectStore.index('chainAccountAddress');
-      index.openCursor([chain, account, address]).onsuccess = e => {
+      index.openCursor([chain, account, address]).onsuccess = (e) => {
         const cursor = e.target.result;
         if (cursor) {
           tokens.push(cursor.value);
@@ -190,5 +214,5 @@ export default {
         resolve(tokens);
       };
     });
-  }
+  },
 };

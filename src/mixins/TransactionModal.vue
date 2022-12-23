@@ -110,6 +110,8 @@ export default {
     },
     transactionError(err) {
       this.$q.loading.hide();
+      // eslint-disable-next-line no-console
+      console.log(err);
       this.$q.notify({
         type: 'negative',
         message: `Error: ${err.message}`,

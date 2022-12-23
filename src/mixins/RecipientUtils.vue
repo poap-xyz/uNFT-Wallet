@@ -1,4 +1,14 @@
+<i18n>
+</i18n>
 <script>
+const NULL_ADDRESS = '0x0000000000000000000000000000000000000000';
+
+function mergeLocaleMessages(i18n, messages) {
+  Object.entries(messages).forEach(([locale, localeMessages]) =>
+    i18n.mergeLocaleMessage(locale, localeMessages)
+  );
+}
+
 export default {
   name: 'RecipientUtils',
   data() {
@@ -9,9 +19,26 @@ export default {
       recipientAddress: null,
     };
   },
+  beforeCreate() {
+    mergeLocaleMessages(this.$i18n, {
+      en: {
+        invalidAddress: 'Invalid Address',
+        transferingToNull:
+          "The NFT standards don't allow transfering to the Null address, you can still try, or send to 0x000000000000000000000000000000000000dead",
+      },
+      es: {
+        invalidAddress: 'Dirección invalida',
+        transferingToNull:
+          'Los estandares de NFTs no permiten transferir a la dirección Null, lo puedes intentar, o enviar a 0x000000000000000000000000000000000000dead',
+      },
+    });
+  },
   methods: {
     async validateRecipient(recipient) {
       let isOK = false;
+      if (recipient === NULL_ADDRESS) {
+        return this.$t('transferingToNull');
+      }
       if (this.$web3.instance.utils.isAddress(recipient)) {
         this.isENS = false;
         this.recipientAddress = recipient;
@@ -51,7 +78,7 @@ export default {
       if (isOK) {
         return true;
       }
-      return 'Invalid address';
+      return this.$t('invalidAddress');
     },
   },
 };

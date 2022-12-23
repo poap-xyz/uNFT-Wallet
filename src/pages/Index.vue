@@ -24,18 +24,18 @@ es:
       <div class="row">
         <div class="col-xs-8"></div>
       </div>
-      <div v-for="c in contracts" :key="chainId + coinbase + c.address">
+      <div v-for="c in contracts" :key="c.chain + coinbase + c.address">
         <ContractRow
           :type="c.type"
           :address="c.address"
           :alias="c.alias"
           :last-scan-block="c.lastScanBlock"
           :coinbase="coinbase"
-          :chain-id="chainId"
-          @delete="onDeleteContract"
+          :chain-id="c.chain"
+          @delete="onDeleteContract(c)"
           @scan="onScanContract"
-          @grabFAB="showFAB=false"
-          @releaseFAB="showFAB=true"
+          @grabFAB="showFAB = false"
+          @releaseFAB="showFAB = true"
         />
       </div>
       <div v-if="contracts.length === 0" class="q-pa-md q-gutter-sm">
@@ -113,7 +113,7 @@ export default {
   data() {
     return {
       contracts: [],
-      showFAB: true
+      showFAB: true,
     };
   },
   computed: {
@@ -126,12 +126,18 @@ export default {
     chainId() {
       return this.$store.state.web3.chainId;
     },
+    multichainMode() {
+      return this.$store.state.ui.multichainMode;
+    },
   },
   watch: {
     coinbase() {
       this.loadContracts();
     },
     chainId() {
+      this.loadContracts();
+    },
+    multichainMode() {
       this.loadContracts();
     },
   },
@@ -145,7 +151,14 @@ export default {
   methods: {
     async loadContracts() {
       if (this.coinbase && this.chainId) {
-        this.contracts = await idb.getContracts(this.chainId, this.coinbase);
+        if (this.multichainMode) {
+          this.contracts = await idb.getContracts(this.coinbase);
+        } else {
+          this.contracts = await idb.getContractsByChain(
+            this.chainId,
+            this.coinbase
+          );
+        }
       }
     },
     async showAddContractDialog() {
@@ -154,7 +167,7 @@ export default {
           component: AddContractDialog,
           componentProps: {
             existing: this.contracts,
-            chain: this.chainId,
+            chainId: this.chainId,
           },
         })
         .onOk(async (data) => {
@@ -254,7 +267,7 @@ export default {
         })
         .onOk(() => {
           idb
-            .deleteContract(this.chainId, this.coinbase, contract.address)
+            .deleteContract(contract.chain, this.coinbase, contract.address)
             .then(() => {
               this.contracts.splice(
                 this.contracts.findIndex((c) => c.address === contract.address),

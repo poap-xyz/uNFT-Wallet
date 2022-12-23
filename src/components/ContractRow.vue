@@ -13,7 +13,9 @@ en:
   checkOwnership: 'Verifying current owner of received tokens'
   getMetadata: 'Getting new token metadata'
   ttMultitransfer: 'Send several tokens using only two transactions'
+  ttMultitransferDisabled: "Change to this contract's chain on your wallet to send several tokens using only two transactions"
   ttSearchTokens: 'Search for newly transfered tokens'
+  ttSearchTokensDisabled: "Change to this contract's chain on your wallet to scan for new tokens"
   ttExpand: 'Expand'
   ttContact: 'Return to row view'
   ttDeleteContract: 'Delete this contract (can be added again later)'
@@ -46,7 +48,9 @@ es:
   unknownErrorTitle: 'Error desconocido al escanear Tokens'
   unknownErrorMessage: '{unknownErrorCount} tokens de {alias} reportaron un error al escanear, favor de revisar con el emisor'
   ttMultitransfer: 'Envía varios tokens usando solo dos transacciones'
+  ttMultitransferDisabled: 'Cambia a la cadena de este contrato para poder enviar varios tokens usando solo dos transacciones'
   ttSearchTokens: 'Busca tokens transferidos recientemente'
+  ttSearchTokensDisabled: 'Cambia a la cadena de este contrato en tu billetera para poder buscar nuevos tokens'
   ttExpand: 'Expandir'
   ttContact: 'Regresar a modo renglon'
   ttDeleteContract: 'Borrar este contrato (se puede volver a agregar)'
@@ -70,6 +74,9 @@ es:
   <div class="contract">
     <q-toolbar>
       <q-toolbar-title>
+        <q-icon :name="chainIcon" size="lg">
+          <q-tooltip>{{ chainName }}</q-tooltip>
+        </q-icon>
         {{ alias }}
         <div class="text-caption">
           {{ address }}
@@ -120,13 +127,24 @@ es:
         dense
         icon="merge_type"
         class="rotate-90"
+        :disable="!onEnabledChain"
         @click="startMultitransfer"
       >
         <q-tooltip>{{ $t('ttMultitransfer') }}</q-tooltip>
       </q-btn>
-      <q-btn flat round dense icon="refresh" @click="computeTokens">
-        <q-tooltip>{{ $t('ttSearchTokens') }}</q-tooltip>
-      </q-btn>
+      <div>
+        <q-btn
+          flat
+          round
+          dense
+          icon="refresh"
+          :disable="!onEnabledChain"
+          @click="computeTokens"
+        >
+        </q-btn>
+        <q-tooltip v-if="onEnabledChain">{{ $t('ttSearchTokens') }}</q-tooltip>
+        <q-tooltip v-else>{{ $t('ttSearchTokensDisabled') }}</q-tooltip>
+      </div>
       <q-btn flat round dense @click="expanded = !expanded">
         <q-icon v-if="expanded" name="expand_less" />
         <q-icon v-else name="expand_more" />
@@ -165,6 +183,7 @@ es:
                 :type="type"
                 :contract="contract"
                 :coinbase="coinbase"
+                :chain-id="chainId"
                 @transfer="computeTokens"
               />
             </q-intersection>
@@ -505,6 +524,8 @@ export default {
       multitransferSelecting: false,
       selectedTokens: [],
       expandedFAB: true,
+      chainIcon: 'question-mark',
+      chainName: 'unknown',
     };
   },
   computed: {
@@ -524,6 +545,9 @@ export default {
       // eslint-disable-next-line @intlify/vue-i18n/no-dynamic-keys
       return `${this.currentStep + 1}/3: ${this.$t(steps[this.currentStep])}`;
     },
+    onEnabledChain() {
+      return this.chainId === this.$store.state.web3.chainId;
+    },
   },
   watch: {
     coinbase() {
@@ -537,6 +561,14 @@ export default {
       this.type,
       this.address
     );
+    if (blockchains[this.chainId]) {
+      this.chainName = blockchains[this.chainId].name;
+      if (blockchains[this.chainId].logo) {
+        this.chainIcon = `img:/icons/blockchains/${
+          blockchains[this.chainId].logo
+        }.svg`;
+      }
+    }
     this.computeTokens();
     // Rescan on donations/mints
     if (
@@ -551,74 +583,77 @@ export default {
   },
   methods: {
     async computeTokens() {
-      this.latestBlock = await this.$web3.instance.eth.getBlockNumber();
-
-      const newTokenIds = await this.getNewIds(this.type, this.latestBlock);
-
       const oldTokens = await idb.getTokens(
         this.chainId,
         this.coinbase,
         this.address
       );
 
-      const oldTokenIds = oldTokens.map((token) => token.id);
+      if (!this.onEnabledChain) {
+        this.tokens = oldTokens;
+      } else {
+        this.latestBlock = await this.$web3.instance.eth.getBlockNumber();
 
-      const tokenIds = oldTokenIds.concat(
-        newTokenIds.filter((item) => oldTokenIds.indexOf(item) < 0)
-      );
-      this.currentStep = 1;
-      const { currentlyOwnedTokens, errorTokens } =
-        await this.getCurrentlyOwned(tokenIds);
+        const newTokenIds = await this.getNewIds(this.type, this.latestBlock);
 
-      const currentlyOwnedTokenIds = currentlyOwnedTokens.map(
-        (token) => token.id
-      );
+        const oldTokenIds = oldTokens.map((token) => token.id);
 
-      const needMetadataTokenIds = currentlyOwnedTokenIds.filter(
-        (tokenId) => oldTokenIds.indexOf(tokenId) < 0
-      );
+        const tokenIds = oldTokenIds.concat(
+          newTokenIds.filter((item) => oldTokenIds.indexOf(item) < 0)
+        );
+        this.currentStep = 1;
+        const { currentlyOwnedTokens, errorTokens } =
+          await this.getCurrentlyOwned(tokenIds);
 
-      this.currentStep = 2;
-      const newTokensMetadata = await getMetadata(
-        this.contract,
-        this.type,
-        needMetadataTokenIds
-      );
+        const currentlyOwnedTokenIds = currentlyOwnedTokens.map(
+          (token) => token.id
+        );
 
-      const newTokensMetadataComplete = newTokensMetadata.filter(
-        (token) => token.uri !== null
-      );
+        const needMetadataTokenIds = currentlyOwnedTokenIds.filter(
+          (tokenId) => oldTokenIds.indexOf(tokenId) < 0
+        );
 
-      const stillOwnedOldTokens = oldTokens.filter(
-        (oldToken) => currentlyOwnedTokenIds.indexOf(oldToken.id) >= 0
-      );
+        this.currentStep = 2;
+        const newTokensMetadata = await getMetadata(
+          this.contract,
+          this.type,
+          needMetadataTokenIds
+        );
 
-      this.tokens = stillOwnedOldTokens.concat(newTokensMetadataComplete);
-      if (this.type === 'ERC1155') {
-        this.tokens = mergeAmount(this.tokens, currentlyOwnedTokens);
+        const newTokensMetadataComplete = newTokensMetadata.filter(
+          (token) => token.uri !== null
+        );
+
+        const stillOwnedOldTokens = oldTokens.filter(
+          (oldToken) => currentlyOwnedTokenIds.indexOf(oldToken.id) >= 0
+        );
+
+        this.tokens = stillOwnedOldTokens.concat(newTokensMetadataComplete);
+        if (this.type === 'ERC1155') {
+          this.tokens = mergeAmount(this.tokens, currentlyOwnedTokens);
+        }
+
+        this.unknownErrorCount = errorTokens.filter(
+          (token) => token.error === 'Unknown Error'
+        ).length;
+
+        this.notFoundTokenCount = errorTokens.filter(
+          (token) => token.error === 'Not Found'
+        ).length;
+
+        this.nonUriTokensCount =
+          newTokensMetadata.length - newTokensMetadataComplete.length;
+
+        this.tokens.forEach((token) =>
+          idb.putToken(this.chainId, this.coinbase, this.address, token)
+        );
+
+        this.$emit('scan', {
+          address: this.address,
+          lastScanBlock: this.latestBlock,
+          timeout: 120,
+        });
       }
-
-      this.unknownErrorCount = errorTokens.filter(
-        (token) => token.error === 'Unknown Error'
-      ).length;
-
-      this.notFoundTokenCount = errorTokens.filter(
-        (token) => token.error === 'Not Found'
-      ).length;
-
-      this.nonUriTokensCount =
-        newTokensMetadata.length - newTokensMetadataComplete.length;
-
-      this.tokens.forEach((token) =>
-        idb.putToken(this.chainId, this.coinbase, this.address, token)
-      );
-
-      this.$emit('scan', {
-        address: this.address,
-        lastScanBlock: this.latestBlock,
-        timeout: 120,
-      });
-
       this.loadedEvents = true;
       this.selectedTokens = [];
     },

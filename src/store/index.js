@@ -1,5 +1,6 @@
 import { createStore } from 'vuex';
 import web3 from './web3';
+import ui from './ui';
 import badCors from './badCors';
 
 /*
@@ -15,6 +16,7 @@ export default function init(/* { ssrContext } */) {
   const Store = createStore({
     modules: {
       web3,
+      ui,
       badCors,
     },
 

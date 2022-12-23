@@ -12,7 +12,6 @@ en:
   confirmation: 'Confirmation:'
   confirmationValidationError: 'You must confirm the number of NFTs'
   toTransfer: 'NFTs are going to be transfered'
-
 es:
   multitransferToken: 'Transferir Multiples Tokens'
   recipient: 'Receptor'
@@ -314,6 +313,7 @@ export default {
   text-align: center;
 }
 .confirmation {
+  margin-top: 40px;
   font-size: 1.3em;
 }
 .approvedInfo {

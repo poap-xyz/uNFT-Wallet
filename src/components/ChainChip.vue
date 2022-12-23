@@ -1,9 +1,9 @@
 <i18n lang="yaml">
 en:
-  tooltip: "Connected to {chainName}"
+  tooltip: 'Connected to {chainName}'
 
 es:
-  tooltip: "Conectado a {chainName}"
+  tooltip: 'Conectado a {chainName}'
 </i18n>
 <template>
   <q-chip :icon="chainIcon" :color="chainColor">
@@ -16,13 +16,13 @@ es:
 const colors = {
   ok: 'positive',
   warn: 'warning',
-  error: 'negative'
+  error: 'negative',
 };
 
 const icons = {
   ok: 'fas fa-link',
   warn: 'fas fa-exclamation-triangle',
-  error: 'fas fa-times'
+  error: 'fas fa-times',
 };
 
 export default {
@@ -30,12 +30,12 @@ export default {
   props: {
     chains: {
       type: Object,
-      required: true
+      required: true,
     },
     chainId: {
       type: Number,
-      required: true
-    }
+      required: true,
+    },
   },
   computed: {
     chainName() {
@@ -57,13 +57,16 @@ export default {
     chainIcon() {
       let status;
       try {
+        if (this.chains[this.chainId].logo) {
+          return `img:/icons/blockchains/${this.chains[this.chainId].logo}.svg`;
+        }
         status = this.chains[this.chainId].status;
       } catch {
         status = 'error';
       }
       return icons[status];
-    }
-  }
+    },
+  },
 };
 </script>
 

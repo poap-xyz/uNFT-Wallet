@@ -40,7 +40,9 @@ es:
 
         <q-btn v-close-popup flat round dense icon="close" />
       </q-toolbar>
-
+      <div class="text-center">
+        <chain-chip :chain-id="chainId" :chains="$web3.chains" />
+      </div>
       <q-tabs
         v-model="tab"
         dense
@@ -130,18 +132,16 @@ es:
 import ABI from '../artifacts/ierc1155.abi.json';
 import knownContracts from '../knownContracts.json';
 import donations from '../donations.json';
+import ChainChip from './ChainChip';
 
 export default {
   name: 'AddContractDialog',
+  components: { ChainChip },
   props: {
     existing: {
       type: Array,
       required: false,
       default: () => [],
-    },
-    chain: {
-      type: Number,
-      required: true,
     },
   },
   emits: ['ok', 'hide'],
@@ -157,34 +157,35 @@ export default {
   },
   computed: {
     commonContracts() {
-      const formatedDonations = donations[this.chain.toString()]
+      const chainId = this.$store.state.web3.chainId.toString();
+      const formatedDonations = donations[chainId]
         ? [
             {
               name: 'uNFTWallet Donations ERC721',
               type: 'ERC721',
-              address: donations[this.chain.toString()].tokens.ERC721.address,
-              block:
-                donations[this.chain.toString()].tokens.ERC721.blockCreated,
+              address: donations[chainId].tokens.ERC721.address,
+              block: donations[chainId].tokens.ERC721.blockCreated,
             },
             {
               name: 'uNFTWallet Donations ERC1155',
               type: 'ERC1155',
-              address: donations[this.chain.toString()].tokens.ERC1155.address,
-              block:
-                donations[this.chain.toString()].tokens.ERC1155.blockCreated,
+              address: donations[chainId].tokens.ERC1155.address,
+              block: donations[chainId].tokens.ERC1155.blockCreated,
             },
           ]
         : [];
 
-      return (knownContracts[this.chain.toString()] || []).concat(
-        formatedDonations
-      );
+      return (knownContracts[chainId] || []).concat(formatedDonations);
     },
     commonSelectionType() {
       if (this.commonSelection) return this.commonSelection.type;
       return null;
     },
+    chainId() {
+      return this.$store.state.web3.chainId;
+    },
   },
+
   methods: {
     // following method is REQUIRED
     // (don't change its name --> "show")

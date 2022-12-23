@@ -106,9 +106,9 @@ es:
           </q-input>
 
           <div class="multitransferNudge">
-            <p>{{$t('sendingMultiple')}}</p>
+            <p>{{ $t('sendingMultiple') }}</p>
             <p>
-            {{$t('tryMultitransfer')}}
+              {{ $t('tryMultitransfer') }}
               <q-icon class="rotate-90" name="merge_type" />
             </p>
           </div>
@@ -131,13 +131,14 @@ es:
 <script>
 import Blockie from './Blockie';
 import TransactionModal from '../mixins/TransactionModal';
+import RecipientUtils from '../mixins/RecipientUtils';
 
 export default {
   name: 'TransferDialog',
   components: {
     blockie: Blockie,
   },
-  mixins: [TransactionModal],
+  mixins: [TransactionModal, RecipientUtils],
   props: {
     coinbase: {
       type: String,
@@ -170,49 +171,6 @@ export default {
     };
   },
   methods: {
-    async validateRecipient(recipient) {
-      let isOK = false;
-      if (this.$web3.instance.utils.isAddress(recipient)) {
-        this.isENS = false;
-        this.recipientAddress = recipient;
-        isOK = true;
-        this.$web3.ens
-          .getName(this.recipientAddress)
-          .then(async (name) => {
-            this.$web3.ens
-              .name(name.name)
-              .getAddress()
-              .then((forwardAddress) => {
-                if (this.recipientAddress === forwardAddress) {
-                  this.reverseENS = name.name;
-                }
-              });
-          })
-          .catch(() => {});
-      }
-      // 3 letter domain + 3 letter tld + period
-      if (!isOK && recipient.length >= 7) {
-        await this.$web3.ens
-          .name(recipient)
-          .getAddress()
-          .then((address) => {
-            if (address !== '0x0000000000000000000000000000000000000000') {
-              this.isENS = true;
-              this.recipientAddress = address;
-              isOK = true;
-            }
-          })
-          .catch(() => {
-            this.isENS = false;
-            this.recipientAddress = null;
-          });
-      }
-
-      if (isOK) {
-        return true;
-      }
-      return 'Invalid address';
-    },
     reset() {
       this.recipient = null;
       this.amount = null;
@@ -283,6 +241,7 @@ export default {
   text-align: center;
 }
 .multitransferNudge {
+  margin-top: 40px;
   padding: 5px;
   border: 1px dashed gray;
   color: gray;
@@ -291,7 +250,7 @@ export default {
     margin-bottom: 0px;
   }
 
-  .q-icon{
+  .q-icon {
     font-size: 1.3em;
   }
 }
