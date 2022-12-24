@@ -129,14 +129,14 @@ es:
 </template>
 
 <script>
-import Blockie from './Blockie';
+import Web3Blockie from './Web3Blockie';
 import TransactionModal from '../mixins/TransactionModal';
 import RecipientUtils from '../mixins/RecipientUtils';
 
 export default {
   name: 'TransferDialog',
   components: {
-    blockie: Blockie,
+    blockie: Web3Blockie,
   },
   mixins: [TransactionModal, RecipientUtils],
   props: {

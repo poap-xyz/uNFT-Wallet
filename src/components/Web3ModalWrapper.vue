@@ -29,7 +29,7 @@ import { WalletLink } from 'walletlink';
 // import UniLogin from '@unilogin/provider';
 
 export default {
-  name: 'Web3Modal',
+  name: 'Web3ModalWrapper',
   props: {
     color: {
       type: String,
@@ -40,7 +40,7 @@ export default {
       default: 'white',
     },
   },
-  emits: ['accountChanged', 'chainChanged'],
+  emits: ['account-changed', 'chain-changed'],
   data() {
     return {
       web3Modal: {},
@@ -156,14 +156,14 @@ export default {
       if (this.$web3.instance) {
         this.$web3.instance.eth.getAccounts().then((accounts) => {
           const [coinbase] = accounts;
-          this.$emit('accountChanged', { coinbase });
+          this.$emit('account-changed', { coinbase });
         });
       }
     },
     chainChanged() {
       if (this.$web3.instance) {
         this.$web3.instance.eth.getChainId().then((chain) => {
-          this.$emit('chainChanged', { chain });
+          this.$emit('chain-changed', { chain });
         });
       }
     },
@@ -175,8 +175,8 @@ export default {
         window.localStorage.removeItem('walletconnect');
       }
       this.web3Modal.clearCachedProvider();
-      this.$emit('accountChanged', { coinbase: null });
-      this.$emit('chainChanged', { chain: null });
+      this.$emit('account-changed', { coinbase: null });
+      this.$emit('chain-changed', { chain: null });
       this.connected = false;
     },
   },

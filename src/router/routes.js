@@ -1,22 +1,22 @@
 const routes = [
   {
     path: '/welcome',
-    name: 'welcome',
-    component: () => import('pages/Welcome/Welcome'),
+    name: 'welcome-page',
+    component: () => import('pages/WelcomePage/WelcomePage'),
   },
   {
     path: '/single/:chainId/:contractAddress/:tokenId',
-    name: 'single',
+    name: 'single-page',
     component: () => import('pages/Single'),
     props: true,
   },
 
-  { path: '/', name: 'main', component: () => import('pages/Index') },
+  { path: '/', name: 'main-page', component: () => import('pages/Index') },
   // Always leave this as last one,
   // but you can also remove it
   {
     path: '/:catchAll(.*)*',
-    component: () => import('pages/Error404'),
+    component: () => import('pages/Error404Page'),
   },
 ];
 

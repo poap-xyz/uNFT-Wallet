@@ -36,9 +36,8 @@ export const ContractUtils = {
   },
   created() {},
   methods: {
-    getContract: (web3, type, address) => {
-      return new web3.eth.Contract(getABI(type), address);
-    },
+    getContract: (web3, type, address) =>
+      new web3.eth.Contract(getABI(type), address),
   },
 };
 

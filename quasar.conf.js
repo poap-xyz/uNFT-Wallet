@@ -9,6 +9,7 @@
 
 // eslint-disable-next-line import/no-extraneous-dependencies
 const nodePolyfillWebpackPlugin = require('node-polyfill-webpack-plugin');
+const ESLintPlugin = require('eslint-webpack-plugin');
 
 module.exports = (/* ctx */) => {
   return {
@@ -66,18 +67,15 @@ module.exports = (/* ctx */) => {
       // https://quasar.dev/quasar-cli/handling-webpack
       extendWebpack(cfg) {
         cfg.module.rules.push({
-          enforce: 'pre',
-          test: /\.(js|vue)$/,
-          loader: 'eslint-loader',
-          exclude: /node_modules/,
-        });
-        cfg.module.rules.push({
           resourceQuery: /blockType=i18n/,
           type: 'javascript/auto',
           loader: '@intlify/vue-i18n-loader',
         });
       },
       chainWebpack(chain) {
+        chain
+          .plugin('eslint-webpack-plugin')
+          .use(ESLintPlugin, [{ extensions: ['js', 'vue'] }]);
         chain.plugin('node-polyfill').use(nodePolyfillWebpackPlugin);
       },
     },

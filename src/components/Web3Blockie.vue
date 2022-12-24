@@ -8,7 +8,7 @@
 import makeBlockie from 'ethereum-blockies-base64';
 
 export default {
-  name: 'Blockie',
+  name: 'Web3Blockie',
   props: {
     address: {
       type: String,

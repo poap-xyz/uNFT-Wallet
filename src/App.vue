@@ -39,13 +39,12 @@ es:
           <q-toolbar-title @click="goHome()">
             {{ $t('uNFTWallet') }}
           </q-toolbar-title>
-          <Web3Modal
+          <Web3ModalWrapper
             ref="web3modal"
             color="accent"
-            @accountChanged="accountChanged"
-            @chainChanged="chainChanged"
+            @account-changed="accountChanged"
+            @chain-changed="chainChanged"
           />
-
           <ChainChip
             v-if="connected"
             :chain-id="chain"
@@ -53,7 +52,7 @@ es:
           />
           <q-btn v-if="connected" round flat>
             <MetaAvatar :address="coinbase">
-              <Blockie :address="coinbase"></Blockie>
+              <Web3Blockie :address="coinbase"></Web3Blockie>
             </MetaAvatar>
             <q-menu>
               <q-list style="min-width: 100px">
@@ -162,8 +161,8 @@ es:
 
 <script>
 import { setCssVar } from 'quasar';
-import Blockie from './components/Blockie';
-import Web3Modal from './components/Web3Modal';
+import Web3Blockie from './components/Web3Blockie';
+import Web3ModalWrapper from './components/Web3ModalWrapper';
 import LanguageChanger from './components/LanguageChanger';
 import ChainChip from './components/ChainChip';
 import MetaAvatar from './components/MetaAvatar';
@@ -190,7 +189,13 @@ function setDarkMode() {
 
 export default {
   name: 'App',
-  components: { Blockie, Web3Modal, LanguageChanger, ChainChip, MetaAvatar },
+  components: {
+    Web3Blockie,
+    Web3ModalWrapper,
+    LanguageChanger,
+    ChainChip,
+    MetaAvatar,
+  },
   data() {
     return {
       leftDrawerOpen: false,
@@ -231,7 +236,7 @@ export default {
     connected(newValue, oldValue) {
       if (this.$router.name !== 'single') {
         if (newValue && !oldValue) {
-          this.$router.push({ name: 'main' });
+          this.$router.push({ name: 'main-page' });
         } else if (!newValue && oldValue) {
           this.$router.replace({ name: 'welcome' });
         }

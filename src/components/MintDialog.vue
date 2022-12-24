@@ -92,7 +92,7 @@ es:
             <template #option="scope">
               <q-item v-bind="scope.itemProps">
                 <q-item-section>
-                  <!-- eslint-disable-next-line vue/no-v-html -->
+                  <!-- eslint-disable-next-line vue/no-v-html, vue/no-v-text-v-html-on-component -->
                   <q-item-label v-html="scope.opt.name" />
                 </q-item-section>
                 <q-item-section class="type-description">
@@ -111,7 +111,7 @@ es:
             <template #option="scope">
               <q-item v-bind="scope.itemProps">
                 <q-item-section>
-                  <!-- eslint-disable-next-line vue/no-v-html -->
+                  <!-- eslint-disable-next-line vue/no-v-html, vue/no-v-text-v-html-on-component -->
                   <q-item-label v-html="scope.opt.name" />
                 </q-item-section>
                 <q-item-section avatar>

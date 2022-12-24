@@ -204,21 +204,17 @@ function parseProperties(props) {
       const valueIndex = keys.indexOf('value');
       if (valueIndex > -1) {
         const keyVar = keys[(valueIndex + 1) % 1];
-        return props.map((prop) => {
-          return {
-            key: parseKey(prop[keyVar]),
-            value: parseBool(prop.value),
-          };
-        });
+        return props.map((prop) => ({
+          key: parseKey(prop[keyVar]),
+          value: parseBool(prop.value),
+        }));
       }
       return [];
     }
-    const propsArray = Object.entries(props).map((prop) => {
-      return {
-        key: parseKey(prop[0]),
-        value: parseBool(prop[1]),
-      };
-    });
+    const propsArray = Object.entries(props).map((prop) => ({
+      key: parseKey(prop[0]),
+      value: parseBool(prop[1]),
+    }));
     return propsArray;
   }
   return [];

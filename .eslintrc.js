@@ -28,7 +28,6 @@ module.exports = {
 
     'airbnb-base',
     'prettier',
-    'prettier/vue',
     'plugin:@intlify/vue-i18n/recommended',
   ],
 
@@ -100,7 +99,11 @@ module.exports = {
         extensions: ['.js', '.vue'],
       },
     ],
-    '@intlify/vue-i18n/key-format-style': ['error', 'camelCase', {allowArray: true}],
+    '@intlify/vue-i18n/key-format-style': [
+      'error',
+      'camelCase',
+      { allowArray: true },
+    ],
     '@intlify/vue-i18n/no-duplicate-keys-in-locale': ['error'],
   },
 };

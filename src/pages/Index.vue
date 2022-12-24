@@ -34,8 +34,8 @@ es:
           :chain-id="c.chain"
           @delete="onDeleteContract(c)"
           @scan="onScanContract"
-          @grabFAB="showFAB = false"
-          @releaseFAB="showFAB = true"
+          @grab-fab="showFAB = false"
+          @release-fab="showFAB = true"
         />
       </div>
       <div v-if="contracts.length === 0" class="q-pa-md q-gutter-sm">

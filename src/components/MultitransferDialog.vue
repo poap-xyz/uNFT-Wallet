@@ -129,7 +129,7 @@ es:
 </template>
 
 <script>
-import Blockie from './Blockie';
+import Web3Blockie from './Web3Blockie';
 import TransactionModal from '../mixins/TransactionModal';
 import RecipientUtils from '../mixins/RecipientUtils';
 import abiMultitransfer from '../artifacts/multitransfer721.abi.json';
@@ -142,7 +142,7 @@ function getMultitransferContractAddress(chainId) {
 export default {
   name: 'MultitransferDialog',
   components: {
-    blockie: Blockie,
+    blockie: Web3Blockie,
   },
   mixins: [TransactionModal, RecipientUtils],
   props: {

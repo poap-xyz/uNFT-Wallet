@@ -341,11 +341,7 @@ function getLogs721(contract, coinbase, range) {
       toBlock: range.to,
       filter: { to: coinbase },
     })
-    .then((events) => {
-      return events.map((ev) => {
-        return ev.returnValues.tokenId;
-      });
-    });
+    .then((events) => events.map((ev) => ev.returnValues.tokenId));
 }
 
 function getLogs1155Single(contract, coinbase, range) {
@@ -424,12 +420,11 @@ async function currentyOwned721(contract, coinbase, tokenIds) {
   const partialTokens = await asyncPool(500, tokenIds, (tokenId) =>
     getOwner721(contract, tokenId)
   );
-  const currentlyOwnedTokens = partialTokens.filter((token) => {
-    return (
+  const currentlyOwnedTokens = partialTokens.filter(
+    (token) =>
       token.error === null &&
       token.currentOwner.toLowerCase() === coinbase.toLowerCase()
-    );
-  });
+  );
 
   const errorTokens = partialTokens.filter((token) => token.error !== null);
   return { currentlyOwnedTokens, errorTokens };
@@ -455,11 +450,11 @@ async function currentyOwned1155(contract, coinbase, tokenIds) {
 export async function getMetadata(contract, type, tokenIds) {
   const uriFunctionName = type === 'ERC721' ? 'tokenURI' : 'uri';
 
-  return asyncPool(500, tokenIds, (tokenId) => {
-    return contract.methods[uriFunctionName](tokenId)
+  return asyncPool(500, tokenIds, (tokenId) =>
+    contract.methods[uriFunctionName](tokenId)
       .call()
-      .then((uri) => ({ id: tokenId, uri }));
-  });
+      .then((uri) => ({ id: tokenId, uri }))
+  );
 }
 
 function mergeAmount(tokens, amounts) {
@@ -508,7 +503,7 @@ export default {
       required: true,
     },
   },
-  emits: ['scan', 'delete', 'grabFAB', 'releaseFAB'],
+  emits: ['scan', 'delete', 'grab-fab', 'release-fab'],
   data() {
     return {
       loadedEvents: false,
@@ -755,7 +750,7 @@ export default {
       if (chainHasMultitransfer(this.chainId)) {
         this.expanded = true;
         this.multitransferSelecting = true;
-        this.$emit('grabFAB');
+        this.$emit('grab-fab');
         this.$q
           .dialog({
             title: this.$t('multitransferInstructions.title'),
@@ -823,7 +818,7 @@ export default {
       return index > -1;
     },
     closeMultitransfer() {
-      this.$emit('releaseFAB');
+      this.$emit('release-fab');
       this.multitransferSelecting = false;
       this.selectedTokens = [];
     },

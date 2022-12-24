@@ -1,10 +1,9 @@
 <i18n lang="yaml">
 en:
-  message: "Oops. Nothing here..."
+  message: 'Oops. Nothing here...'
 
 es:
-  message: "Ups. No hay nada aquí..."
-
+  message: 'Ups. No hay nada aquí...'
 </i18n>
 <template>
   <div
@@ -12,11 +11,9 @@ es:
   >
     <div>
       <!-- eslint-disable-next-line @intlify/vue-i18n/no-raw-text -->
-      <div style="font-size: 30vh">
-        404
-      </div>
+      <div style="font-size: 30vh">404</div>
 
-      <div class="text-h2" style="opacity:.4">{{ $t('message') }}</div>
+      <div class="text-h2" style="opacity: 0.4">{{ $t('message') }}</div>
 
       <q-btn
         class="q-mt-xl"
@@ -33,6 +30,6 @@ es:
 
 <script>
 export default {
-  name: 'Error404'
+  name: 'Error404Page',
 };
 </script>
