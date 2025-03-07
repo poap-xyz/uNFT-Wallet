@@ -36,7 +36,7 @@
     "vue-zoomer": "^0.4.0-beta.1",
     "vuex": "4",
     "walletlink": "^2.3.0",
-    "web3": "^1.8.1",
+    "web3": "1.5.2",
     "web3-eth-contract": "^1.5.3",
     "web3modal": "^1.9.4",
     "webpack": "^5.51.1"
@@ -71,5 +71,6 @@
     "node": ">= 10.18.1",
     "npm": ">= 6.13.4",
     "yarn": ">= 1.21.1"
-  }
+  },
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }
