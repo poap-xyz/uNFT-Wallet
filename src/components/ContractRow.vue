@@ -417,9 +417,12 @@ export async function getAmount1155(contract, tokenId, account) {
 }
 
 async function currentyOwned721(contract, coinbase, tokenIds) {
-  const partialTokens = await asyncPool(500, tokenIds, (tokenId) =>
+  const partialTokens = [];
+  for await (const partialToken of asyncPool(500, tokenIds, (tokenId) =>
     getOwner721(contract, tokenId)
-  );
+  )) {
+    partialTokens.push(partialToken);
+  }
   const currentlyOwnedTokens = partialTokens.filter(
     (token) =>
       token.error === null &&
@@ -450,11 +453,13 @@ async function currentyOwned1155(contract, coinbase, tokenIds) {
 export async function getMetadata(contract, type, tokenIds) {
   const uriFunctionName = type === 'ERC721' ? 'tokenURI' : 'uri';
 
-  return asyncPool(500, tokenIds, (tokenId) =>
-    contract.methods[uriFunctionName](tokenId)
-      .call()
-      .then((uri) => ({ id: tokenId, uri }))
-  );
+  const results = [];
+  for await (const result of asyncPool(500, tokenIds, (tokenId) =>
+    contract.methods[uriFunctionName](tokenId).call().then((uri) => ({ id: tokenId, uri }))
+  )) {
+    results.push(result);
+  }
+  return results;
 }
 
 function mergeAmount(tokens, amounts) {
