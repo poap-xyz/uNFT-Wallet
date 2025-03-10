@@ -423,7 +423,7 @@ async function currentyOwned721(contract, coinbase, tokenIds) {
     try {
       return await getOwner721(contract, tokenId);
     } catch (error) {
-      return { tokenId, error };
+      return { tokenId, error: error || 'Unknown Error' };
     }
   })) {
     partialTokens.push(partialToken);
@@ -431,11 +431,10 @@ async function currentyOwned721(contract, coinbase, tokenIds) {
 
   const currentlyOwnedTokens = partialTokens.filter(
     (token) =>
-      token.error === null &&
-      token.currentOwner.toLowerCase() === coinbase.toLowerCase()
+      !token.error && token.currentOwner?.toLowerCase() === coinbase.toLowerCase()
   );
 
-  const errorTokens = partialTokens.filter((token) => token.error !== null);
+  const errorTokens = partialTokens.filter((token) => !!token.error);
   return { currentlyOwnedTokens, errorTokens };
 }
 
