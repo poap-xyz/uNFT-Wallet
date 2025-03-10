@@ -5,37 +5,9 @@
     "type": "production",
     "explorerAddress": "https://etherscan.io/address/%s",
     "explorerTx": "https://etherscan.io/tx/%s",
-    "rpc": "https://eth-mainnet.alchemyapi.io/v2/2pT9LJbbjuBhaVTmaQoE3wyIWJcHotYU",
+    "rpc": "https://eth-mainnet.g.alchemy.com/v2/hTr9WukGGZJilhxOwQ07lbtof2pFb4er",
     "multitransferAddress": "0x8A50Aad065BEd0f138bcF3ce6ccbaE87748EF2a7",
     "logo": "mainnet"
-  },
-  "3": {
-    "name": "Ropsten",
-    "status": "error",
-    "type": "test",
-    "explorerAddress": "https://ropsten.etherscan.io/address/%s",
-    "explorerTx": "https://ropsten.etherscan.io/tx/%s",
-    "faucet": "https://faucet.ropsten.be/",
-    "rpc": "https://eth-ropsten.alchemyapi.io/v2/AkNG6siuaC2LDNxNzsc9BkUm0m9VOXqt"
-  },
-  "4": {
-    "name": "Rinkeby",
-    "status": "error",
-    "type": "test",
-    "explorerAddress": "https://rinkeby.etherscan.io/address/%s",
-    "explorerTx": "https://rinkeby.etherscan.io/tx/%s",
-    "faucet": "http://rinkeby-faucet.com/",
-    "rpc": "https://eth-rinkeby.alchemyapi.io/v2/PVG3Cru0vP_9TCEnM73qXuqkNxlEkdf4"
-  },
-  "5": {
-    "name": "Görli",
-    "status": "error",
-    "type": "test",
-    "explorerAddress": "https://goerli.etherscan.io/address/%s",
-    "explorerTx": "https://goerli.etherscan.io/tx/%s",
-    "faucet": "https://goerli-faucet.slock.it/",
-    "rpc": "https://eth-goerli.alchemyapi.io/v2/CE7523yco5hm0ZbSyBDQK6gGnYYD79nj",
-    "multitransferAddress": "0x5160b31B96fa28494BFd5Eb43310b4469845eD7F"
   },
   "10": {
     "name": "Optimistic Ethereum",
@@ -46,15 +18,6 @@
     "rpc": "https://optimistic.etherscan.io",
     "multitransferAddress": "0x5638de7996E1A02471BD9496Bd50C44eE6590fF8",
     "logo": "optimism"
-  },
-  "42": {
-    "name": "Kovan",
-    "status": "error",
-    "type": "test",
-    "explorerAddress": "https://kovan.etherscan.io/address/%s",
-    "explorerTx": "https://kovan.etherscan.io/tx/%s",
-    "faucet": "https://enjin.io/software/kovan-faucet",
-    "rpc": "https://eth-kovan.alchemyapi.io/v2/rdvmCipeQJZw2p_oTdgp3ELyueWmlrVz"
   },
   "56": {
     "name": "Binance Smart Chain",
