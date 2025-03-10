@@ -3,22 +3,20 @@ en:
   uNFTWallet: 'uNFT Wallet'
   betaWarning: 'This is experimental software, use at your own risk'
   logout: 'Disconnect'
-  chatDiscord: 'Connect on Discord'
-  collaborateGitlab: 'Collaborate on Gitlab'
+  collaborateGithub: 'Collaborate on Github'
   donate: 'Donate'
   donationAccount: 'Thank you very much for supporting uNFT Wallet. If you want to donate you may send a transfer to 0x1018fd8686acA67DcB9D71168c2D1fF45a820417 or, better yet, you can buy an NFT (and show it off) with the red heart button inside the app.'
-  donationOtherWays: 'Other awesome ways to support the project are connecting on Discord, coding, reporting issues, and/or translating on Gitlab and spreading the word.'
+  donationOtherWays: 'Other awesome ways to support the project are connecting on Discord, coding, reporting issues, and/or translating on Github and spreading the word.'
   donationClose: 'Again, thank you very much for your support.'
 
 es:
   uNFTWallet: 'uNFT Wallet'
   betaWarning: 'Esto es software experimental, use bajo su propio riesgo'
   logout: 'Desconectar'
-  chatDiscord: 'Conectar en Discord'
-  collaborateGitlab: 'Colabora en Gitlab'
+  collaborateGithub: 'Colabora en Github'
   donate: 'Donar'
   donationAccount: 'Muchisimas gracias por apoyar a uNFT Wallet. Si gustas donar, puedes enviar una transferencia a 0x1018fd8686acA67DcB9D71168c2D1fF45a820417 o, mejor todavía, puedes comprar un NFT (y presumirlo) con el botón rojo con un corazón que está dentro de la aplicación.'
-  donationOtherWays: 'Otras geniales maneras de apoyar el proyecto son comentando tu experiencia en Discord, programando, reportando problemas y/o traduciendo en Gitlab y compartiendo uNFT Wallet con mas personas.'
+  donationOtherWays: 'Otras geniales maneras de apoyar el proyecto son comentando tu experiencia en Discord, programando, reportando problemas y/o traduciendo en Github y compartiendo uNFT Wallet con mas personas.'
   donationClose: 'De nuevo, muchas gracias por tu apoyo.'
 </i18n>
 
@@ -96,33 +94,14 @@ es:
               clickable
               tag="a"
               target="_blank"
-              href="https://discord.gg/cVEPe333Fu"
+              href="https://github.com/poap-xyz/unft-wallet"
             >
               <q-item-section avatar>
-                <q-icon name="fab fa-discord" />
-              </q-item-section>
-              <q-item-section> {{ $t('chatDiscord') }} </q-item-section>
-            </q-item>
-            <q-item
-              v-ripple
-              clickable
-              tag="a"
-              target="_blank"
-              href="https://gitlab.com/ktl_xv/unft-wallet"
-            >
-              <q-item-section avatar>
-                <q-icon name="fab fa-gitlab" />
+                <q-icon name="fab fa-github" />
               </q-item-section>
               <q-item-section>
-                {{ $t('collaborateGitlab') }}
+                {{ $t('collaborateGithub') }}
               </q-item-section>
-            </q-item>
-            <q-separator />
-            <q-item v-ripple clickable @click="showDonateModal = true">
-              <q-item-section avatar>
-                <q-icon name="favorite" />
-              </q-item-section>
-              <q-item-section> {{ $t('donate') }} </q-item-section>
             </q-item>
           </q-list>
         </div>
