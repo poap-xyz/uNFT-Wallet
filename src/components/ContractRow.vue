@@ -418,11 +418,17 @@ export async function getAmount1155(contract, tokenId, account) {
 
 async function currentyOwned721(contract, coinbase, tokenIds) {
   const partialTokens = [];
-  for await (const partialToken of asyncPool(500, tokenIds, (tokenId) =>
-    getOwner721(contract, tokenId)
-  )) {
+
+  for await (const partialToken of asyncPool(500, tokenIds, async (tokenId) => {
+    try {
+      return await getOwner721(contract, tokenId);
+    } catch (error) {
+      return { tokenId, error };
+    }
+  })) {
     partialTokens.push(partialToken);
   }
+
   const currentlyOwnedTokens = partialTokens.filter(
     (token) =>
       token.error === null &&
@@ -454,9 +460,13 @@ export async function getMetadata(contract, type, tokenIds) {
   const uriFunctionName = type === 'ERC721' ? 'tokenURI' : 'uri';
 
   const results = [];
-  for await (const result of asyncPool(500, tokenIds, (tokenId) =>
-    contract.methods[uriFunctionName](tokenId).call().then((uri) => ({ id: tokenId, uri }))
-  )) {
+  for await (const result of asyncPool(500, tokenIds, async (tokenId) => {
+    try {
+      return await contract.methods[uriFunctionName](tokenId).call().then((uri) => ({ id: tokenId, uri }))
+    } catch (error) {
+      return { id: tokenId, error };
+    }
+  })) {
     results.push(result);
   }
   return results;

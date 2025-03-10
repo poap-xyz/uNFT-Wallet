@@ -145,7 +145,7 @@ export default {
     if (this.connected) {
       this.loadContracts();
     } else {
-      this.$router.push({ path: 'welcome-page' });
+      this.$router.push({ name: 'welcome-page' });
     }
   },
   methods: {
