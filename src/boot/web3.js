@@ -3,7 +3,7 @@ import Web3 from 'web3';
 import ENS, { getEnsAddress } from '@ensdomains/ensjs';
 
 const mainnetProvider = new Web3.providers.HttpProvider(
-  'https://eth-mainnet.gateway.pokt.network/v1/5f7648aab90218002e9ce993'
+  'https://public-eth-node.poap.tech/a4515e04d575d29ec59024e3a2e4089f85bcb9ad',
 );
 
 const ens = new ENS({
