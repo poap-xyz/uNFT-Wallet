@@ -238,7 +238,7 @@ export default {
         if (newValue && !oldValue) {
           this.$router.push({ name: 'main-page' });
         } else if (!newValue && oldValue) {
-          this.$router.replace({ name: 'welcome' });
+          this.$router.replace({ name: 'welcome-page' });
         }
       }
     },
