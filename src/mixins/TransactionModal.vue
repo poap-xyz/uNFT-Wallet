@@ -7,7 +7,7 @@ function mergeLocaleMessages(i18n, messages) {
 }
 const i18nMessages = {
   en: {
-    pleaseAprove: 'Please aprove the transaction',
+    pleaseAprove: 'Please approve the transaction',
     transactionSent: 'Transaction Sent',
     transactionConfirmed: 'Transaction Confirmed',
   },

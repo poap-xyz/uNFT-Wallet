@@ -32,8 +32,8 @@ en:
     steps:
       - 'Select the tokens you want to transfer'
       - 'Click on the "Transfer" button in the bottom of the screen'
-      - "Aprove the first transaction, this will allow uNFT Wallet to manage this contract's NFTs (only needed once per contract)"
-      - 'Aprove the second transaction, this will do the actual transfer'
+      - "Approve the first transaction, this will allow uNFT Wallet to manage this contract's NFTs (only needed once per contract)"
+      - 'Approve the second transaction, this will do the actual transfer'
 
 es:
   noTokens: 'No se encontraron tokens'
