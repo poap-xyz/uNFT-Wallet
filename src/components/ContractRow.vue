@@ -685,14 +685,15 @@ export default {
           return [...new Set(newIds)]; // Remove duplicates
         } catch (err) {
           const regexp =
-            /eth_getLogs(?: and eth_newFilter)? are limited to a ([\d,]+) blocks range|exceed maximum block range: ([\d,]+)/;
+            /eth_getLogs(?: and eth_newFilter)? are limited to a ([\d,]+) blocks range|exceed maximum block range: ([\d,]+)|please limit the query to at most ([\d,]+) blocks/;
           const matchesArray = err.message.match(regexp);
-          const limitString = matchesArray?.[1] ?? matchesArray?.[2];
+          const limitString = matchesArray?.[1] ?? matchesArray?.[2] ?? matchesArray?.[3];
           if (limitString) {
             const parsedMaxBlocks = parseInt(
               limitString.replace(',', '').replace('.', ''),
               10
             );
+            console.log(`Max blocks: ${parsedMaxBlocks}`);
             if (maxBlocks === undefined) {
               return this.getNewIds(type, lastBlock, parsedMaxBlocks);
             }
