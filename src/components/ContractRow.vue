@@ -685,7 +685,7 @@ export default {
           return [...new Set(newIds)]; // Remove duplicates
         } catch (err) {
           const regexp =
-            /eth_getLogs(?: and eth_newFilter)? are limited to a ([\d,]+) blocks range|exceed maximum block range: ([\d,]+)|please limit the query to at most ([\d,]+) blocks/;
+            /eth_getLogs.*limited to a ([\d,]+).*range|exceed maximum block range: ([\d,]+)|please limit the query to at most ([\d,]+) blocks|/;
           const matchesArray = err.message.match(regexp);
           const limitString = matchesArray?.[1] ?? matchesArray?.[2] ?? matchesArray?.[3];
           if (limitString) {
