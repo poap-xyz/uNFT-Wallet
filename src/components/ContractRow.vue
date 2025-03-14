@@ -687,7 +687,7 @@ export default {
           const regexp =
             /eth_getLogs(?: and eth_newFilter)? are limited to a ([\d,]+) blocks range|exceed maximum block range: ([\d,]+)/;
           const matchesArray = err.message.match(regexp);
-          const limitString = matchesArray[1] ?? matchesArray[2];
+          const limitString = matchesArray?.[1] ?? matchesArray?.[2];
           if (limitString) {
             const parsedMaxBlocks = parseInt(
               limitString.replace(',', '').replace('.', ''),
