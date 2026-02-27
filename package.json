@@ -39,7 +39,7 @@
     "web3": "1.5.2",
     "web3-eth-contract": "^1.5.3",
     "web3modal": "^1.9.4",
-    "webpack": "^5.51.1"
+    "webpack": "^5.104.1"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.0.0",
